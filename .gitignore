@@ -1,0 +1,5 @@
+# see https://github.com/github/gitignore for templates
+
+
+/.idea/
+**/.DS_Store
