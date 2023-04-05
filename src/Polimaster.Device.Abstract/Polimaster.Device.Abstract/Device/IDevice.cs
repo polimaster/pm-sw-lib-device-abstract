@@ -1,3 +1,4 @@
+using System;
 using Polimaster.Device.Abstract.Commands;
 using Polimaster.Device.Abstract.Transport;
 
@@ -7,7 +8,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// Device
 /// </summary>
 /// <typeparam name="TData" cref="ICommand{TParam,TData}"></typeparam>
-public interface IDevice<TData> {
+public interface IDevice<TData> : IDisposable {
 
     /// <summary>
     /// Transport layer
