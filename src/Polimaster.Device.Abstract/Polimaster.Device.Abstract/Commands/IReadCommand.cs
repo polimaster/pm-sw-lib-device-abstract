@@ -24,5 +24,5 @@ public interface IReadCommand<out TResult, TParam, TData> : ICommand<TParam, TDa
     /// <see cref="Transport.ITransport{TData}"/>
     /// Result returned from transport
     /// </param>
-    void Parse(TData result);
+    TResult? Parse(TData result);
 }

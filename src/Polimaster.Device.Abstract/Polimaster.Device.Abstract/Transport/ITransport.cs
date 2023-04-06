@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
 
@@ -19,28 +20,28 @@ public interface ITransport<TData> : IDisposable {
     /// Occurs when connection state changed
     /// </summary>
     event Action<ConnectionState> ConnectionStateChanged;
-    
+
     /// <summary>
     /// Write well-formatted command to device
     /// </summary>
     /// <param name="command">Command</param>
-    void Write(TData command);
-    
+    Task Write(TData command);
+
     /// <summary>
     /// Read well-formatted command to device
     /// </summary>
     /// <param name="command">Command</param>
     /// <returns>Result of command</returns>
-    TData Read(TData command);
+    Task<TData> Read(TData command);
 
 
     /// <summary>
     /// Connect to device
     /// </summary>
-    void Open();
+    Task Open();
 
     /// <summary>
     /// Disconnect from device
     /// </summary>
-    void Close();
+    Task Close();
 }

@@ -9,7 +9,7 @@ public interface ICommand<TParam, out TData> {
     /// <summary>
     /// Parameters for command
     /// </summary>
-    TParam? Param { get; set; }
+    TParam Param { get; set; }
 
     /// <summary>
     /// Returns formatted command to be send to device

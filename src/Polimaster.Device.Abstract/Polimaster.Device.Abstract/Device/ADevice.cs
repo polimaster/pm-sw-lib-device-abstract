@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Commands;
 using Polimaster.Device.Abstract.Transport;
 
@@ -21,21 +22,21 @@ public abstract class ADevice<TData> : IDevice<TData> {
     }
 
     /// <inheritdoc cref="IDevice{TData}.Write{TParam}"/>
-    public virtual void Write<TParam>(ref ICommand<TParam, TData> command) {
+    public virtual async Task Write<TParam>(ICommand<TParam, TData> command) {
         try {
-            Transport.Open();
-            Transport.Write(command.Compile());
+            await Transport.Open();
+            await Transport.Write(command.Compile());
         } catch (Exception e) {
             throw new DeviceException(e);
         }
     }
 
     /// <inheritdoc cref="IDevice{TData}.Read{TResult,TParam}"/>
-    public virtual void Read<TResult, TParam>(ref IReadCommand<TResult, TParam, TData> command) {
+    public virtual async Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command) {
         try {
-            Transport.Open();
-            var res = Transport.Read(command.Compile());
-            command.Parse(res);
+            await Transport.Open();
+            var res = await Transport.Read(command.Compile());
+            return command.Parse(res);
         } catch (Exception e) {
             throw new DeviceException(e);
         }
