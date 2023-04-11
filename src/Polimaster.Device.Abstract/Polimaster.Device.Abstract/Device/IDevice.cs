@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Commands;
 using Polimaster.Device.Abstract.Transport;
@@ -23,8 +24,10 @@ public interface IDevice<TData> : IDisposable {
     /// <param name="command">
     ///     <see cref="ICommand{TParam,TData}"/>
     ///     Command to be send to device</param>
+    /// <param name="cancellationToken"></param>
     /// <typeparam name="TParam"><see cref="ICommand{TParam,TData}"/></typeparam>
-    Task Write<TParam>(ICommand<TParam, TData> command);
+    Task Write<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new());
+    
 
     /// <summary>
     /// Reads data from device with command
@@ -33,7 +36,8 @@ public interface IDevice<TData> : IDisposable {
     ///     <see cref="IReadCommand{TResult,TParam,TData}"/>
     ///     Command to be send to device
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <typeparam name="TResult"><see cref="IReadCommand{TResult,TParam,TData}"/></typeparam>
     /// <typeparam name="TParam"><see cref="IReadCommand{TResult,TParam,TData}"/></typeparam>
-    Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command);
+    Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());
 }

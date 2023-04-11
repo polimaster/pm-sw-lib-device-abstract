@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -25,14 +26,16 @@ public interface ITransport<TData> : IDisposable {
     /// Write well-formatted command to device
     /// </summary>
     /// <param name="command">Command</param>
-    Task Write(TData command);
+    /// <param name="cancellationToken"></param>
+    Task Write(TData command, CancellationToken cancellationToken);
 
     /// <summary>
     /// Read well-formatted command to device
     /// </summary>
     /// <param name="command">Command</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>Result of command</returns>
-    Task<TData> Read(TData command);
+    Task<TData> Read(TData command, CancellationToken cancellationToken);
 
 
     /// <summary>

@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Abstract", "Polimaster.Device.Abstract\Polimaster.Device.Abstract.csproj", "{99855766-C325-44DC-9CC1-F38167E1B443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{1F7D4873-C68E-4977-AA25-800253A36B45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Abstract.Tests", "Polimaster.Device.Abstract.Tests\Polimaster.Device.Abstract.Tests.csproj", "{1F7D4873-C68E-4977-AA25-800253A36B45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

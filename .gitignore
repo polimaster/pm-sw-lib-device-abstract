@@ -6,3 +6,4 @@
 /src/**/**/bin/
 /src/**/**/obj/
 **/.DS_Store
+/src/Polimaster.Device.Abstract/Polimaster.Device.Abstract.sln.DotSettings.user
