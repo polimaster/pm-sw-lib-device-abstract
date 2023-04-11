@@ -13,11 +13,7 @@ public class Http<TTcpClient> : ITransport<string> where TTcpClient : ITcpClient
     private readonly int _connectTimeout;
 
     /// <inheritdoc cref="ITransport{TData}.ConnectionState"/>
-    public virtual ConnectionState ConnectionState {
-        get {
-            lock (_client) { return _client.Connected ? ConnectionState.Open : ConnectionState.Closed; }
-        }
-    }
+    public virtual ConnectionState ConnectionState => _client.Connected ? ConnectionState.Open : ConnectionState.Closed;
 
     /// <inheritdoc cref="ITransport{TData}.ConnectionStateChanged"/>
     public virtual event Action<ConnectionState>? ConnectionStateChanged;

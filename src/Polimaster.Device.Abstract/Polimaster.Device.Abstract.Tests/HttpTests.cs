@@ -17,13 +17,20 @@ public class HttpTests {
     [Fact]
     public async void ConnectionStateTests() {
         var http = new Http<ITcpClient>(_clientMock.Object, It.IsAny<string>(), It.IsAny<int>());
+        // var mockState = ConnectionState.Closed;
+        // http.ConnectionStateChanged += state => mockState = state;
         
         _clientMock.Setup(s => s.Connected).Returns(false);
+
         Assert.Equal(ConnectionState.Closed, http.ConnectionState);
-        
+        // Assert.Equal(ConnectionState.Closed, mockState);
+
         await http.Open();
+        
         _clientMock.Setup(s => s.Connected).Returns(true);
+        
         Assert.Equal(ConnectionState.Open, http.ConnectionState);
+        // Assert.Equal(ConnectionState.Open, mockState);
     }
 
 
@@ -61,7 +68,7 @@ public class HttpTests {
         
         _clientMock.Setup(s => s.GetStream()).Returns(streamMock.Object);
         
-        await http.Write("");
+        await http.Write(string.Empty);
         
         _clientMock.Verify(v => v.GetStream());
     }

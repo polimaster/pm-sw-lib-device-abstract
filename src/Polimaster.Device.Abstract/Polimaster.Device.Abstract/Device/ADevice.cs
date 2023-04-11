@@ -18,7 +18,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
     /// <param name="transport">
     /// <see cref="Transport"/>
     /// </param>
-    public ADevice(ITransport<TData> transport) {
+    protected ADevice(ITransport<TData> transport) {
         Transport = transport;
     }
 
