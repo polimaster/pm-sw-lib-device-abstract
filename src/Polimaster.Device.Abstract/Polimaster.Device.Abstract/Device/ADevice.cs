@@ -9,6 +9,9 @@ namespace Polimaster.Device.Abstract.Device;
 /// <inheritdoc cref="IDevice{TData}"/>
 public abstract class ADevice<TData> : IDevice<TData> {
     
+    /// <inheritdoc cref="IDevice{TData}.DeviceInfo"/>
+    public virtual IDeviceInfo? DeviceInfo => null;
+
     /// <inheritdoc cref="IDevice{TData}.Transport"/>
     public ITransport<TData> Transport { get; }
 

@@ -9,8 +9,13 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device
 /// </summary>
-/// <typeparam name="TData" cref="ICommand{TParam,TData}"></typeparam>
+/// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
 public interface IDevice<TData> : IDisposable {
+
+    /// <summary>
+    /// Device information
+    /// </summary>
+    IDeviceInfo? DeviceInfo { get; }
 
     /// <summary>
     /// Transport layer
@@ -24,7 +29,7 @@ public interface IDevice<TData> : IDisposable {
     /// <param name="command">
     ///     <see cref="ICommand{TParam,TData}"/>
     ///     Command to be send to device</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <typeparam name="TParam"><see cref="ICommand{TParam,TData}"/></typeparam>
     Task Write<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new());
     
@@ -36,7 +41,7 @@ public interface IDevice<TData> : IDisposable {
     ///     <see cref="IReadCommand{TResult,TParam,TData}"/>
     ///     Command to be send to device
     /// </param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <typeparam name="TResult"><see cref="IReadCommand{TResult,TParam,TData}"/></typeparam>
     /// <typeparam name="TParam"><see cref="IReadCommand{TResult,TParam,TData}"/></typeparam>
     Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());

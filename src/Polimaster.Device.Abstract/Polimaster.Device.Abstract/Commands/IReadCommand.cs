@@ -1,3 +1,5 @@
+using Polimaster.Device.Abstract.Transport;
+
 namespace Polimaster.Device.Abstract.Commands; 
 
 /// <summary>
@@ -13,16 +15,18 @@ namespace Polimaster.Device.Abstract.Commands;
 public interface IReadCommand<out TResult, TParam, TData> : ICommand<TParam, TData> {
     
     /// <summary>
-    /// Result of executing command
-    /// </summary>
-    TResult? Result { get; }
-
-    /// <summary>
     /// This method should parse result of command
     /// </summary>
     /// <param name="result">
-    /// <see cref="Transport.ITransport{TData}"/>
-    /// Result returned from transport
+    /// <see cref="ITransport{TData}.Read"/>
+    /// Result of executed command
     /// </param>
     TResult? Parse(TData result);
+}
+
+
+public interface IDeviceParameter<out TResult, TParam, TData> {
+    ICommand<TParam, TData> WriteCommand { get; }
+    
+    IReadCommand<TResult, TParam, TData> ReadCommand { get; }
 }

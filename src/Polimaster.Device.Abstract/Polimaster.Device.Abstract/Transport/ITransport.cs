@@ -26,14 +26,14 @@ public interface ITransport<TData> : IDisposable {
     /// Write well-formatted command to device
     /// </summary>
     /// <param name="command">Command</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     Task Write(TData command, CancellationToken cancellationToken);
 
     /// <summary>
     /// Read well-formatted command to device
     /// </summary>
     /// <param name="command">Command</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns>Result of command</returns>
     Task<TData> Read(TData command, CancellationToken cancellationToken);
 
