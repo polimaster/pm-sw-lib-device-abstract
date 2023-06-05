@@ -12,16 +12,20 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.DeviceInfo"/>
     public virtual IDeviceInfo? DeviceInfo => null;
+    
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.ConnectionParams"/>
     public TConnectionParams? ConnectionParams { get; }
 
+    
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.ConnectionState"/>
-    public virtual ConnectionState ConnectionState => ConnectionState.Closed;
+    public virtual ConnectionState ConnectionState { get; private set; }
+
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.ConnectionStateChanged"/>
     public event Action<ConnectionState>? ConnectionStateChanged;
 
+    
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Transport"/>
     public ITransport<TData, TConnectionParams> Transport { get; }
 
@@ -35,6 +39,10 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     protected ADevice(ITransport<TData, TConnectionParams> transport, TConnectionParams? connectionParams = default) {
         Transport = transport;
         ConnectionParams = connectionParams;
+        // Transport.ConnectionStateChanged += state => {
+        //     ConnectionState = state;
+        //     ConnectionStateChanged.Invoke(ConnectionState);
+        // };
     }
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Write{TParam}"/>

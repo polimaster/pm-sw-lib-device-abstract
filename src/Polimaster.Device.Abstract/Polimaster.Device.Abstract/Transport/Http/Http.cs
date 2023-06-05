@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
-public struct HttpConnectionParams {
-    public int Port;
-    public string Ip;
-    public int Timeout;
-}
-
 public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where TTcpClient : ITcpClient {
     private readonly TTcpClient _client;
 

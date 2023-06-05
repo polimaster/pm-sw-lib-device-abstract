@@ -39,12 +39,12 @@ public interface ITransport<TData, TConnectionParams> : IDisposable {
 
 
     /// <summary>
-    /// Connect to device
+    /// Open connection
     /// </summary>
     Task Open(TConnectionParams connectionParams);
 
     /// <summary>
-    /// Disconnect from device
+    /// Close connection
     /// </summary>
     Task Close();
 }
