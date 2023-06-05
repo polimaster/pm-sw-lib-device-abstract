@@ -1,6 +1,4 @@
-using Polimaster.Device.Abstract.Transport;
-
-namespace Polimaster.Device.Abstract.Commands; 
+namespace Polimaster.Device.Abstract.Transport.Commands; 
 
 /// <summary>
 /// Parametrized command for device with command result returned.
@@ -22,11 +20,4 @@ public interface IReadCommand<out TResult, TParam, TData> : ICommand<TParam, TDa
     /// Result of executed command
     /// </param>
     TResult? Parse(TData result);
-}
-
-
-public interface IDeviceParameter<out TResult, TParam, TData> {
-    ICommand<TParam, TData> WriteCommand { get; }
-    
-    IReadCommand<TResult, TParam, TData> ReadCommand { get; }
 }

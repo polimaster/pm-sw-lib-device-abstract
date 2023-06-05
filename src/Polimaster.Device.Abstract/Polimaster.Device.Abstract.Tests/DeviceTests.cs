@@ -6,10 +6,10 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests;
 
 public class DeviceTests {
-    private readonly Mock<ITransport<string>> _transportMock;
+    private readonly Mock<ITransport<string, string>> _transportMock;
 
     public DeviceTests() {
-        _transportMock = new Mock<ITransport<string>>();
+        _transportMock = new Mock<ITransport<string, string>>();
     }
 
     [Fact]

@@ -6,50 +6,45 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
-public class Http<TTcpClient> : ITransport<string> where TTcpClient : ITcpClient {
-    private readonly TTcpClient _client;
-    private readonly string _ip;
-    private readonly int _port;
-    private readonly int _connectTimeout;
+public struct HttpConnectionParams {
+    public int Port;
+    public string Ip;
+    public int Timeout;
+}
 
-    /// <inheritdoc cref="ITransport{TData}.ConnectionState"/>
+public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where TTcpClient : ITcpClient {
+    private readonly TTcpClient _client;
+
+    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionState"/>
     public virtual ConnectionState ConnectionState => _client.Connected ? ConnectionState.Open : ConnectionState.Closed;
 
-    /// <inheritdoc cref="ITransport{TData}.ConnectionStateChanged"/>
+    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionStateChanged"/>
     public virtual event Action<ConnectionState>? ConnectionStateChanged;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="client">Transport client</param>
-    /// <param name="ip">IP address to connect</param>
-    /// <param name="port">IP port to connect</param>
-    /// <param name="connectTimeout">Connect timeout</param>
-    public Http(TTcpClient client, string ip, int port, int connectTimeout = 5000) {
+    public Http(TTcpClient client) {
         _client = client;
-        _ip = ip;
-        _port = port;
-        _connectTimeout = connectTimeout;
     }
 
-    /// <inheritdoc cref="ITransport{TData}.Open"/>
-    public virtual Task Open() {
-        if (ConnectionState == ConnectionState.Open) return Task.CompletedTask;
+    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Open"/>
+    public virtual async Task Open(HttpConnectionParams connectionParams) {
+        if (ConnectionState == ConnectionState.Open) return;
 
-        var connected = _client.ConnectAsync(_ip, _port).Wait(_connectTimeout);
-        if (!connected) throw new TimeoutException($"Connection to {_ip}:{_port} timed out");
+        var connected = _client.ConnectAsync(connectionParams.Ip, connectionParams.Port).Wait(connectionParams.Timeout);
+        if (!connected) throw new TimeoutException($"Connection to {connectionParams.Ip}:{connectionParams.Port} timed out");
         ConnectionStateChanged?.Invoke(ConnectionState);
-        return Task.CompletedTask;
     }
 
-    /// <inheritdoc cref="ITransport{TData}.Close"/>
-    public virtual Task Close() {
+    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Close"/>
+    public virtual async Task Close() {
         _client.Close();
         ConnectionStateChanged?.Invoke(ConnectionState);
-        return Task.CompletedTask;
     }
 
-    /// <inheritdoc cref="ITransport{TData}.Write"/>
+    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Write"/>
     public virtual async Task Write(string command, CancellationToken cancellationToken = new()) {
         await using var stream = _client.GetStream();
         await using var writer = new StreamWriter(stream) { AutoFlush = true };
@@ -57,7 +52,7 @@ public class Http<TTcpClient> : ITransport<string> where TTcpClient : ITcpClient
         writer.Close();
     }
 
-    /// <inheritdoc cref="ITransport{TData}.Read"/>
+    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Read"/>
     public virtual async Task<string> Read(string command, CancellationToken cancellationToken = new()) {
         await using var stream = _client.GetStream();
 

@@ -1,4 +1,4 @@
-using Polimaster.Device.Abstract.Commands;
+using Polimaster.Device.Abstract.Transport.Commands;
 
 namespace Polimaster.Device.Abstract.Tests.Device;
 

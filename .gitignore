@@ -7,3 +7,5 @@
 /src/**/**/obj/
 **/.DS_Store
 /src/Polimaster.Device.Abstract/Polimaster.Device.Abstract.sln.DotSettings.user
+/src/Polimaster.Device.Abstract/.vs/**
+/.vs/**

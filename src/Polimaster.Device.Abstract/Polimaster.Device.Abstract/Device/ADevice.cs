@@ -1,44 +1,56 @@
 using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Commands;
 using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Transport.Commands;
 
 namespace Polimaster.Device.Abstract.Device; 
 
-/// <inheritdoc cref="IDevice{TData}"/>
-public abstract class ADevice<TData> : IDevice<TData> {
+/// <inheritdoc cref="IDevice{TData, TConnectionParams}"/>
+public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnectionParams> {
     
-    /// <inheritdoc cref="IDevice{TData}.DeviceInfo"/>
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.DeviceInfo"/>
     public virtual IDeviceInfo? DeviceInfo => null;
 
-    /// <inheritdoc cref="IDevice{TData}.Transport"/>
-    public ITransport<TData> Transport { get; }
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.ConnectionParams"/>
+    public TConnectionParams? ConnectionParams { get; }
+
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.ConnectionState"/>
+    public virtual ConnectionState ConnectionState => ConnectionState.Closed;
+
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.ConnectionStateChanged"/>
+    public event Action<ConnectionState>? ConnectionStateChanged;
+
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Transport"/>
+    public ITransport<TData, TConnectionParams> Transport { get; }
 
     /// <summary>
     /// Device constructor
     /// </summary>
     /// <param name="transport">
-    /// <see cref="Transport"/>
+    ///     <see cref="Transport"/>
     /// </param>
-    protected ADevice(ITransport<TData> transport) {
+    /// <param name="connectionParams"></param>
+    protected ADevice(ITransport<TData, TConnectionParams> transport, TConnectionParams? connectionParams = default) {
         Transport = transport;
+        ConnectionParams = connectionParams;
     }
 
-    /// <inheritdoc cref="IDevice{TData}.Write{TParam}"/>
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Write{TParam}"/>
     public virtual async Task Write<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new()) {
         try {
-            await Transport.Open();
+            await Transport.Open(ConnectionParams);
             await Transport.Write(command.Compile(), cancellationToken);
         } catch (Exception e) {
             throw new DeviceException(e);
         }
     }
 
-    /// <inheritdoc cref="IDevice{TData}.Read{TResult,TParam}"/>
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Read{TResult,TParam}"/>
     public virtual async Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new()) {
         try {
-            await Transport.Open();
+            await Transport.Open(ConnectionParams);
             var res = await Transport.Read(command.Compile(), cancellationToken);
             return command.Parse(res);
         } catch (Exception e) {
