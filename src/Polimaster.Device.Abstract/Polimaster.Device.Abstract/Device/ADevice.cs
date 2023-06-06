@@ -48,8 +48,8 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Write{TParam}"/>
     public virtual async Task Write<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new()) {
         try {
-            await Transport.Open(ConnectionParams);
-            await Transport.Write(command.Compile(), cancellationToken);
+            var stream = await Transport.Open(ConnectionParams);
+            await Transport.Write(stream, command.Compile(), cancellationToken);
         } catch (Exception e) {
             throw new DeviceException(e);
         }
@@ -58,8 +58,8 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Read{TResult,TParam}"/>
     public virtual async Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new()) {
         try {
-            await Transport.Open(ConnectionParams);
-            var res = await Transport.Read(command.Compile(), cancellationToken);
+            var stream = await Transport.Open(ConnectionParams);
+            var res = await Transport.Read(stream, command.Compile(), cancellationToken);
             return command.Parse(res);
         } catch (Exception e) {
             throw new DeviceException(e);

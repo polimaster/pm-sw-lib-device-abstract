@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Device;
@@ -21,7 +22,7 @@ public class DeviceTests {
         };
         await dev.Write(myCommand);
 
-        _transportMock.Verify(v => v.Write(myCommand.Compile(), CancellationToken.None));
+        _transportMock.Verify(v => v.Write(It.IsAny<Stream>(), myCommand.Compile(), CancellationToken.None));
     }
 
     [Fact]
@@ -33,6 +34,6 @@ public class DeviceTests {
         };
         await dev.Read(myCommand);
 
-        _transportMock.Verify(v => v.Read(myCommand.Compile(), CancellationToken.None));
+        _transportMock.Verify(v => v.Read(It.IsAny<Stream>(), myCommand.Compile(), CancellationToken.None));
     }
 }

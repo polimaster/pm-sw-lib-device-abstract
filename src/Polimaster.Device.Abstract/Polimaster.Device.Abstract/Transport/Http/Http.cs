@@ -24,12 +24,13 @@ public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where T
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Open"/>
-    public virtual async Task Open(HttpConnectionParams connectionParams) {
-        if (ConnectionState == ConnectionState.Open) return;
+    public virtual async Task<Stream> Open(HttpConnectionParams connectionParams) {
+        if (ConnectionState == ConnectionState.Open) _client.GetStream();
 
         var connected = _client.ConnectAsync(connectionParams.Ip, connectionParams.Port).Wait(connectionParams.Timeout);
         if (!connected) throw new TimeoutException($"Connection to {connectionParams.Ip}:{connectionParams.Port} timed out");
         ConnectionStateChanged?.Invoke(ConnectionState);
+        return _client.GetStream();
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Close"/>
@@ -39,17 +40,14 @@ public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where T
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Write"/>
-    public virtual async Task Write(string command, CancellationToken cancellationToken = new()) {
-        await using var stream = _client.GetStream();
+    public virtual async Task Write(Stream stream, string command, CancellationToken cancellationToken) {
         await using var writer = new StreamWriter(stream) { AutoFlush = true };
         await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
         writer.Close();
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Read"/>
-    public virtual async Task<string> Read(string command, CancellationToken cancellationToken = new()) {
-        await using var stream = _client.GetStream();
-
+    public virtual async Task<string> Read(Stream stream, string command, CancellationToken cancellationToken) {
         await using var writer = new StreamWriter(stream) { AutoFlush = true };
         await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
         // writer.Close();
