@@ -2,8 +2,8 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Commands;
 using Polimaster.Device.Abstract.Transport;
-using Polimaster.Device.Abstract.Transport.Commands;
 
 namespace Polimaster.Device.Abstract.Device;
 

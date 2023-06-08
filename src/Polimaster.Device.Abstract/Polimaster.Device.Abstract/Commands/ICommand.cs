@@ -1,4 +1,4 @@
-namespace Polimaster.Device.Abstract.Transport.Commands;
+namespace Polimaster.Device.Abstract.Commands;
 
 /// <summary>
 /// Parametrized command for device with no result returned, just call & forget. 

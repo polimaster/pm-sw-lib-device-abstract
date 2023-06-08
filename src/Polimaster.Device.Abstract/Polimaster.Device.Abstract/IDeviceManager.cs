@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract;
@@ -25,10 +26,11 @@ public interface IDeviceManager<T> {
     /// Current connected devices
     /// </summary>
     List<T> Devices { get; set; }
-    
-    
+
+
     /// <summary>
     /// Refresh list of device
     /// </summary>
-    Task RefreshConnectedDevices();
+    /// <param name="token"></param>
+    Task RefreshConnectedDevices(CancellationToken token);
 }
