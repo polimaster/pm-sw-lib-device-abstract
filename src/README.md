@@ -1,6 +1,6 @@
-# Project source code directory
+# Polimaster.Device.Abstract
 
-Place general information about project structure here.
+Abstractions library for Polimaster devices. C# implementation for *netstandard.2*.
 
 # Setup
 
