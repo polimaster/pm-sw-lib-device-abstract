@@ -10,12 +10,19 @@ namespace Polimaster.Device.Abstract.Transport;
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
 /// <typeparam name="TData">Data type for device communication</typeparam>
-public interface ITransport<TData, TConnectionParams> : IDisposable {
+/// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
+public interface ITransport<TData, out TConnectionParams> : IDisposable {
     
     /// <summary>
     /// State of connection
     /// </summary>
     ConnectionState ConnectionState { get; }
+    
+    
+    /// <summary>
+    /// Parameters for connection
+    /// </summary>
+    TConnectionParams? ConnectionParams { get; }
 
     
     /// <summary>
@@ -44,7 +51,7 @@ public interface ITransport<TData, TConnectionParams> : IDisposable {
     /// <summary>
     /// Open connection
     /// </summary>
-    Task<Stream> Open(TConnectionParams connectionParams);
+    Task<Stream?> Open();
 
     /// <summary>
     /// Close connection

@@ -12,6 +12,8 @@ public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where T
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionState"/>
     public virtual ConnectionState ConnectionState => _client.Connected ? ConnectionState.Open : ConnectionState.Closed;
 
+    public HttpConnectionParams ConnectionParams { get; }
+
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionStateChanged"/>
     public virtual event Action<ConnectionState>? ConnectionStateChanged;
 
@@ -19,24 +21,27 @@ public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where T
     /// 
     /// </summary>
     /// <param name="client">Transport client</param>
-    public Http(TTcpClient client) {
+    /// <param name="connectionParams"></param>
+    public Http(TTcpClient client, HttpConnectionParams connectionParams) {
+        ConnectionParams = connectionParams;
         _client = client;
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Open"/>
-    public virtual async Task<Stream> Open(HttpConnectionParams connectionParams) {
+    public virtual Task<Stream?> Open() {
         if (ConnectionState == ConnectionState.Open) _client.GetStream();
 
-        var connected = _client.ConnectAsync(connectionParams.Ip, connectionParams.Port).Wait(connectionParams.Timeout);
-        if (!connected) throw new TimeoutException($"Connection to {connectionParams.Ip}:{connectionParams.Port} timed out");
+        var connected = _client.ConnectAsync(ConnectionParams.Ip, ConnectionParams.Port).Wait(ConnectionParams.Timeout);
+        if (!connected) throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
         ConnectionStateChanged?.Invoke(ConnectionState);
-        return _client.GetStream();
+        return Task.FromResult<Stream?>(_client.GetStream());
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Close"/>
-    public virtual async Task Close() {
+    public virtual Task Close() {
         _client.Close();
         ConnectionStateChanged?.Invoke(ConnectionState);
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Write"/>

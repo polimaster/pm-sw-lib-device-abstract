@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Commands;
@@ -12,33 +11,18 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 /// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
 /// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
-public interface IDevice<TData, TConnectionParams> : IDisposable {
+public interface IDevice<TData, out TConnectionParams> : IDisposable {
 
     /// <summary>
     /// Device information
     /// </summary>
-    IDeviceInfo? DeviceInfo { get; }
-    
-    /// <summary>
-    /// Device connection parameters
-    /// </summary>
-    TConnectionParams? ConnectionParams { get; }
-    
-    /// <summary>
-    /// State of connection
-    /// </summary>
-    ConnectionState ConnectionState { get; }
-    
-    /// <summary>
-    /// Occurs when connection state changed
-    /// </summary>
-    event Action<ConnectionState> ConnectionStateChanged;
+    IDeviceInfo? DeviceInfo { get; protected set; }
 
     /// <summary>
     /// Transport layer
     /// </summary>
     /// <see cref="ITransport{TData, TConnectionParams}"/>
-    ITransport<TData, TConnectionParams> Transport { get; }
+    ITransport<TData, TConnectionParams?> Transport { get; }
 
     /// <summary>
     /// Send command to device

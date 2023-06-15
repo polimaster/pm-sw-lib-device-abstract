@@ -11,6 +11,8 @@ public class DeviceTests {
 
     public DeviceTests() {
         _transportMock = new Mock<ITransport<string, string>>();
+        var stream = new Mock<Stream>();
+        _transportMock.Setup(x => x.Open()).ReturnsAsync(stream.Object);
     }
 
     [Fact]

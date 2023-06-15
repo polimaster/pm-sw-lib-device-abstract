@@ -15,7 +15,7 @@ public class HttpTests {
 
     [Fact]
     public async void ConnectionStateTests() {
-        var http = new Http<ITcpClient>(_clientMock.Object);
+        var http = new Http<ITcpClient>(_clientMock.Object, new HttpConnectionParams{ Ip = HOST, Port = PORT });
         // var mockState = ConnectionState.Closed;
         // http.ConnectionStateChanged += state => mockState = state;
         
@@ -24,7 +24,7 @@ public class HttpTests {
         Assert.Equal(ConnectionState.Closed, http.ConnectionState);
         // Assert.Equal(ConnectionState.Closed, mockState);
 
-        await http.Open(new HttpConnectionParams{ Ip = HOST, Port = PORT });
+        await http.Open();
         
         _clientMock.Setup(s => s.Connected).Returns(true);
         
@@ -36,15 +36,15 @@ public class HttpTests {
     [Fact]
     public async void ShouldOpenConnection() {
 
-        var http = new Http<ITcpClient>(_clientMock.Object);
-        await http.Open(new HttpConnectionParams{ Ip = HOST, Port = PORT});
+        var http = new Http<ITcpClient>(_clientMock.Object, new HttpConnectionParams{ Ip = HOST, Port = PORT});
+        await http.Open();
      
         _clientMock.Verify(v => v.ConnectAsync(HOST, PORT));
     }
     
     [Fact]
     public async void ShouldCloseConnection() {
-        var http = new Http<ITcpClient>(_clientMock.Object);
+        var http = new Http<ITcpClient>(_clientMock.Object, new HttpConnectionParams{ Ip = HOST, Port = PORT});
         await http.Close();
      
         _clientMock.Verify(v => v.Close());
@@ -52,7 +52,7 @@ public class HttpTests {
 
     [Fact]
     public void ShouldDisposeTcpClient() {
-        var http = new Http<ITcpClient>(_clientMock.Object);
+        var http = new Http<ITcpClient>(_clientMock.Object, new HttpConnectionParams{ Ip = HOST, Port = PORT});
         http.Dispose();
         
         _clientMock.Verify(v => v.Dispose());

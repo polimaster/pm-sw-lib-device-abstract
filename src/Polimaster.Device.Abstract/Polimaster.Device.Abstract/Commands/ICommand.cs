@@ -1,10 +1,15 @@
+using Polimaster.Device.Abstract.Transport;
+
 namespace Polimaster.Device.Abstract.Commands;
 
 /// <summary>
 /// Parametrized command for device with no result returned, just call & forget. 
 /// </summary>
+/// <see cref="ITransport{TData,TConnectionParams}"/>
 /// <typeparam name="TParam">Params value type</typeparam>
-/// <typeparam name="TData">Command value type</typeparam>
+/// <typeparam name="TData">
+/// Command value type
+/// </typeparam>
 public interface ICommand<TParam, out TData> {
     /// <summary>
     /// Parameters for command

@@ -1,7 +1,7 @@
 namespace Polimaster.Device.Abstract.Device;
 
 /// <inheritdoc cref="IDeviceInfo"/>
-public class DeviceInfo : IDeviceInfo {
+public struct DeviceInfo : IDeviceInfo {
     
     /// <inheritdoc cref="IDeviceInfo"/>
     public string? Manufacturer { get; set; }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract;
 
@@ -12,25 +10,19 @@ namespace Polimaster.Device.Abstract;
 public interface IDeviceManager<T> {
     
     /// <summary>
-    /// Occurs when irda device connected
+    /// Occurs when device attached to computer
     /// </summary>
-    event Action<T>? Connected;
+    event Action<T>? Attached;
     
     /// <summary>
-    /// Occurs when irda device disconnected
+    /// Occurs when device detached from computer
     /// </summary>
-    event Action<T>? Disconnected;
+    event Action<T>? Removed;
     
     
     /// <summary>
     /// Current connected devices
     /// </summary>
     List<T> Devices { get; set; }
-
-
-    /// <summary>
-    /// Refresh list of device
-    /// </summary>
-    /// <param name="token"></param>
-    Task RefreshConnectedDevices(CancellationToken token);
+    
 }

@@ -21,8 +21,8 @@ public class TcpClientAdapter : ITcpClient {
         return _wrapped.GetStream();
     }
 
-    public Task ConnectAsync(string ip, int port) {
-        return _wrapped.ConnectAsync(ip, port);
+    public async Task ConnectAsync(string ip, int port) {
+        await _wrapped.ConnectAsync(ip, port);
     }
 
     public void Dispose() {
