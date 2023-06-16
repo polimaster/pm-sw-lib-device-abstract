@@ -19,12 +19,6 @@ public interface ITransport<TData, TConnectionParams> : IDisposable {
     /// </summary>
     TConnectionParams? ConnectionParams { get; }
 
-    
-    /// <summary>
-    /// Occurs when connection state changed
-    /// </summary>
-    event Action<bool> ConnectionStateChanged;
-
     /// <summary>
     /// Write well-formatted command to device
     /// </summary>

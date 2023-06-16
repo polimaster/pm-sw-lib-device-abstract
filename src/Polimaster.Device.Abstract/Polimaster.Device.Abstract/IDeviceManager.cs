@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract;
 /// </summary>
 /// <typeparam name="T">Device type</typeparam>
 public interface IDeviceManager<T> {
-    
+
     /// <summary>
     /// Occurs when device attached to computer
     /// </summary>

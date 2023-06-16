@@ -28,10 +28,6 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
         ILogger<ADevice<TData, TConnectionParams>>? logger = null) {
         Logger = logger;
         Transport = transport;
-        // Transport.ConnectionStateChanged += state => {
-        //     ConnectionState = state;s
-        //     ConnectionStateChanged.Invoke(ConnectionState);
-        // };
     }
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Write{TParam}"/>

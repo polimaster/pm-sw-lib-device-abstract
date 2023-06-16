@@ -9,9 +9,6 @@ public class Http : ITransport<string, HttpConnectionParams> {
     public IClient<HttpConnectionParams> Client { get; }
     public HttpConnectionParams ConnectionParams { get; }
 
-    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionStateChanged"/>
-    public virtual event Action<bool>? ConnectionStateChanged;
-
     /// <summary>
     /// 
     /// </summary>
@@ -23,31 +20,29 @@ public class Http : ITransport<string, HttpConnectionParams> {
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Open"/>
-    public virtual Task<Stream?> Open() {
+    public Task<Stream?> Open() {
         if (Client.Connected) Client.GetStream();
 
         var connected = Client.ConnectAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
         if (!connected) throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
-        ConnectionStateChanged?.Invoke(Client.Connected);
         return Task.FromResult<Stream?>(Client.GetStream());
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Close"/>
-    public virtual Task Close() {
+    public Task Close() {
         Client.Close();
-        ConnectionStateChanged?.Invoke(Client.Connected);
         return Task.CompletedTask;
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Write"/>
-    public virtual async Task Write(Stream stream, string command, CancellationToken cancellationToken) {
+    public async Task Write(Stream stream, string command, CancellationToken cancellationToken) {
         await using var writer = new StreamWriter(stream) { AutoFlush = true };
         await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
         writer.Close();
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Read"/>
-    public virtual async Task<string> Read(Stream stream, string command, CancellationToken cancellationToken) {
+    public async Task<string> Read(Stream stream, string command, CancellationToken cancellationToken) {
         await using var writer = new StreamWriter(stream) { AutoFlush = true };
         await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
         // writer.Close();
