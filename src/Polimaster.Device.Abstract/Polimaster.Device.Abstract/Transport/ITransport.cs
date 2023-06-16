@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,14 +10,10 @@ namespace Polimaster.Device.Abstract.Transport;
 /// </summary>
 /// <typeparam name="TData">Data type for device communication</typeparam>
 /// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-public interface ITransport<TData, out TConnectionParams> : IDisposable {
+public interface ITransport<TData, TConnectionParams> : IDisposable {
     
-    /// <summary>
-    /// State of connection
-    /// </summary>
-    ConnectionState ConnectionState { get; }
-    
-    
+    IClient<TConnectionParams> Client { get; }
+
     /// <summary>
     /// Parameters for connection
     /// </summary>
@@ -28,7 +23,7 @@ public interface ITransport<TData, out TConnectionParams> : IDisposable {
     /// <summary>
     /// Occurs when connection state changed
     /// </summary>
-    event Action<ConnectionState> ConnectionStateChanged;
+    event Action<bool> ConnectionStateChanged;
 
     /// <summary>
     /// Write well-formatted command to device

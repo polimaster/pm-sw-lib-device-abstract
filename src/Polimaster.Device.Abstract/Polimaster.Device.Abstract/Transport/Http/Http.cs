@@ -1,46 +1,41 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
-public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where TTcpClient : IClient<HttpConnectionParams> {
-    private readonly TTcpClient _client;
-
-    /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionState"/>
-    public virtual ConnectionState ConnectionState => _client.Connected ? ConnectionState.Open : ConnectionState.Closed;
-
+public class Http : ITransport<string, HttpConnectionParams> {
+    public IClient<HttpConnectionParams> Client { get; }
     public HttpConnectionParams ConnectionParams { get; }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionStateChanged"/>
-    public virtual event Action<ConnectionState>? ConnectionStateChanged;
+    public virtual event Action<bool>? ConnectionStateChanged;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="client">Transport client</param>
     /// <param name="connectionParams"></param>
-    public Http(TTcpClient client, HttpConnectionParams connectionParams) {
+    public Http(IClient<HttpConnectionParams> client, HttpConnectionParams connectionParams) {
         ConnectionParams = connectionParams;
-        _client = client;
+        Client = client;
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Open"/>
     public virtual Task<Stream?> Open() {
-        if (ConnectionState == ConnectionState.Open) _client.GetStream();
+        if (Client.Connected) Client.GetStream();
 
-        var connected = _client.ConnectAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
+        var connected = Client.ConnectAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
         if (!connected) throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
-        ConnectionStateChanged?.Invoke(ConnectionState);
-        return Task.FromResult<Stream?>(_client.GetStream());
+        ConnectionStateChanged?.Invoke(Client.Connected);
+        return Task.FromResult<Stream?>(Client.GetStream());
     }
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.Close"/>
     public virtual Task Close() {
-        _client.Close();
-        ConnectionStateChanged?.Invoke(ConnectionState);
+        Client.Close();
+        ConnectionStateChanged?.Invoke(Client.Connected);
         return Task.CompletedTask;
     }
 
@@ -65,6 +60,6 @@ public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where T
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose() {
-        _client.Dispose();
+        Client.Dispose();
     }
 }

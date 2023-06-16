@@ -11,7 +11,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 /// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
 /// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
-public interface IDevice<TData, out TConnectionParams> : IDisposable {
+public interface IDevice<TData, TConnectionParams> : IDisposable {
 
     /// <summary>
     /// Device information

@@ -1,4 +1,3 @@
-using System.Data;
 using Moq;
 using Polimaster.Device.Abstract.Transport;
 using Polimaster.Device.Abstract.Transport.Http;
@@ -16,21 +15,18 @@ public class HttpTests {
 
     [Fact]
     public async void ConnectionStateTests() {
-        var http = new Http<IClient<HttpConnectionParams>>(_clientMock.Object,
-            new HttpConnectionParams { Ip = HOST, Port = PORT });
-        // var mockState = ConnectionState.Closed;
-        // http.ConnectionStateChanged += state => mockState = state;
+        var http = new Http(_clientMock.Object, new HttpConnectionParams { Ip = HOST, Port = PORT });
 
         _clientMock.Setup(s => s.Connected).Returns(false);
 
-        Assert.Equal(ConnectionState.Closed, http.ConnectionState);
+        Assert.False(http.Client.Connected);
         // Assert.Equal(ConnectionState.Closed, mockState);
 
         await http.Open();
 
         _clientMock.Setup(s => s.Connected).Returns(true);
 
-        Assert.Equal(ConnectionState.Open, http.ConnectionState);
+        Assert.True(http.Client.Connected);
         // Assert.Equal(ConnectionState.Open, mockState);
     }
 
@@ -38,7 +34,7 @@ public class HttpTests {
     [Fact]
     public async void ShouldOpenConnection() {
         var httpConnectionParams = new HttpConnectionParams { Ip = HOST, Port = PORT };
-        var http = new Http<IClient<HttpConnectionParams>>(_clientMock.Object, httpConnectionParams);
+        var http = new Http(_clientMock.Object, httpConnectionParams);
         await http.Open();
 
         _clientMock.Verify(v => v.ConnectAsync(httpConnectionParams));
@@ -46,7 +42,7 @@ public class HttpTests {
 
     [Fact]
     public async void ShouldCloseConnection() {
-        var http = new Http<IClient<HttpConnectionParams>>(_clientMock.Object,
+        var http = new Http(_clientMock.Object,
             new HttpConnectionParams { Ip = HOST, Port = PORT });
         await http.Close();
 
@@ -55,7 +51,7 @@ public class HttpTests {
 
     [Fact]
     public void ShouldDisposeTcpClient() {
-        var http = new Http<IClient<HttpConnectionParams>>(_clientMock.Object,
+        var http = new Http(_clientMock.Object,
             new HttpConnectionParams { Ip = HOST, Port = PORT });
         http.Dispose();
 
