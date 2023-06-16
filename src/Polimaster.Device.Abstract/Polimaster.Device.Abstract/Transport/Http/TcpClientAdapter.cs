@@ -7,8 +7,8 @@ namespace Polimaster.Device.Abstract.Transport.Http;
 public class TcpClientAdapter : IClient<HttpConnectionParams> {
     private readonly TcpClient _wrapped;
 
-    public TcpClientAdapter(TcpClient client) {
-        _wrapped = client;
+    public TcpClientAdapter() {
+        _wrapped = new TcpClient();
     }
 
     public bool Connected => _wrapped.Connected;
