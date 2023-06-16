@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
-public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where TTcpClient : ITcpClient {
+public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where TTcpClient : IClient<HttpConnectionParams> {
     private readonly TTcpClient _client;
 
     /// <inheritdoc cref="ITransport{TData, HttpConnectionParams}.ConnectionState"/>
@@ -31,7 +31,7 @@ public class Http<TTcpClient> : ITransport<string, HttpConnectionParams> where T
     public virtual Task<Stream?> Open() {
         if (ConnectionState == ConnectionState.Open) _client.GetStream();
 
-        var connected = _client.ConnectAsync(ConnectionParams.Ip, ConnectionParams.Port).Wait(ConnectionParams.Timeout);
+        var connected = _client.ConnectAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
         if (!connected) throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
         ConnectionStateChanged?.Invoke(ConnectionState);
         return Task.FromResult<Stream?>(_client.GetStream());

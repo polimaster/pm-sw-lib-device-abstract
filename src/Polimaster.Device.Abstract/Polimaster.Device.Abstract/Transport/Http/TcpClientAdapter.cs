@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
-public class TcpClientAdapter : ITcpClient {
+public class TcpClientAdapter : IClient<HttpConnectionParams> {
     private readonly TcpClient _wrapped;
 
     public TcpClientAdapter(TcpClient client) {
@@ -21,8 +21,12 @@ public class TcpClientAdapter : ITcpClient {
         return _wrapped.GetStream();
     }
 
-    public async Task ConnectAsync(string ip, int port) {
-        await _wrapped.ConnectAsync(ip, port);
+    public void Connect(HttpConnectionParams connectionParams) {
+        _wrapped.Connect(connectionParams.Ip, connectionParams.Port);
+    }
+
+    public async Task ConnectAsync(HttpConnectionParams connectionParams) {
+        await _wrapped.ConnectAsync(connectionParams.Ip, connectionParams.Port);
     }
 
     public void Dispose() {
