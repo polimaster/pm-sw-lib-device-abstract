@@ -12,7 +12,7 @@ namespace Polimaster.Device.Abstract.Commands;
 /// <typeparam name="TData">
 /// <see cref="ICommand{TParam,TData}"/>
 /// </typeparam>
-public interface IReadCommand<out TResult, TParam, TData> : ICommand<TParam, TData> {
+public interface IResultCommand<out TResult, TParam, TData> : ICommand<TParam, TData> {
     
     /// <summary>
     /// This method should parse result of command

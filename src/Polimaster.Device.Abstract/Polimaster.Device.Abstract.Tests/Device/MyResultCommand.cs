@@ -2,7 +2,7 @@ using Polimaster.Device.Abstract.Commands;
 
 namespace Polimaster.Device.Abstract.Tests.Device;
 
-public class MyReadCommand : MyCommand, IReadCommand<string, MyParam, string> {
+public class MyResultCommand : MyCommand, IResultCommand<string, MyParam, string> {
     public string? Result { get; private set; }
     public string Parse(string result) {
         Result = result;

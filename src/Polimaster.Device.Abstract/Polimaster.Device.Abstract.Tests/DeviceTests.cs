@@ -31,7 +31,7 @@ public class DeviceTests {
     public async void ShouldRead() {
         var dev = new MyDevice(_transportMock.Object);
 
-        var myCommand = new MyReadCommand {
+        var myCommand = new MyResultCommand {
             Param = new MyParam { CommandPid = 0, Value = "read test" }
         };
         await dev.Read(myCommand);

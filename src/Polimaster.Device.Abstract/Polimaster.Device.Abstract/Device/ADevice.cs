@@ -41,7 +41,7 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     }
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Read{TResult,TParam}"/>
-    public virtual async Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command,
+    public virtual async Task<TResult?> Read<TResult, TParam>(IResultCommand<TResult, TParam, TData> command,
         CancellationToken cancellationToken = new()) {
         try {
             Logger?.LogDebug("Reading command {C}", command.GetType().Name);

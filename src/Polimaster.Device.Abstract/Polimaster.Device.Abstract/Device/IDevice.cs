@@ -39,11 +39,11 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// Reads data from device with command
     /// </summary>
     /// <param name="command">
-    ///     <see cref="IReadCommand{TResult,TParam,TData}"/>
+    ///     <see cref="IResultCommand{TResult,TParam,TData}"/>
     ///     Command to be send to device
     /// </param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <typeparam name="TResult"><see cref="IReadCommand{TResult,TParam,TData}"/></typeparam>
-    /// <typeparam name="TParam"><see cref="IReadCommand{TResult,TParam,TData}"/></typeparam>
-    Task<TResult?> Read<TResult, TParam>(IReadCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());
+    /// <typeparam name="TResult"><see cref="IResultCommand{TResult,TParam,TData}"/></typeparam>
+    /// <typeparam name="TParam"><see cref="IResultCommand{TResult,TParam,TData}"/></typeparam>
+    Task<TResult?> Read<TResult, TParam>(IResultCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());
 }

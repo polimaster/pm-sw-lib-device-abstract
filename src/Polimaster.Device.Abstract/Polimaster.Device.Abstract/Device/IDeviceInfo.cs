@@ -4,10 +4,6 @@ namespace Polimaster.Device.Abstract.Device;
 /// Device information
 /// </summary>
 public interface IDeviceInfo {
-    /// <summary>
-    /// Device manufacturer
-    /// </summary>
-    string? Manufacturer { get; set; }
 
     /// <summary>
     /// Model of device
@@ -23,9 +19,4 @@ public interface IDeviceInfo {
     /// Firmware number or ID
     /// </summary>
     string? Firmware { get; set; }
-
-    /// <summary>
-    /// Hardware number or ID
-    /// </summary>
-    string? Hardware { get; set; }
 }
