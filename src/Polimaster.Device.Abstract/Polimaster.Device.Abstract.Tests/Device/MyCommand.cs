@@ -7,4 +7,7 @@ public class MyCommand : ICommand<MyParam, string> {
     public string Compile() {
         return $"{Param.CommandPid} : {Param.Value}";
     }
+
+    public void Validate() {
+    }
 }
