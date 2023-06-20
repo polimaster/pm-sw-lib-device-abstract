@@ -1,6 +1,6 @@
 using System;
 
-namespace Polimaster.Device.Abstract.Device;
+namespace Polimaster.Device.Abstract.Commands;
 
 /// <summary>
 /// Exception while device communication occurs
