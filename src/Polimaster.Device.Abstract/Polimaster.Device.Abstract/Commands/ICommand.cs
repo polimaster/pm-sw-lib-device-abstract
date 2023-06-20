@@ -19,6 +19,7 @@ public interface ICommand<TParam, out TData> {
     /// <summary>
     /// Returns formatted command to be send to device
     /// </summary>
+    /// <exception cref="CommandCompilationException"></exception>
     TData Compile();
 
     /// <summary>
