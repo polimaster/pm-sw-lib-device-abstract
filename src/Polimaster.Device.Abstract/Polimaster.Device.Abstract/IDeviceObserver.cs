@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract; 
 
-public interface IDeviceWatcher {
+public interface IDeviceObserver {
     
     /// <summary>
     /// Starts finding devices in background
