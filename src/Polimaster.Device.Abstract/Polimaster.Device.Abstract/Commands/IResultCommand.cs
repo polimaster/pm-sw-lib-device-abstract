@@ -1,6 +1,6 @@
 using Polimaster.Device.Abstract.Transport;
 
-namespace Polimaster.Device.Abstract.Commands; 
+namespace Polimaster.Device.Abstract.Commands;
 
 /// <summary>
 /// Parametrized command for device with command result returned.
@@ -15,11 +15,12 @@ namespace Polimaster.Device.Abstract.Commands;
 public interface IResultCommand<out TResult, TParam, TData> : ICommand<TParam, TData> {
     
     /// <summary>
-    /// This method should parse result of command
-    /// </summary>
+    /// This method should parse result of command or throws exception,
+    /// </summary>s
     /// <param name="result">
     /// <see cref="ITransport{TData,TConnectionParams}.Read"/>
     /// Result of executed command
     /// </param>
+    /// <exception cref="CommandResultParsingException"></exception>
     TResult? Parse(TData result);
 }

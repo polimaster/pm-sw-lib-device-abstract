@@ -12,7 +12,7 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     protected readonly ILogger<IDevice<TData, TConnectionParams>>? Logger;
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.DeviceInfo"/>
-    public virtual IDeviceInfo? DeviceInfo { get; set; }
+    public IDeviceInfo DeviceInfo { get; protected set; } = new DeviceInfo();
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Transport"/>
     public virtual ITransport<TData, TConnectionParams?> Transport { get; }
@@ -33,10 +33,13 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Write{TParam}"/>
     public virtual async Task Write<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new()) {
         try {
-            Logger?.LogDebug("Writing command {C}", nameof(command.GetType));
+            command.Validate();
+            Logger?.LogDebug("Executing command {C}", nameof(command.GetType));
             var stream = await Transport.Open();
             if (stream == null) throw new NullReferenceException("Transport stream is null");
             await Transport.Write(stream, command.Compile(), cancellationToken);
+        } catch (CommandValidationException) {
+            throw;
         } catch (Exception e) { throw new DeviceException(e); }
     }
 
@@ -44,11 +47,16 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     public virtual async Task<TResult?> Read<TResult, TParam>(IResultCommand<TResult, TParam, TData> command,
         CancellationToken cancellationToken = new()) {
         try {
-            Logger?.LogDebug("Reading command {C}", command.GetType().Name);
+            command.Validate();
+            Logger?.LogDebug("Executing command {C}", command.GetType().Name);
             var stream = await Transport.Open();
             if (stream == null) throw new NullReferenceException("Transport stream is null");
             var res = await Transport.Read(stream, command.Compile(), cancellationToken);
             return command.Parse(res);
+        } catch (CommandValidationException) {
+            throw;
+        } catch (CommandResultParsingException) {
+            throw;
         } catch (Exception e) { throw new DeviceException(e); }
     }
 

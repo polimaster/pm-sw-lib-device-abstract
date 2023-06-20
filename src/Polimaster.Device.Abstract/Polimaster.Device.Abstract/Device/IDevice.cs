@@ -16,7 +16,7 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// <summary>
     /// Device information
     /// </summary>
-    IDeviceInfo? DeviceInfo { get; protected set; }
+    IDeviceInfo DeviceInfo { get; }
 
     /// <summary>
     /// Transport layer

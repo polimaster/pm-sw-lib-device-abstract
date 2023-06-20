@@ -14,10 +14,17 @@ public interface ICommand<TParam, out TData> {
     /// <summary>
     /// Parameters for command
     /// </summary>
-    TParam Param { get; set; }
+    TParam? Param { get; set; }
 
     /// <summary>
     /// Returns formatted command to be send to device
     /// </summary>
     TData Compile();
+
+    /// <summary>
+    /// Validates command or/and its parameters before execution.
+    /// Should throw CommandValidationException if failed.
+    /// </summary>
+    /// <exception cref="CommandValidationException"></exception>
+    void Validate();
 }
