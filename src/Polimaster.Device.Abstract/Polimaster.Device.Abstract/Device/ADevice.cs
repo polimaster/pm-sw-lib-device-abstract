@@ -11,8 +11,8 @@ namespace Polimaster.Device.Abstract.Device;
 public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnectionParams> {
     protected readonly ILogger<IDevice<TData, TConnectionParams>>? Logger;
 
-    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.DeviceInfo"/>
-    public IDeviceInfo DeviceInfo { get; protected set; } = new DeviceInfo();
+    public DeviceInfo DeviceInfo { get; set; }
+    public abstract Task<DeviceInfo> ReadDeviceInfo();
 
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Transport"/>
     public virtual ITransport<TData, TConnectionParams?> Transport { get; }

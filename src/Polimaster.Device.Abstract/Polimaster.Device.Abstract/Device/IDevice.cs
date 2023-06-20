@@ -12,11 +12,14 @@ namespace Polimaster.Device.Abstract.Device;
 /// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
 /// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
 public interface IDevice<TData, TConnectionParams> : IDisposable {
-
+    
+    DeviceInfo DeviceInfo { get; protected set; }
+    
     /// <summary>
-    /// Device information
+    /// Read device information
     /// </summary>
-    IDeviceInfo DeviceInfo { get; }
+    /// <returns></returns>
+    Task<DeviceInfo> ReadDeviceInfo();
 
     /// <summary>
     /// Transport layer

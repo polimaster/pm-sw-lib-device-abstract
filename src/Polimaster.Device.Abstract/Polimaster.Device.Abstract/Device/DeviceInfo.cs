@@ -1,14 +1,22 @@
 namespace Polimaster.Device.Abstract.Device;
 
-/// <inheritdoc cref="IDeviceInfo"/>
-public struct DeviceInfo : IDeviceInfo {
-    
-    /// <inheritdoc cref="IDeviceInfo"/>
-    public string? Model { get; set; }
-    
-    /// <inheritdoc cref="IDeviceInfo"/>
-    public string? Serial { get; set; }
-    
-    /// <inheritdoc cref="IDeviceInfo"/>
-    public string? Firmware { get; set; }
+/// <summary>
+/// Device information
+/// </summary>
+public struct DeviceInfo {
+
+    /// <summary>
+    /// Model of device
+    /// </summary>
+    public string? Model;
+
+    /// <summary>
+    /// Serial number
+    /// </summary>
+    public string? Serial;
+
+    /// <summary>
+    /// Firmware number or ID
+    /// </summary>
+    public string? Firmware;
 }
