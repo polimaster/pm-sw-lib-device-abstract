@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Device; 
+namespace Polimaster.Device.Abstract.Device.Implements; 
 
 public interface IHasBattery {
     
-    BatteryStatus BatteryStatus { get; protected set; }
+    BatteryStatus BatteryStatus { get; }
     
     Task<BatteryStatus> RefreshBatteryStatus();
 }

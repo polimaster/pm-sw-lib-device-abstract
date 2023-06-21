@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Device; 
+namespace Polimaster.Device.Abstract.Device.Implements; 
 
 /// <summary>
 /// Identifies a device with reset dose function
