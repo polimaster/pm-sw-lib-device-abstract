@@ -8,5 +8,5 @@ namespace Polimaster.Device.Abstract.Device.Implements;
 /// </summary>
 public interface IHasClock {
     Task SetTime(DateTime? dateTime = default);
-    Task<DateTime> GetTime();
+    Task<DateTime?> GetTime();
 }
