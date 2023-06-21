@@ -73,6 +73,10 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read));
     }
 
+    /// <summary>
+    /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
+    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges()"/> on target property.
+    /// </summary>
     public async Task WriteSettings() {
         var ds = GetDeviceSettingsInfo();
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges));

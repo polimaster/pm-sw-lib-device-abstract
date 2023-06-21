@@ -5,7 +5,7 @@ namespace Polimaster.Device.Abstract.Device.Implements;
 /// <summary>
 /// Identifies a device with reset dose function
 /// </summary>
-public interface ICanResetDose {
+public interface IHasDose {
     
     /// <summary>
     /// Resets accumulated dose on device
