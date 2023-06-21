@@ -28,6 +28,18 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     ITransport<TData, TConnectionParams?> Transport { get; }
 
     /// <summary>
+    /// Reads device settings
+    /// </summary>
+    /// <returns></returns>
+    Task ReadSettings();
+
+    /// <summary>
+    /// Write settings to device
+    /// </summary>
+    /// <returns></returns>
+    Task WriteSettings();
+
+    /// <summary>
     /// Send command to device
     /// </summary>
     /// <param name="command">
