@@ -66,8 +66,8 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
 
     /// <summary>
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
+    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.Read()"/> on target property.
     /// </summary>
-    /// <exception cref="InvalidOperationException">When impossible to invoke Read() on setting</exception>
     public async Task ReadSettings() {
         var ds = GetDeviceSettingsInfo();
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read));
