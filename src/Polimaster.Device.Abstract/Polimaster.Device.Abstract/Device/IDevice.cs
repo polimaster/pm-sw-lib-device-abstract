@@ -10,12 +10,9 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device;
 
 /// <summary>
-/// Device
+/// Device base
 /// </summary>
-/// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
-/// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
-public interface IDevice<TData, TConnectionParams> : IDisposable {
-    
+public interface IDevice : IDisposable {
     DeviceInfo DeviceInfo { get; protected set; }
     
     /// <summary>
@@ -23,19 +20,12 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// </summary>
     /// <returns></returns>
     Task<DeviceInfo> ReadDeviceInfo();
-
-    /// <summary>
-    /// Transport layer
-    /// </summary>
-    /// <see cref="ITransport{TData, TConnectionParams}"/>
-    ITransport<TData, TConnectionParams?> Transport { get; }
-    
     
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
     Action? IsDisposing { get; set; }
-
+    
     /// <summary>
     /// Reads device settings
     /// </summary>
@@ -47,13 +37,28 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// </summary>
     /// <returns></returns>
     Task WriteSettings();
-
+    
     /// <summary>
     /// Search for <see cref="IDeviceSetting{T}"/> properties in device object
     /// </summary>
     /// <returns>Array of <see cref="PropertyInfo"/></returns>
     IEnumerable<PropertyInfo> GetDeviceSettingsProperties();
+}
 
+
+/// <summary>
+/// Device with identified <see cref="Transport"/>
+/// </summary>
+/// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
+/// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
+public interface IDevice<TData, TConnectionParams> : IDevice {
+
+    /// <summary>
+    /// Transport layer
+    /// </summary>
+    /// <see cref="ITransport{TData, TConnectionParams}"/>
+    ITransport<TData, TConnectionParams?> Transport { get; }
+    
     /// <summary>
     /// Send command to device
     /// </summary>
