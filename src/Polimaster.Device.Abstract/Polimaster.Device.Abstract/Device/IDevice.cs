@@ -34,7 +34,7 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     Task ReadSettings();
 
     /// <summary>
-    /// Write settings to device
+    /// Writes settings to device
     /// </summary>
     /// <returns></returns>
     Task WriteSettings();
@@ -47,7 +47,7 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     ///     Command to be send to device</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <typeparam name="TParam"><see cref="ICommand{TParam,TData}"/></typeparam>
-    Task Write<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new());
+    Task SendCommand<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new());
     
 
     /// <summary>
@@ -60,5 +60,5 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <typeparam name="TResult"><see cref="IResultCommand{TResult,TParam,TData}"/></typeparam>
     /// <typeparam name="TParam"><see cref="IResultCommand{TResult,TParam,TData}"/></typeparam>
-    Task<TResult?> Read<TResult, TParam>(IResultCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());
+    Task<TResult?> SendCommand<TResult, TParam>(IResultCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());
 }

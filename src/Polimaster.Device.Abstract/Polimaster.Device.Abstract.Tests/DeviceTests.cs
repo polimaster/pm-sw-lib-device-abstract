@@ -7,10 +7,10 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests;
 
 public class DeviceTests {
-    private readonly Mock<ITransport<string, string>> _transportMock;
+    private readonly Mock<ITransport<string, string?>> _transportMock;
 
     public DeviceTests() {
-        _transportMock = new Mock<ITransport<string, string>>();
+        _transportMock = new Mock<ITransport<string, string?>>();
         var stream = new Mock<Stream>();
         _transportMock.Setup(x => x.Open()).ReturnsAsync(stream.Object);
     }
@@ -22,7 +22,7 @@ public class DeviceTests {
         var myCommand = new MyCommand {
             Param = new MyParam { CommandPid = 0, Value = "write test" }
         };
-        await dev.Write(myCommand);
+        await dev.SendCommand(myCommand);
 
         _transportMock.Verify(v => v.Write(It.IsAny<Stream>(), myCommand.Compile(), CancellationToken.None));
     }
@@ -34,7 +34,7 @@ public class DeviceTests {
         var myCommand = new MyResultCommand {
             Param = new MyParam { CommandPid = 0, Value = "read test" }
         };
-        await dev.Read(myCommand);
+        await dev.SendCommand(myCommand);
 
         _transportMock.Verify(v => v.Read(It.IsAny<Stream>(), myCommand.Compile(), CancellationToken.None));
     }
