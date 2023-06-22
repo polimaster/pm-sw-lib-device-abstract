@@ -69,7 +69,7 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.Read()"/> on target property.
     /// </summary>
     public async Task ReadSettings() {
-        var ds = GetDeviceSettingsInfo();
+        var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read));
     }
 
@@ -78,7 +78,7 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges()"/> on target property.
     /// </summary>
     public async Task WriteSettings() {
-        var ds = GetDeviceSettingsInfo();
+        var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges));
     }
 
@@ -93,7 +93,7 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
         if (task != null) await task;
     }
 
-    private IEnumerable<PropertyInfo> GetDeviceSettingsInfo() {
+    public IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
         var propertyInfos = GetType().GetProperties();
         return propertyInfos.Where(info => info.PropertyType.IsGenericType)
             .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>)).ToList();

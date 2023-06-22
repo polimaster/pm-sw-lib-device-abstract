@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Commands;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device;
@@ -38,6 +41,12 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// </summary>
     /// <returns></returns>
     Task WriteSettings();
+
+    /// <summary>
+    /// Search for <see cref="IDeviceSetting{T}"/> properties in device object
+    /// </summary>
+    /// <returns>Array of <see cref="PropertyInfo"/></returns>
+    IEnumerable<PropertyInfo> GetDeviceSettingsProperties();
 
     /// <summary>
     /// Send command to device
