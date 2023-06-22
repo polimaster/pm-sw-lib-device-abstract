@@ -5,14 +5,14 @@ namespace Polimaster.Device.Abstract.Commands;
 /// <summary>
 /// Parametrized command for device with command result returned.
 /// </summary>
-/// <typeparam name="TResult">Type of command result</typeparam>
+/// <typeparam name="TParseResult">Type of command result</typeparam>
 /// <typeparam name="TParam">
-/// <see cref="ICommand{TParam,TData}"/>
+/// <see cref="ICommand{TParam,TCompiled}"/>
 /// </typeparam>
-/// <typeparam name="TData">
-/// <see cref="ICommand{TParam,TData}"/>
+/// <typeparam name="TCompiled">
+/// <see cref="ICommand{TParam,TCompiled}"/>
 /// </typeparam>
-public interface IResultCommand<out TResult, TParam, TData> : ICommand<TParam, TData> {
+public interface IResultCommand<out TParseResult, TParam, TCompiled> : ICommand<TParam, TCompiled> {
     
     /// <summary>
     /// This method should parse result of command or throws exception,
@@ -22,5 +22,5 @@ public interface IResultCommand<out TResult, TParam, TData> : ICommand<TParam, T
     /// Result of executed command
     /// </param>
     /// <exception cref="CommandResultParsingException"></exception>
-    TResult? Parse(TData result);
+    TParseResult? Parse(TCompiled result);
 }

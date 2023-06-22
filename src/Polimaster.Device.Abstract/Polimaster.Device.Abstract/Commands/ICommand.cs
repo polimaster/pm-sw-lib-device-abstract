@@ -7,10 +7,8 @@ namespace Polimaster.Device.Abstract.Commands;
 /// </summary>
 /// <see cref="ITransport{TData,TConnectionParams}"/>
 /// <typeparam name="TParam">Params value type</typeparam>
-/// <typeparam name="TData">
-/// Command value type
-/// </typeparam>
-public interface ICommand<TParam, out TData> {
+/// <typeparam name="TCompiled">Command value type</typeparam>
+public interface ICommand<TParam, out TCompiled> {
     /// <summary>
     /// Parameters for command
     /// </summary>
@@ -20,7 +18,7 @@ public interface ICommand<TParam, out TData> {
     /// Returns formatted command to be send to device
     /// </summary>
     /// <exception cref="CommandCompilationException"></exception>
-    TData Compile();
+    TCompiled Compile();
 
     /// <summary>
     /// Validates command or/and its parameters before execution.
