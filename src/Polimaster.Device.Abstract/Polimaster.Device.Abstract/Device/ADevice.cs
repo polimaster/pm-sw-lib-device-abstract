@@ -21,6 +21,8 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Transport"/>
     public virtual ITransport<TData, TConnectionParams?> Transport { get; }
 
+    public Action? IsDisposing { get; set; }
+
     /// <summary>
     /// Device constructor
     /// </summary>
@@ -61,6 +63,7 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
     }
 
     public void Dispose() {
+        IsDisposing?.Invoke();
         Transport.Dispose();
     }
 

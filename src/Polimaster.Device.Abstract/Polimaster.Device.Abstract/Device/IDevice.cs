@@ -29,6 +29,12 @@ public interface IDevice<TData, TConnectionParams> : IDisposable {
     /// </summary>
     /// <see cref="ITransport{TData, TConnectionParams}"/>
     ITransport<TData, TConnectionParams?> Transport { get; }
+    
+    
+    /// <summary>
+    /// Indicates device is disconnected and will be removed from memory
+    /// </summary>
+    Action? IsDisposing { get; set; }
 
     /// <summary>
     /// Reads device settings

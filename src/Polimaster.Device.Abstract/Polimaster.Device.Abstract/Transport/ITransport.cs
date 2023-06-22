@@ -35,8 +35,7 @@ public interface ITransport<TData, TConnectionParams> : IDisposable {
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns>Result of command</returns>
     Task<TData> Read(Stream stream, TData command, CancellationToken cancellationToken);
-
-
+    
     /// <summary>
     /// Open connection
     /// </summary>
