@@ -6,12 +6,8 @@ namespace Polimaster.Device.Abstract.Commands;
 /// Parametrized command for device with command result returned.
 /// </summary>
 /// <typeparam name="TParseResult">Type of command result</typeparam>
-/// <typeparam name="TParam">
-/// <see cref="ICommand{TParam,TCompiled}"/>
-/// </typeparam>
-/// <typeparam name="TCompiled">
-/// <see cref="ICommand{TParam,TCompiled}"/>
-/// </typeparam>
+/// <typeparam name="TParam"><see cref="ICommand{TParam,TCompiled}"/></typeparam>
+/// <typeparam name="TCompiled"><see cref="ICommand{TParam,TCompiled}"/></typeparam>
 public interface IResultCommand<out TParseResult, TParam, TCompiled> : ICommand<TParam, TCompiled> {
     
     /// <summary>

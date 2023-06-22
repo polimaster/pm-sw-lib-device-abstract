@@ -28,7 +28,6 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T> {
     }
 
     public bool IsDirty { get; protected set; }
-
     public bool IsError => Exception != null;
     public Exception? Exception { get; private set; }
 
