@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
 
-
+/// <summary>
+/// Device transport layer (USB, Tcp, Bluetooth etc)
+/// </summary>
+/// <typeparam name="TData">Data type for device communication</typeparam>
 public interface ITransport<TData> : IDisposable {
     /// <summary>
     /// Write well-formatted command to device
@@ -35,11 +38,9 @@ public interface ITransport<TData> : IDisposable {
     Task Close();
 }
 
-/// <summary>
-/// Device transport layer (USB, Tcp, Bluetooth etc)
-/// </summary>
-/// <typeparam name="TData">Data type for device communication</typeparam>
+/// <inheritdoc cref="ITransport{TData}"/>
 /// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
+/// <typeparam name="TData">Data type for device communication</typeparam>
 public interface ITransport<TData, TConnectionParams> : ITransport<TData> {
     
     IClient<TConnectionParams> Client { get; }

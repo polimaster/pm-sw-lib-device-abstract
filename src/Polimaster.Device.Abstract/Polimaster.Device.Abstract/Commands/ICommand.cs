@@ -2,6 +2,11 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Commands;
 
+/// <summary>
+/// Command for device with no result returned, just call & forget.
+/// <see cref="TCompiled"/> should correlate with <see cref="ITransport{TData}"/>
+/// </summary>
+/// <typeparam name="TCompiled">Command value type</typeparam>
 public interface ICommand<out TCompiled> {
     /// <summary>
     /// Returns formatted command to be send to device
@@ -21,7 +26,6 @@ public interface ICommand<out TCompiled> {
 /// <summary>
 /// Parametrized command for device with no result returned, just call & forget. 
 /// </summary>
-/// <see cref="ITransport{TData,TConnectionParams}"/>
 /// <typeparam name="TParam">Params value type</typeparam>
 /// <typeparam name="TCompiled">Command value type</typeparam>
 public interface ICommand<TParam, out TCompiled> : ICommand<TCompiled> {
