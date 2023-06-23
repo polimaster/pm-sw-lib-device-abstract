@@ -48,15 +48,13 @@ public interface IDevice : IDisposable {
 /// <summary>
 /// Device can send commands
 /// </summary>
-/// <typeparam name="TData"><see cref="ICommand{TParam,TCompiled}"/></typeparam>
+/// <typeparam name="TData"><see cref="ICommand{TCompiled}"/></typeparam>
 public interface IDevice<TData> : IDevice {
     
     /// <summary>
     /// Send command to device
     /// </summary>
-    /// <param name="command">
-    ///     <see cref="ICommand{TParam,TData}"/>
-    ///     Command to be send to device</param>
+    /// <param name="command"><see cref="ICommand{TCompiled}"/> to be send to device</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     Task SendCommand(ICommand<TData> command, CancellationToken cancellationToken = new());
     
@@ -64,13 +62,11 @@ public interface IDevice<TData> : IDevice {
     /// <summary>
     /// Reads data from device with command
     /// </summary>
-    /// <param name="command">
-    ///     <see cref="IResultCommand{TResult,TData}"/>
-    ///     Command to be send to device
+    /// <param name="command"><see cref="IResultCommand{TParseResult,TCompiled}"/> to be send to device
     /// </param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <typeparam name="TResult"><see cref="IResultCommand{TResult,TCompiled}"/></typeparam>
-    Task<TResult?> SendCommand<TResult>(IResultCommand<TResult, TData> command, CancellationToken cancellationToken = new());
+    /// <typeparam name="TParseResult">Result of <see cref="IResultCommand{TParseResult,TCompiled}"/></typeparam>
+    Task<TParseResult?> SendCommand<TParseResult>(IResultCommand<TParseResult, TData> command, CancellationToken cancellationToken = new());
 }
 
 
@@ -78,7 +74,7 @@ public interface IDevice<TData> : IDevice {
 /// Device with identified <see cref="Transport"/>
 /// </summary>
 /// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
-/// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
+/// <typeparam name="TConnectionParams">Connection parameters type for <see cref="ITransport{TData,TConnectionParams}"/></typeparam>
 public interface IDevice<TData, TConnectionParams> : IDevice<TData> {
 
     /// <summary>
