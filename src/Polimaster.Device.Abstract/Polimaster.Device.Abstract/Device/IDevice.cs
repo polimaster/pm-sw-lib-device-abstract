@@ -45,19 +45,11 @@ public interface IDevice : IDisposable {
     IEnumerable<PropertyInfo> GetDeviceSettingsProperties();
 }
 
-
 /// <summary>
-/// Device with identified <see cref="Transport"/>
+/// Device can send commands
 /// </summary>
-/// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
-/// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
-public interface IDevice<TData, TConnectionParams> : IDevice {
-
-    /// <summary>
-    /// Transport layer
-    /// </summary>
-    /// <see cref="ITransport{TData, TConnectionParams}"/>
-    ITransport<TData, TConnectionParams?> Transport { get; }
+/// <typeparam name="TData"><see cref="ICommand{TParam,TCompiled}"/></typeparam>
+public interface IDevice<TData> : IDevice {
     
     /// <summary>
     /// Send command to device
@@ -66,19 +58,32 @@ public interface IDevice<TData, TConnectionParams> : IDevice {
     ///     <see cref="ICommand{TParam,TData}"/>
     ///     Command to be send to device</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <typeparam name="TParam"><see cref="ICommand{TParam,TData}"/></typeparam>
-    Task SendCommand<TParam>(ICommand<TParam, TData> command, CancellationToken cancellationToken = new());
+    Task SendCommand(ICommand<TData> command, CancellationToken cancellationToken = new());
     
 
     /// <summary>
     /// Reads data from device with command
     /// </summary>
     /// <param name="command">
-    ///     <see cref="IResultCommand{TResult,TParam,TData}"/>
+    ///     <see cref="IResultCommand{TResult,TData}"/>
     ///     Command to be send to device
     /// </param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <typeparam name="TResult"><see cref="IResultCommand{TResult,TParam,TData}"/></typeparam>
-    /// <typeparam name="TParam"><see cref="IResultCommand{TResult,TParam,TData}"/></typeparam>
-    Task<TResult?> SendCommand<TResult, TParam>(IResultCommand<TResult, TParam, TData> command, CancellationToken cancellationToken = new());
+    /// <typeparam name="TResult"><see cref="IResultCommand{TResult,TCompiled}"/></typeparam>
+    Task<TResult?> SendCommand<TResult>(IResultCommand<TResult, TData> command, CancellationToken cancellationToken = new());
+}
+
+
+/// <summary>
+/// Device with identified <see cref="Transport"/>
+/// </summary>
+/// <typeparam name="TData">Command value type <see cref="ICommand{TParam,TData}"/></typeparam>
+/// <typeparam name="TConnectionParams">Connection parameters type</typeparam>
+public interface IDevice<TData, TConnectionParams> : IDevice<TData> {
+
+    /// <summary>
+    /// Transport layer
+    /// </summary>
+    /// <see cref="ITransport{TData, TConnectionParams}"/>
+    ITransport<TData, TConnectionParams?> Transport { get; }
 }

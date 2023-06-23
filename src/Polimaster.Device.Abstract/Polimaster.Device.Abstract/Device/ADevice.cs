@@ -36,8 +36,8 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
         Transport = transport;
     }
 
-    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.SendCommand{TParam}"/>
-    public virtual async Task SendCommand<TParam>(ICommand<TParam, TData> command,
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.SendCommand"/>
+    public virtual async Task SendCommand(ICommand<TData> command,
         CancellationToken cancellationToken = new()) {
         try {
             command.Validate();
@@ -48,8 +48,8 @@ public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnec
         } catch (CommandValidationException) { throw; } catch (Exception e) { throw new DeviceException(e); }
     }
 
-    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.SendCommand{TResult,TParam}"/>
-    public virtual async Task<TResult?> SendCommand<TResult, TParam>(IResultCommand<TResult, TParam, TData> command,
+    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.SendCommand{TResult}"/>
+    public virtual async Task<TResult?> SendCommand<TResult>(IResultCommand<TResult, TData> command,
         CancellationToken cancellationToken = new()) {
         try {
             command.Validate();

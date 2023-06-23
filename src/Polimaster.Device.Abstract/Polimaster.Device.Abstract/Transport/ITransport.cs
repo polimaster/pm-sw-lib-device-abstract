@@ -5,20 +5,8 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
 
-/// <summary>
-/// Device transport layer (USB, Tcp, Bluetooth etc)
-/// </summary>
-/// <typeparam name="TData">Data type for device communication</typeparam>
-/// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-public interface ITransport<TData, TConnectionParams> : IDisposable {
-    
-    IClient<TConnectionParams> Client { get; }
 
-    /// <summary>
-    /// Parameters for connection
-    /// </summary>
-    TConnectionParams? ConnectionParams { get; }
-
+public interface ITransport<TData> : IDisposable {
     /// <summary>
     /// Write well-formatted command to device
     /// </summary>
@@ -45,4 +33,20 @@ public interface ITransport<TData, TConnectionParams> : IDisposable {
     /// Close connection
     /// </summary>
     Task Close();
+}
+
+/// <summary>
+/// Device transport layer (USB, Tcp, Bluetooth etc)
+/// </summary>
+/// <typeparam name="TData">Data type for device communication</typeparam>
+/// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
+public interface ITransport<TData, TConnectionParams> : ITransport<TData> {
+    
+    IClient<TConnectionParams> Client { get; }
+
+    /// <summary>
+    /// Parameters for connection
+    /// </summary>
+    TConnectionParams? ConnectionParams { get; }
+    
 }
