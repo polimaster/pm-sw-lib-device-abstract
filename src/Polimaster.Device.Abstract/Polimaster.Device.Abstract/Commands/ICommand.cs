@@ -1,36 +1,97 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Commands;
 
+
 /// <summary>
-/// Command for device with no result returned, just call & forget.
-/// <see cref="TCompiled"/> should correlate with <see cref="ITransport{TData}"/>
+/// Device command
 /// </summary>
-/// <typeparam name="TCompiled">Command value type</typeparam>
-public interface ICommand<out TCompiled> {
-    /// <summary>
-    /// Returns formatted command to be send to device
-    /// </summary>
-    /// <exception cref="CommandCompilationException"></exception>
-    TCompiled Compile();
+public interface ICommand {
     
     /// <summary>
-    /// Validates command or/and its parameters before execution.
-    /// Should throw CommandValidationException if failed.
+    /// Send command to device
     /// </summary>
-    /// <exception cref="CommandValidationException"></exception>
-    void Validate();
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns></returns>
+    Task Send(CancellationToken cancellationToken);
+}
+
+/// <summary>
+/// Device command with parameter
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IPCommand<T> {
+    T? Parameter { get; set; }
 }
 
 
 /// <summary>
-/// Parametrized command for device with no result returned, just call & forget. 
+/// Device command with result of <see cref="ICommand.Send"/>
 /// </summary>
-/// <typeparam name="TParam">Params value type</typeparam>
-/// <typeparam name="TCompiled">Command value type</typeparam>
-public interface ICommand<TParam, out TCompiled> : ICommand<TCompiled> {
+/// <typeparam name="TResult">Type of <see cref="Result"/></typeparam>
+public interface ICommand<out TResult> : ICommand {
+    
     /// <summary>
-    /// Parameters for command
+    /// Result of <see cref="ICommand.Send"/>
     /// </summary>
-    TParam? Param { get; set; }
+    TResult? Result { get; }
+}
+
+public interface ITransportCommand<TData> : ICommand {
+    ITransport<TData>? Transport { get; set; }
+    ILogger? Logger { get; set; }
+}
+
+public abstract class ACommand<TData> : ITransportCommand<TData> {
+    public ITransport<TData>? Transport { get; set; }
+    public ILogger? Logger { get; set; }
+
+    /// <summary>
+    /// Returns formatted command to be send to device
+    /// </summary>
+    /// <exception cref="CommandCompilationException"></exception>
+    protected abstract TData Compile();
+    
+    /// <summary>
+    /// Validates command or/and its parameters before execution.
+    /// </summary>
+    /// <exception cref="CommandValidationException"></exception>
+    protected virtual void Validate(){}
+    
+    public virtual async Task Send(CancellationToken cancellationToken = new()) {
+        CheckTransport();
+        Validate();
+        var stream = await Transport!.Open();
+        if (cancellationToken.IsCancellationRequested) return;
+        if (stream == null) throw new NullReferenceException("Transport stream is null");
+        Logger?.LogDebug("Executing command {C}", GetType().Name);
+        await Transport.Write(stream, Compile(), cancellationToken);
+    }
+
+    protected void CheckTransport() {
+        if (Transport == null) throw new NullReferenceException(
+            $"Transport for {GetType().Name} is null. Consider using {nameof(ICommandFactory<TData>)} while creating commands.");
+    }
+}
+
+public abstract class AResultCommand<TResult, TData> : ACommand<TData>, ICommand<TResult> {
+
+    public TResult? Result { get; private set; }
+
+    protected abstract TResult Parse(TData data);
+
+    public override async Task Send(CancellationToken cancellationToken = new()) {
+        CheckTransport();
+        Validate();
+        var stream = await Transport!.Open();
+        if (cancellationToken.IsCancellationRequested) return;
+        if (stream == null) throw new NullReferenceException("Transport stream is null");
+        Logger?.LogDebug("Executing command {C}", GetType().Name);
+        var res = await Transport.Read(stream, Compile(), cancellationToken);
+        Result = Parse(res);
+    }
 }

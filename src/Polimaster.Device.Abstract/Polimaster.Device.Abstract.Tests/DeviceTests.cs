@@ -7,35 +7,46 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests;
 
 public class DeviceTests {
-    private readonly Mock<ITransport<string, string?>> _transportMock;
+    private readonly Mock<ITransport<string>> _transportMock;
 
     public DeviceTests() {
-        _transportMock = new Mock<ITransport<string, string?>>();
+        _transportMock = new Mock<ITransport<string>>();
         var stream = new Mock<Stream>();
         _transportMock.Setup(x => x.Open()).ReturnsAsync(stream.Object);
     }
 
     [Fact]
     public async void ShouldWrite() {
-        var dev = new MyDevice(_transportMock.Object);
-
-        var myCommand = new MyCommand {
-            Param = new MyParam { CommandPid = 0, Value = "write test" }
+        var myCommand = new MyCommand(){
+            Param = new MyParam { CommandPid = 0, Value = "write test" },
+            Transport = _transportMock.Object
         };
-        await dev.SendCommand(myCommand);
+        
+        // simulate compilation
+        var compiled = $"{myCommand.Param?.CommandPid} : {myCommand.Param?.Value}";
 
-        _transportMock.Verify(v => v.Write(It.IsAny<Stream>(), myCommand.Compile(), CancellationToken.None));
+        await myCommand.Send();
+
+        _transportMock.Verify(v => v.Write(It.IsAny<Stream>(), compiled, CancellationToken.None));
     }
 
     [Fact]
     public async void ShouldRead() {
-        var dev = new MyDevice(_transportMock.Object);
 
         var myCommand = new MyResultCommand {
-            Param = new MyParam { CommandPid = 0, Value = "read test" }
+            Param = new MyParam { CommandPid = 0, Value = "read test" },
+            Transport = _transportMock.Object
         };
-        await dev.SendCommand(myCommand);
+        
+        // simulate compilation
+        var compiled = $"{myCommand.Param?.CommandPid} : {myCommand.Param?.Value}";
 
-        _transportMock.Verify(v => v.Read(It.IsAny<Stream>(), myCommand.Compile(), CancellationToken.None));
+        _transportMock.Setup(x => x.Read(It.IsAny<Stream>(), compiled, CancellationToken.None)).ReturnsAsync(compiled);
+        
+        await myCommand.Send();
+        var res = myCommand.Result;
+
+        _transportMock.Verify(v => v.Read(It.IsAny<Stream>(), compiled, CancellationToken.None));
+        Assert.Equal(compiled, res);
     }
 }

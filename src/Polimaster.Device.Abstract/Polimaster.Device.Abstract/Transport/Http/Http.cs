@@ -8,6 +8,8 @@ namespace Polimaster.Device.Abstract.Transport.Http;
 public class Http : ITransport<string, HttpConnectionParams> {
     public IClient<HttpConnectionParams> Client { get; }
     public HttpConnectionParams ConnectionParams { get; }
+    
+    public string ConnectionId => $"{ConnectionParams.Ip}:{ConnectionParams.Port}";
 
     /// <summary>
     /// 

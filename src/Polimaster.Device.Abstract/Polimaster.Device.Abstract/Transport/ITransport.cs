@@ -10,6 +10,9 @@ namespace Polimaster.Device.Abstract.Transport;
 /// </summary>
 /// <typeparam name="TData">Data type for device communication</typeparam>
 public interface ITransport<TData> : IDisposable {
+    
+    string ConnectionId { get; }
+    
     /// <summary>
     /// Write well-formatted command to device
     /// </summary>
@@ -40,7 +43,7 @@ public interface ITransport<TData> : IDisposable {
 
 /// <inheritdoc cref="ITransport{TData}"/>
 /// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-/// <typeparam name="TData">Data type for device communication</typeparam>
+/// <typeparam name="TData"><see cref="ITransport{TData}"/></typeparam>
 public interface ITransport<TData, TConnectionParams> : ITransport<TData> {
     
     IClient<TConnectionParams> Client { get; }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Commands;
@@ -11,76 +10,39 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device;
 
-/// <inheritdoc cref="IDevice{TData, TConnectionParams}"/>
-public abstract class ADevice<TData, TConnectionParams> : IDevice<TData, TConnectionParams> {
-    protected readonly ILogger<IDevice<TData, TConnectionParams>>? Logger;
-
+public abstract class ADevice<TData> : IDevice<TData> {
+    protected readonly ICommandFactory<TData> CommandFactory;
+    protected readonly ILogger<IDevice<TData>>? Logger;
     public DeviceInfo DeviceInfo { get; set; }
     public abstract Task<DeviceInfo> ReadDeviceInfo();
-
-    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.Transport"/>
-    public virtual ITransport<TData, TConnectionParams?> Transport { get; }
-
+    public ITransport<TData> Transport { get; }
+    public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
 
     /// <summary>
     /// Device constructor
     /// </summary>
-    /// <param name="transport">
-    ///     <see cref="Transport"/>
-    /// </param>
-    /// <param name="logger"></param>
-    protected ADevice(ITransport<TData, TConnectionParams?> transport,
-        ILogger<ADevice<TData, TConnectionParams>>? logger = null) {
-        Logger = logger;
+    /// <param name="transport"><see cref="Transport"/></param>
+    /// <param name="loggerFactory"></param>
+    protected ADevice(ITransport<TData> transport, ILoggerFactory? loggerFactory = null) {
+        CommandFactory = new CommandFactory<TData>(transport, loggerFactory);
+        Logger = loggerFactory?.CreateLogger<ADevice<TData>>();
         Transport = transport;
-    }
-
-    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.SendCommand"/>
-    public virtual async Task SendCommand(ICommand<TData> command,
-        CancellationToken cancellationToken = new()) {
-        try {
-            command.Validate();
-            Logger?.LogDebug("Executing command {C}", nameof(command.GetType));
-            var stream = await Transport.Open();
-            if (stream == null) throw new NullReferenceException("Transport stream is null");
-            await Transport.Write(stream, command.Compile(), cancellationToken);
-        } catch (CommandValidationException) { throw; } catch (Exception e) { throw new DeviceException(e); }
-    }
-
-    /// <inheritdoc cref="IDevice{TData,TConnectionParams}.SendCommand{TResult}"/>
-    public virtual async Task<TResult?> SendCommand<TResult>(IResultCommand<TResult, TData> command,
-        CancellationToken cancellationToken = new()) {
-        try {
-            command.Validate();
-            Logger?.LogDebug("Executing command {C}", command.GetType().Name);
-            var stream = await Transport.Open();
-            if (stream == null) throw new NullReferenceException("Transport stream is null");
-            var res = await Transport.Read(stream, command.Compile(), cancellationToken);
-            return command.Parse(res);
-        } catch (CommandValidationException) { throw; } catch (CommandResultParsingException) { throw; } catch
-            (Exception e) { throw new DeviceException(e); }
     }
 
     public void Dispose() {
         IsDisposing?.Invoke();
         Transport.Dispose();
     }
-
-    /// <summary>
-    /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.Read()"/> on target property.
-    /// </summary>
+    
     public async Task ReadSettings() {
+        Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read));
     }
-
-    /// <summary>
-    /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges()"/> on target property.
-    /// </summary>
+    
     public async Task WriteSettings() {
+        Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges));
     }
