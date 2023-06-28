@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Implements; 
 
@@ -6,10 +7,10 @@ namespace Polimaster.Device.Abstract.Device.Implements;
 /// Identifies a device with reset dose function
 /// </summary>
 public interface IHasDose {
-    
     /// <summary>
     /// Resets accumulated dose on device
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task ResetDose();
+    Task ResetDose(CancellationToken cancellationToken = new());
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Implements; 
 
@@ -11,12 +12,13 @@ public interface IHasBattery {
     /// Status of device battery
     /// </summary>
     BatteryStatus BatteryStatus { get; }
-    
+
     /// <summary>
     /// Read battery status from device
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns><see cref="BatteryStatus"/></returns>
-    Task<BatteryStatus> RefreshBatteryStatus();
+    Task<BatteryStatus> RefreshBatteryStatus(CancellationToken cancellationToken = new());
 }
 
 /// <summary>

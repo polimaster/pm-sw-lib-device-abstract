@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Implements;
@@ -11,14 +12,16 @@ public interface IHasHistory<THistory> : IHasClock {
     /// <summary>
     /// Reads history from device
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns>Array of history records</returns>
-    Task<IEnumerable<THistory>> ReadHistory();
+    Task<IEnumerable<THistory>> ReadHistory(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Wipe history from device
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task WipeHistory();
+    Task WipeHistory(CancellationToken cancellationToken = new());
 }
 
 /// <summary>
@@ -31,6 +34,7 @@ public interface IHasHistory<THistory, in TReadParams> : IHasHistory<THistory> {
     /// Reads history from device
     /// </summary>
     /// <param name="parameters">Parameters while reading history</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>Array of history records</returns>
-    Task<IEnumerable<THistory>> ReadHistory(TReadParams? parameters = default);
+    Task<IEnumerable<THistory>> ReadHistory(TReadParams? parameters = default, CancellationToken cancellationToken = new());
 }

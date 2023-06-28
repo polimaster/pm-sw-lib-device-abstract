@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Implements; 
@@ -14,10 +15,11 @@ public interface IHasClock {
     /// <param name="dateTime">Time</param>
     /// <returns></returns>
     Task SetTime(DateTime? dateTime = default);
-    
+
     /// <summary>
     /// Reads current date and time from device
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns>Current date and time on device</returns>
-    Task<DateTime?> GetTime();
+    Task<DateTime?> GetTime(CancellationToken cancellationToken = new());
 }
