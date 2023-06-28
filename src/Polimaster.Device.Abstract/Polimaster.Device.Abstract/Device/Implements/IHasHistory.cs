@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Device.Implements;
 
@@ -9,6 +10,12 @@ namespace Polimaster.Device.Abstract.Device.Implements;
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
 public interface IHasHistory<THistory> : IHasClock {
+    
+    /// <summary>
+    /// Interval between history entries
+    /// </summary>
+    IDeviceSetting<ushort?> HistoryInterval { get; }
+    
     /// <summary>
     /// Reads history from device
     /// </summary>
