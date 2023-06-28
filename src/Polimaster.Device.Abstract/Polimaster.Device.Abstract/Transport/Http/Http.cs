@@ -9,7 +9,7 @@ public class Http : ITransport<string, HttpConnectionParams> {
     public IClient<HttpConnectionParams> Client { get; }
     public HttpConnectionParams ConnectionParams { get; }
     
-    public string ConnectionId => $"{ConnectionParams.Ip}:{ConnectionParams.Port}";
+    public string ConnectionId => $"{GetType().Name}:{ConnectionParams.Ip}:{ConnectionParams.Port}";
 
     /// <summary>
     /// 
