@@ -66,7 +66,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
 
         // dynamic awaitable = m?.Invoke(setting, null) ?? throw new InvalidOperationException();
         // if (awaitable != null) await awaitable;
-        var p = new object[] {};
+        var p = new object[1];
         p[0] = cancellationToken;
         var task = (Task)method.Invoke(setting, p);
         if (task != null) await task;
