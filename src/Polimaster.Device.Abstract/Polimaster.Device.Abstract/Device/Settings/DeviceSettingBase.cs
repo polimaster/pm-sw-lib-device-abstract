@@ -5,12 +5,17 @@ using Polimaster.Device.Abstract.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
+/// <summary>
+/// Device setting base class
+/// </summary>
+/// <typeparam name="T"><see cref="IDeviceSetting{T}.Value"/> type</typeparam>
+/// <typeparam name="TData">Transport data type for <see cref="ICommand{TValue,TTransportData}"/></typeparam>
 public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
-    private readonly ICommand<T, TData> _readCommand;
-    private readonly ICommand<T, TData>? _writeCommand;
+    protected readonly ICommand<T, TData>? ReadCommand;
+    protected readonly ICommand<T, TData>? WriteCommand;
     private T? _value;
 
-    public T? Value {
+    public virtual T? Value {
         get => _value;
         set {
             try {
@@ -28,9 +33,9 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
     public bool IsError => Exception != null;
     public Exception? Exception { get; private set; }
 
-    public DeviceSettingBase(ICommand<T, TData> readCommand, ICommand<T, TData>? writeCommand = null) {
-        _readCommand = readCommand;
-        _writeCommand = writeCommand;
+    public DeviceSettingBase(ICommand<T, TData>? readCommand = null, ICommand<T, TData>? writeCommand = null) {
+        ReadCommand = readCommand;
+        WriteCommand = writeCommand;
     }
 
 
@@ -46,8 +51,10 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
 
     public virtual async Task Read(CancellationToken cancellationToken) {
         try {
-            await _readCommand.Send(cancellationToken);
-            Value = _readCommand.Value;
+            if (ReadCommand != null) {
+                await ReadCommand.Send(cancellationToken);
+                Value = ReadCommand.Value;
+            }
             IsDirty = false;
         } catch (Exception e) { SetError(e); }
     }
@@ -55,9 +62,9 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
     public virtual async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsDirty) return;
         try {
-            if (_writeCommand != null) {
-                _writeCommand.Value = Value;
-                await _writeCommand.Send(cancellationToken);
+            if (WriteCommand != null) {
+                WriteCommand.Value = Value;
+                await WriteCommand.Send(cancellationToken);
             }
         } catch (Exception e) { SetError(e); }
     }

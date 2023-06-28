@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Commands;
 using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Transport;
 
@@ -21,6 +23,16 @@ public interface IDevice : IDisposable {
 public interface IDevice<TData> : IDevice {
     
     /// <summary>
+    /// Instance of see <see cref="ICommandFactory{TTransportData}"/>
+    /// </summary>
+    ICommandFactory<TData> CommandFactory { get; }
+    
+    /// <summary>
+    /// Instance of <see cref="ISettingsFactory{TData}"/>
+    /// </summary>
+    ISettingsFactory<TData> SettingsFactory { get; }
+    
+    /// <summary>
     /// Transport layer
     /// </summary>
     /// <see cref="ITransport{TData, TConnectionParams}"/>
@@ -38,22 +50,24 @@ public interface IDevice<TData> : IDevice {
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
     Action? IsDisposing { get; set; }
-    
+
     /// <summary>
     ///  Reads device settings.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.Read()"/> on target property.
+    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.Read"/> on target property.
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task ReadSettings();
+    Task ReadSettings(CancellationToken cancellationToken);
 
     /// <summary>
     /// Writes settings to device.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
     /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task WriteSettings();
+    Task WriteSettings(CancellationToken cancellationToken);
     
     /// <summary>
     /// Search for <see cref="IDeviceSetting{T}"/> properties in device object

@@ -7,6 +7,11 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Commands;
 
+/// <summary>
+/// Command with no result returned while <see cref="ITransport{TData}.Write"/>
+/// </summary>
+/// <typeparam name="TValue"><inheritdoc cref="ICommand{TValue,TTransportData}"/></typeparam>
+/// <typeparam name="TTransportData"><inheritdoc cref="ICommand{TValue,TTransportData}"/></typeparam>
 public abstract class AWriteCommand<TValue, TTransportData> : ICommand<TValue, TTransportData> {
     public ITransport<TTransportData>? Transport { get; set; }
     public ILogger? Logger { get; set; }

@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Commands;
 /// Device command
 /// </summary>
 /// <typeparam name="TValue">Type of <see cref="Value"/></typeparam>
-/// <typeparam name="TTransportData"></typeparam>
+/// <typeparam name="TTransportData"><see cref="ITransport{TData}"/></typeparam>
 public interface ICommand<TValue, TTransportData> {
     
     /// <summary>

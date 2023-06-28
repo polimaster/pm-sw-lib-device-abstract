@@ -6,7 +6,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device settings factory
 /// </summary>
 /// <typeparam name="TData">Data type for <see cref="ICommand{TValue,TTransportData}.Transport"/></typeparam>
-public interface ISettingsFactory<TData> {
+public interface ISettingsFactory<TData> {  // todo add validation to setting
     /// <summary>
     /// Create device read-only setting
     /// </summary>
@@ -27,15 +27,16 @@ public interface ISettingsFactory<TData> {
     IDeviceSetting<T> Create<T, TReadCommand, TWriteCommand>() 
         where TReadCommand : ICommand<T, TData>, new()
         where TWriteCommand : ICommand<T, TData>, new();
-    
+
     /// <summary>
     /// Create custom setting implementation 
     /// </summary>
     /// <typeparam name="T">Type for <see cref="IDeviceSetting{T}"/></typeparam>
     /// <typeparam name="TImplementation">Implementation of <see cref="IDeviceSetting{T}"/></typeparam>
+    /// <typeparam name="TParams">Parameter type for <see cref="IDeviceSetting{T,TParams}.Init"/></typeparam>
     /// <returns></returns>
-    IDeviceSetting<T> CreateCustomImpl<T, TImplementation>()
-        where TImplementation : IDeviceSetting<T>, new();
+    IDeviceSetting<T> CreateCustom<T, TParams, TImplementation>(TParams @params)
+        where TImplementation : IDeviceSetting<T, TParams>, new();
 }
 
 public class SettingsFactory<TData> : ISettingsFactory<TData> {
@@ -64,8 +65,10 @@ public class SettingsFactory<TData> : ISettingsFactory<TData> {
         return setting;
     }
 
-    public IDeviceSetting<T> CreateCustomImpl<T, TImplementation>() 
-        where TImplementation : IDeviceSetting<T>, new() {
-        return new TImplementation();
+    public IDeviceSetting<T> CreateCustom<T, TParams, TImplementation>(TParams @params) 
+        where TImplementation : IDeviceSetting<T, TParams>, new() {
+        var impl = new TImplementation();
+        impl.Init(@params);
+        return impl;
     }
 }
