@@ -44,7 +44,7 @@ public class DeviceTests {
         _transportMock.Setup(x => x.Read(It.IsAny<Stream>(), compiled, CancellationToken.None)).ReturnsAsync(compiled);
         
         await myCommand.Send();
-        var res = myCommand.Result;
+        var res = myCommand.Value;
 
         _transportMock.Verify(v => v.Read(It.IsAny<Stream>(), compiled, CancellationToken.None));
         Assert.Equal(compiled, res);

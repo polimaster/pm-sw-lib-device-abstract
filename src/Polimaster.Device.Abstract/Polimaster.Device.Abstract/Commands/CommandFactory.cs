@@ -8,12 +8,12 @@ public class CommandFactory<TData> : ICommandFactory<TData> {
     private readonly ITransport<TData> _transport;
     private readonly ILoggerFactory? _loggerFactory;
 
-    public CommandFactory( ITransport<TData> transport, ILoggerFactory? loggerFactory = null) {
+    public CommandFactory(ITransport<TData> transport, ILoggerFactory? loggerFactory = null) {
         _transport = transport;
         _loggerFactory = loggerFactory;
     }
 
-    public T Create<T>() where T : ITransportCommand<TData>, new() {
+    public T Create<T, TValue>() where T : ICommand<TValue, TData>, new() {
         if (_transport == null) throw new NullReferenceException($"{nameof(Transport)} is null");
         
         var t = new T {

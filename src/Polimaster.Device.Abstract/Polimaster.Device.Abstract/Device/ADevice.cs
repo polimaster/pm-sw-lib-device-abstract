@@ -12,6 +12,7 @@ namespace Polimaster.Device.Abstract.Device;
 
 public abstract class ADevice<TData> : IDevice<TData> {
     protected readonly ICommandFactory<TData> CommandFactory;
+    protected readonly ISettingsFactory<TData> SettingsFactory;
     protected readonly ILogger<IDevice<TData>>? Logger;
     public DeviceInfo DeviceInfo { get; set; }
     public abstract Task<DeviceInfo> ReadDeviceInfo();
@@ -26,6 +27,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
     /// <param name="loggerFactory"></param>
     protected ADevice(ITransport<TData> transport, ILoggerFactory? loggerFactory = null) {
         CommandFactory = new CommandFactory<TData>(transport, loggerFactory);
+        SettingsFactory = new SettingsFactory<TData>(CommandFactory);
         Logger = loggerFactory?.CreateLogger<ADevice<TData>>();
         Transport = transport;
     }

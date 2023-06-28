@@ -50,7 +50,7 @@ public interface IDevice<TData> : IDevice {
     /// <summary>
     /// Writes settings to device.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges()"/> on target property.
+    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
     /// </summary>
     /// <returns></returns>
     Task WriteSettings();

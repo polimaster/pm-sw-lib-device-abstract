@@ -1,16 +1,13 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
-public abstract class DeviceSettingBool : ADeviceSetting<bool?> { }
-public abstract class DeviceSettingInt : ADeviceSetting<int?> { }
-public abstract class DeviceSettingFloat : ADeviceSetting<float?> { }
-public abstract class DeviceSettingDouble : ADeviceSetting<double?> { }
-public abstract class DeviceSettingUshort : ADeviceSetting<ushort?> { }
-public abstract class DeviceSettingString : ADeviceSetting<string?> { }
-
-public abstract class ADeviceSetting<T> : IDeviceSetting<T> {
+public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
+    private readonly ICommand<T, TData> _readCommand;
+    private readonly ICommand<T, TData>? _writeCommand;
     private T? _value;
 
     public T? Value {
@@ -31,6 +28,12 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T> {
     public bool IsError => Exception != null;
     public Exception? Exception { get; private set; }
 
+    public DeviceSettingBase(ICommand<T, TData> readCommand, ICommand<T, TData>? writeCommand = null) {
+        _readCommand = readCommand;
+        _writeCommand = writeCommand;
+    }
+
+
     /// <summary>
     /// Sets error while device communication
     /// </summary>
@@ -40,9 +43,24 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T> {
         IsDirty = false;
         Value = default;
     }
-    
-    public abstract Task Read();
-    public abstract Task CommitChanges();
+
+    public virtual async Task Read(CancellationToken cancellationToken) {
+        try {
+            await _readCommand.Send(cancellationToken);
+            Value = _readCommand.Value;
+            IsDirty = false;
+        } catch (Exception e) { SetError(e); }
+    }
+
+    public virtual async Task CommitChanges(CancellationToken cancellationToken) {
+        if (!IsDirty) return;
+        try {
+            if (_writeCommand != null) {
+                _writeCommand.Value = Value;
+                await _writeCommand.Send(cancellationToken);
+            }
+        } catch (Exception e) { SetError(e); }
+    }
     
     /// <summary>
     /// Validates value while assignment
