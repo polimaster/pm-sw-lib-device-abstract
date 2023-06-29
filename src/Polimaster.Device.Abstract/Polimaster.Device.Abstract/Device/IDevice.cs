@@ -38,19 +38,20 @@ public interface IDevice<TData> : IDevice {
     /// <see cref="ITransport{TData, TConnectionParams}"/>
     ITransport<TData> Transport { get; }
     
-    DeviceInfo DeviceInfo { get; protected set; }
-    
-    /// <summary>
-    /// Read device information
-    /// </summary>
-    /// <returns></returns>
-    Task<DeviceInfo> ReadDeviceInfo();
-    
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
     Action? IsDisposing { get; set; }
 
+    DeviceInfo DeviceInfo { get; protected set; }
+
+    /// <summary>
+    /// Read device information
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
+    
     /// <summary>
     ///  Reads device settings.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
@@ -58,7 +59,7 @@ public interface IDevice<TData> : IDevice {
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task ReadSettings(CancellationToken cancellationToken);
+    Task ReadSettings(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Writes settings to device.
@@ -67,7 +68,7 @@ public interface IDevice<TData> : IDevice {
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task WriteSettings(CancellationToken cancellationToken);
+    Task WriteSettings(CancellationToken cancellationToken = new());
     
     /// <summary>
     /// Search for <see cref="IDeviceSetting{T}"/> properties in device object

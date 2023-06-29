@@ -17,7 +17,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
     
     protected readonly ILogger<IDevice<TData>>? Logger;
     public DeviceInfo DeviceInfo { get; set; }
-    public abstract Task<DeviceInfo> ReadDeviceInfo();
+    public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
     public ITransport<TData> Transport { get; }
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
