@@ -3,7 +3,7 @@ using Polimaster.Device.Abstract.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
-public class DeviceSettingBuilder  : IDeviceSettingBuilder {
+public class DeviceSettingBuilder : IDeviceSettingBuilder {
     private object? _readCommand;
     private object? _writeCommand;
     private object? _implementation;
@@ -19,12 +19,14 @@ public class DeviceSettingBuilder  : IDeviceSettingBuilder {
         return this;
     }
 
-    public IDeviceSettingBuilder WithImplementation<T, TValue, TData>() where T : class, IDeviceSetting<TValue, TData>, new() {
+    public IDeviceSettingBuilder WithImplementation<T, TValue, TData>()
+        where T : class, IDeviceSetting<TValue, TData>, new() {
         _implementation = Activator.CreateInstance<T>();
         return this;
     }
 
-    public IDeviceSettingBuilder WithProxy<T, TIn, TOut, TData>() where T : class, IDeviceSettingProxy<TIn, TOut, TData>, new() {
+    public IDeviceSettingBuilder WithProxy<T, TIn, TOut, TData>()
+        where T : class, IDeviceSettingProxy<TIn, TOut, TData>, new() {
         _proxy = Activator.CreateInstance<T>();
         return this;
     }
@@ -38,6 +40,7 @@ public class DeviceSettingBuilder  : IDeviceSettingBuilder {
         impl.ReadCommand = readCommand;
         impl.WriteCommand = writeCommand;
 
+        CleanUp();
         return impl;
     }
 
@@ -47,9 +50,17 @@ public class DeviceSettingBuilder  : IDeviceSettingBuilder {
                 throw new NullReferenceException($"Initiate Setting Proxy with {nameof(WithProxy)} method.");
             case IDeviceSettingProxy<TIn, TValue, TData> p:
                 p.ProxiedSetting = Build<TValue, TData>();
+                CleanUp();
                 return p;
             default:
                 throw new Exception();
         }
+    }
+
+    private void CleanUp() {
+        _readCommand = null;
+        _writeCommand = null;
+        _implementation = null;
+        _proxy = null;
     }
 }
