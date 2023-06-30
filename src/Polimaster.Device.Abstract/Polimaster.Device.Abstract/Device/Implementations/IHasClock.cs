@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Device.Implements; 
+namespace Polimaster.Device.Abstract.Device.Implementations; 
 
 /// <summary>
 /// Identifies a device with internal clock

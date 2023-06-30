@@ -5,22 +5,23 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Commands;
-using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device;
 
 public abstract class ADevice<TData> : IDevice<TData> {
-    public ICommandBuilder CommandBuilder { get; }
-    public IDeviceSettingBuilder SettingBuilder { get; }
-    
+    public ICommandBuilder<TData> CommandBuilder { get; }
+    public IDeviceSettingBuilder<TData> SettingBuilder { get; }
+
     public DeviceInfo DeviceInfo { get; set; }
     public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
     public ITransport<TData> Transport { get; }
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
-    
+
     protected readonly ILogger<IDevice<TData>>? Logger;
 
     /// <summary>
@@ -30,7 +31,8 @@ public abstract class ADevice<TData> : IDevice<TData> {
     /// <param name="commandBuilder"><see cref="CommandBuilder"/></param>
     /// <param name="settingBuilder"><see cref="SettingBuilder"/></param>
     /// <param name="loggerFactory"></param>
-    protected ADevice(ITransport<TData> transport, ICommandBuilder commandBuilder, IDeviceSettingBuilder settingBuilder, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(ITransport<TData> transport, ICommandBuilder<TData> commandBuilder,
+        IDeviceSettingBuilder<TData> settingBuilder, ILoggerFactory? loggerFactory = null) {
         CommandBuilder = commandBuilder;
         SettingBuilder = settingBuilder;
         Logger = loggerFactory?.CreateLogger<ADevice<TData>>();
@@ -41,24 +43,24 @@ public abstract class ADevice<TData> : IDevice<TData> {
         IsDisposing?.Invoke();
         Transport.Dispose();
     }
-    
+
     public async Task ReadSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
-        if(cancellationToken.IsCancellationRequested) return;
+        if (cancellationToken.IsCancellationRequested) return;
         foreach (var info in ds) {
-            if(cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object, TData>.Read), cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
+            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read), cancellationToken);
         }
     }
-    
+
     public async Task WriteSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
-        if(cancellationToken.IsCancellationRequested) return;
+        if (cancellationToken.IsCancellationRequested) return;
         foreach (var info in ds) {
-            if(cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object, TData>.CommitChanges), cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return;
+            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
         }
     }
 
@@ -78,6 +80,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
     public IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
         var propertyInfos = GetType().GetProperties();
         return propertyInfos.Where(info => info.PropertyType.IsGenericType)
-            .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<object, TData>)).ToList(); // todo IDeviceSetting < object ?????, TData >
+            .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
+            .ToList();
     }
 }

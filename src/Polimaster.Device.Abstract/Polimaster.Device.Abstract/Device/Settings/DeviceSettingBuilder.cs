@@ -1,38 +1,32 @@
 ﻿using System;
-using Polimaster.Device.Abstract.Commands;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
-public class DeviceSettingBuilder : IDeviceSettingBuilder {
+public class DeviceSettingBuilder<TData> : IDeviceSettingBuilder<TData> {
     private object? _readCommand;
     private object? _writeCommand;
     private object? _implementation;
-    private object? _proxy;
 
-    public IDeviceSettingBuilder WithWriteCommand<TValue, TData>(ICommand<TValue, TData> command) {
+    public IDeviceSettingBuilder<TData> WithWriteCommand<TValue>(ICommand<TValue, TData> command) {
         _writeCommand = command;
         return this;
     }
 
-    public IDeviceSettingBuilder WithReadCommand<TValue, TData>(ICommand<TValue, TData> command) {
+    public IDeviceSettingBuilder<TData> WithReadCommand<TValue>(ICommand<TValue, TData> command) {
         _readCommand = command;
         return this;
     }
 
-    public IDeviceSettingBuilder WithImplementation<T, TValue, TData>()
-        where T : class, IDeviceSetting<TValue, TData>, new() {
+    public IDeviceSettingBuilder<TData> WithImplementation<T, TValue>()
+        where T : class, IDeviceSetting<TValue>, new() {
         _implementation = Activator.CreateInstance<T>();
         return this;
     }
 
-    public IDeviceSettingBuilder WithProxy<T, TIn, TOut, TData>()
-        where T : class, IDeviceSettingProxy<TIn, TOut, TData>, new() {
-        _proxy = Activator.CreateInstance<T>();
-        return this;
-    }
-
-    public IDeviceSetting<TValue, TData> Build<TValue, TData>() {
-        var impl = _implementation as IDeviceSetting<TValue, TData> ?? new DeviceSettingBase<TValue, TData>();
+    public IDeviceSetting<TValue> Build<TValue>() {
+        var impl = _implementation as IDeviceSetting<TValue> ?? new DeviceSettingBase<TValue>();
 
         var readCommand = _readCommand as ICommand<TValue, TData>;
         var writeCommand = _writeCommand as ICommand<TValue, TData>;
@@ -44,23 +38,16 @@ public class DeviceSettingBuilder : IDeviceSettingBuilder {
         return impl;
     }
 
-    public IDeviceSettingProxy<TIn, TValue, TData> Build<TIn, TValue, TData>() {
-        switch (_proxy) {
-            case null:
-                throw new NullReferenceException($"Initiate Setting Proxy with {nameof(WithProxy)} method.");
-            case IDeviceSettingProxy<TIn, TValue, TData> p:
-                p.ProxiedSetting = Build<TValue, TData>();
-                CleanUp();
-                return p;
-            default:
-                throw new Exception();
-        }
+    public IDeviceSetting<TIn> BuildWithProxy<T, TIn, TValue>()
+        where T : class, IDeviceSettingProxy<TIn, TValue>, new() {
+        var proxy = Activator.CreateInstance<T>();
+        proxy.ProxiedSetting = Build<TValue>();
+        return proxy;
     }
 
     private void CleanUp() {
         _readCommand = null;
         _writeCommand = null;
         _implementation = null;
-        _proxy = null;
     }
 }

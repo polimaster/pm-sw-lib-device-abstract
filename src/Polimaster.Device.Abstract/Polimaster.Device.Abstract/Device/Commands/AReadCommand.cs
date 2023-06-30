@@ -1,8 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
-namespace Polimaster.Device.Abstract.Commands;
+namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <summary>
 /// Command updates <see cref="ICommand{TValue,TTransportData}.Value"/> while <see cref="ITransport{TData}.Read"/>

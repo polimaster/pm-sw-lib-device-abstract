@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Settings;
+using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
-namespace Polimaster.Device.Abstract.Device.Implements;
+namespace Polimaster.Device.Abstract.Device.Implementations;
 
 /// <summary>
 /// Identifies a device can return history
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
-/// <typeparam name="TData"></typeparam>
-public interface IHasHistory<THistory, TData> : IHasClock {
+public interface IHasHistory<THistory> : IHasClock {
     
     /// <summary>
     /// Interval between history entries
     /// </summary>
-    IDeviceSetting<ushort?, TData> HistoryInterval { get; }
+    IDeviceSetting<ushort?> HistoryInterval { get; }
     
     /// <summary>
     /// Reads history from device
@@ -37,8 +36,7 @@ public interface IHasHistory<THistory, TData> : IHasClock {
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
 /// <typeparam name="TReadParams">History reading parameters</typeparam>
-/// <typeparam name="TData"></typeparam>
-public interface IHasHistory<THistory, TData, in TReadParams> : IHasHistory<THistory, TData> {
+public interface IHasHistory<THistory, in TReadParams> : IHasHistory<THistory> {
     /// <summary>
     /// Reads history from device
     /// </summary>

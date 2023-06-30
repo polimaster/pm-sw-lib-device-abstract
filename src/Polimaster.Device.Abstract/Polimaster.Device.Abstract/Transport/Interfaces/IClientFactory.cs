@@ -1,4 +1,4 @@
-namespace Polimaster.Device.Abstract.Transport;
+namespace Polimaster.Device.Abstract.Transport.Interfaces;
 
 public interface IClientFactory {
     

@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Commands;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
 /// Device setting base class
 /// </summary>
-/// <typeparam name="T"><see cref="IDeviceSetting{T,TData}.Value"/> type</typeparam>
-/// <typeparam name="TData">Transport data type for <see cref="ICommand{TValue,TTransportData}"/></typeparam>
-public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
+/// <typeparam name="T"><see cref="IDeviceSetting{T}.Value"/> type</typeparam>
+public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
 
     private T? _value;
-    private ICommand<T, TData>? _readCommand;
-    private ICommand<T, TData>? _writeCommand;
+    private ICommand<T>? _readCommand;
+    private ICommand<T>? _writeCommand;
 
-    public ICommand<T, TData>? ReadCommand {
+    public override ICommand<T>? ReadCommand {
         get => _readCommand;
         set {
             _readCommand = value;
@@ -24,7 +24,7 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         }
     }
 
-    public ICommand<T, TData>? WriteCommand {
+    public override ICommand<T>? WriteCommand {
         get => _writeCommand;
         set {
             _writeCommand = value;
@@ -32,7 +32,7 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         }
     }
 
-    public virtual T? Value {
+    public override T? Value {
         get => _value;
         set {
             try {
@@ -46,10 +46,6 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         }
     }
 
-    public virtual bool IsDirty { get; protected set; }
-    public virtual bool IsError => Exception != null;
-    public virtual Exception? Exception { get; private set; }
-
     /// <summary>
     /// Sets error while device communication
     /// </summary>
@@ -60,7 +56,7 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         Value = default;
     }
 
-    public virtual async Task Read(CancellationToken cancellationToken) {
+    public override async Task Read(CancellationToken cancellationToken) {
         try {
             if (ReadCommand != null) {
                 await ReadCommand.Send(cancellationToken);
@@ -69,7 +65,7 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         } catch (Exception e) { SetError(e); }
     }
 
-    public virtual async Task CommitChanges(CancellationToken cancellationToken) {
+    public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsDirty) return;
         try {
             if (WriteCommand != null) {

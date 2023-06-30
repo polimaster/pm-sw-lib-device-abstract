@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
-namespace Polimaster.Device.Abstract.Transport;
+namespace Polimaster.Device.Abstract;
 
 /// <summary>
 /// 

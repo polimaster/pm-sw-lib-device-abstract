@@ -2,7 +2,7 @@ using System.IO;
 using System.Threading;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Device;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Tests;
 
@@ -17,7 +17,7 @@ public class DeviceTests {
 
     [Fact]
     public async void ShouldWrite() {
-        var myCommand = new MyCommand(){
+        var myCommand = new MyCommand {
             Param = new MyParam { CommandPid = 0, Value = "write test" },
             Transport = _transportMock.Object
         };

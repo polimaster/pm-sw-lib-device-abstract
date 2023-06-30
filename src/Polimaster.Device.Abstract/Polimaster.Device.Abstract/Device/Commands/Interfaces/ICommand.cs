@@ -2,17 +2,15 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
-namespace Polimaster.Device.Abstract.Commands;
+namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
 /// <summary>
 /// Device command
 /// </summary>
 /// <typeparam name="TValue">Type of <see cref="Value"/></typeparam>
-/// <typeparam name="TTransportData"><see cref="ITransport{TData}"/></typeparam>
-public interface ICommand<TValue, TTransportData> {
-    
+public interface ICommand<TValue> {
     /// <summary>
     /// Send command to device
     /// </summary>
@@ -28,12 +26,20 @@ public interface ICommand<TValue, TTransportData> {
     Action<TValue?>? ValueChanged { get; set; }
     
     /// <summary>
-    /// Command transport
-    /// </summary>
-    ITransport<TTransportData>? Transport { get; set; }
-    
-    /// <summary>
     /// Logger
     /// </summary>
     ILogger? Logger { get; set; }
+}
+
+/// <summary>
+/// Device command
+/// </summary>
+/// <typeparam name="TTransportData"><see cref="ITransport{TData}"/></typeparam>
+/// <typeparam name="TValue"><inheritdoc cref="ICommand{TValue}"/></typeparam>
+public interface ICommand<TValue, TTransportData> : ICommand<TValue> {
+
+    /// <summary>
+    /// Command transport
+    /// </summary>
+    ITransport<TTransportData>? Transport { get; set; }
 }

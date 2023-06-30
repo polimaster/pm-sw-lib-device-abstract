@@ -3,9 +3,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
-namespace Polimaster.Device.Abstract.Commands;
+namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <summary>
 /// Command with no result returned while <see cref="ITransport{TData}.Write"/>
@@ -33,7 +34,7 @@ public abstract class AWriteCommand<TValue, TTransportData> : ICommand<TValue, T
 
     protected async Task<Stream> Prepare() {
         if (Transport == null) throw new NullReferenceException(
-            $"Transport for {GetType().Name} is null. Consider using {nameof(ICommandBuilder)} while creating commands.");
+            $"Transport for {GetType().Name} is null. Consider using {nameof(ICommandBuilder<TTransportData>)} while creating commands.");
         Validate();
         var stream = await Transport!.Open();
         if (stream == null) throw new NullReferenceException("Transport stream is null");

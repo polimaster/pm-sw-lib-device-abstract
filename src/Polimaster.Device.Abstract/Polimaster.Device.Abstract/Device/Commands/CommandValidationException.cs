@@ -1,6 +1,6 @@
 using System;
 
-namespace Polimaster.Device.Abstract.Commands;
+namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <summary>
 /// Rises while command and/or its parameters validation fails..

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Transport;
+namespace Polimaster.Device.Abstract.Transport.Interfaces;
 
 /// <summary>
 /// 

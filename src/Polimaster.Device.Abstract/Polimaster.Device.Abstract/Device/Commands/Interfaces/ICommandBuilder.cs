@@ -1,38 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device;
+using Polimaster.Device.Abstract.Device.Interfaces;
 
-namespace Polimaster.Device.Abstract.Commands;
+namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
-public interface ICommandBuilder {
-    ICommandBuilder With(ILoggerFactory? factory);
-    ICommandBuilder With(ILogger? logger);
+public interface ICommandBuilder<TData> {
+    ICommandBuilder<TData> With(ILoggerFactory? factory);
+    ICommandBuilder<TData> With(ILogger? logger);
 
-    ICommand<TValue, TData> Build<T, TValue, TData>(IDevice<TData> device)
+    ICommand<TValue> Build<T, TValue>(IDevice<TData> device)
         where T : class, ICommand<TValue, TData>, new();
 }
 
-public class CommandBuilder : ICommandBuilder {
+public class CommandBuilder<TData> : ICommandBuilder<TData> {
     private ILoggerFactory? _loggerFactory;
     private ILogger? _logger;
 
-    private static readonly Dictionary<string, object> COMMANDS = new();
+    private readonly Dictionary<string, object> _commands = new();
 
-    public ICommandBuilder With(ILoggerFactory? factory) {
+    public ICommandBuilder<TData> With(ILoggerFactory? factory) {
         _loggerFactory = factory;
         return this;
     }
 
-    public ICommandBuilder With(ILogger? logger) {
+    public ICommandBuilder<TData> With(ILogger? logger) {
         _logger = logger;
         return this;
     }
 
-    public ICommand<TValue, TData> Build<T, TValue, TData>(IDevice<TData> device)
+    public ICommand<TValue> Build<T, TValue>(IDevice<TData> device)
         where T : class, ICommand<TValue, TData>, new() {
         var key = GetKey<T>(device);
-        var found = COMMANDS.FirstOrDefault(e => e.Key == key);
+        var found = _commands.FirstOrDefault(e => e.Key == key);
         if (found.Key != null) return (ICommand<TValue, TData>)found.Value;
 
         var result = new T {
@@ -40,7 +40,7 @@ public class CommandBuilder : ICommandBuilder {
             Logger = _loggerFactory?.CreateLogger<T>() ?? _logger
         };
 
-        COMMANDS.Add(key, result);
+        _commands.Add(key, result);
         device.IsDisposing += () => CleanUpDevice(device);
 
         CleanUp();
@@ -53,9 +53,9 @@ public class CommandBuilder : ICommandBuilder {
         _logger = null;
     }
 
-    private static void CleanUpDevice(IDevice device) {
-        var found = COMMANDS.Where(e => e.Key.StartsWith($"{device.Id}>"));
-        foreach (var pair in found) COMMANDS.Remove(pair.Key);
+    private void CleanUpDevice(IDevice device) {
+        var found = _commands.Where(e => e.Key.StartsWith($"{device.Id}>"));
+        foreach (var pair in found) _commands.Remove(pair.Key);
     }
 
     private static string GetKey<T>(IDevice device) {

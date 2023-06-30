@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Commands;
-using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Transport.Interfaces;
 
-namespace Polimaster.Device.Abstract.Device;
+namespace Polimaster.Device.Abstract.Device.Interfaces;
 
 public interface IDevice : IDisposable {
     
@@ -23,14 +23,14 @@ public interface IDevice : IDisposable {
 public interface IDevice<TData> : IDevice {
     
     /// <summary>
-    /// Instance of see <see cref="ICommandBuilder"/>
+    /// Instance of see <see cref="ICommandBuilder{TData}"/>
     /// </summary>
-    ICommandBuilder CommandBuilder { get; }
+    ICommandBuilder<TData> CommandBuilder { get; }
     
     /// <summary>
-    /// Instance of <see cref="ISettingsFactory{TData}"/>
+    /// Instance of <see cref="IDeviceSettingBuilder{TData}"/>
     /// </summary>
-    IDeviceSettingBuilder SettingBuilder { get; }
+    IDeviceSettingBuilder<TData> SettingBuilder { get; }
     
     /// <summary>
     /// Transport layer

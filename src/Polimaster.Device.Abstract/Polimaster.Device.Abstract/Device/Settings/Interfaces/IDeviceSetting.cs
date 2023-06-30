@@ -1,24 +1,19 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Commands;
+using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
-namespace Polimaster.Device.Abstract.Device.Settings;
+namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
-/// <summary>
-/// Device setting
-/// </summary>
-/// <typeparam name="T">Type of setting value</typeparam>
-/// <typeparam name="TData"></typeparam>
-public interface IDeviceSetting<T, TData> {
+public interface IDeviceSetting<T> {
     
-    ICommand<T, TData>? ReadCommand { get; set; }
-    ICommand<T, TData>? WriteCommand { get; set; }
-
+    ICommand<T>? ReadCommand { get; set; }
+    ICommand<T>? WriteCommand { get; set; }
+    
     /// <summary>
     /// Setting value
     /// </summary>
-    T? Value { get; }
+    T? Value { get; set; }
     
     /// <summary>
     /// Indicates if <see cref="Value"/> changed
@@ -46,5 +41,5 @@ public interface IDeviceSetting<T, TData> {
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task CommitChanges(CancellationToken cancellationToken);
+    Task CommitChanges(CancellationToken cancellationToken = new());
 }
