@@ -9,12 +9,13 @@ namespace Polimaster.Device.Abstract.Device.Implements;
 /// Identifies a device can return history
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
-public interface IHasHistory<THistory> : IHasClock {
+/// <typeparam name="TData"></typeparam>
+public interface IHasHistory<THistory, TData> : IHasClock {
     
     /// <summary>
     /// Interval between history entries
     /// </summary>
-    IDeviceSetting<ushort?> HistoryInterval { get; }
+    IDeviceSetting<ushort?, TData> HistoryInterval { get; }
     
     /// <summary>
     /// Reads history from device
@@ -36,7 +37,8 @@ public interface IHasHistory<THistory> : IHasClock {
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
 /// <typeparam name="TReadParams">History reading parameters</typeparam>
-public interface IHasHistory<THistory, in TReadParams> : IHasHistory<THistory> {
+/// <typeparam name="TData"></typeparam>
+public interface IHasHistory<THistory, TData, in TReadParams> : IHasHistory<THistory, TData> {
     /// <summary>
     /// Reads history from device
     /// </summary>

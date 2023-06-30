@@ -24,6 +24,13 @@ public interface ICommand<TValue, TTransportData> {
     /// </summary>
     TValue? Value { get; set; }
     
+    /// <summary>
+    /// Command transport
+    /// </summary>
     ITransport<TTransportData>? Transport { get; set; }
+    
+    /// <summary>
+    /// Logger
+    /// </summary>
     ILogger? Logger { get; set; }
 }

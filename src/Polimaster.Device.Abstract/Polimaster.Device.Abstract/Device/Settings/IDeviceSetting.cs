@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -8,7 +9,11 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device setting
 /// </summary>
 /// <typeparam name="T">Type of setting value</typeparam>
-public interface IDeviceSetting<out T> {
+/// <typeparam name="TData"></typeparam>
+public interface IDeviceSetting<T, TData> {
+    
+    ICommand<T, TData>? ReadCommand { get; set; }
+    ICommand<T, TData>? WriteCommand { get; set; }
 
     /// <summary>
     /// Setting value
@@ -45,6 +50,6 @@ public interface IDeviceSetting<out T> {
 }
 
 
-public interface IDeviceSetting<out T, in TParams> : IDeviceSetting<T> {
-    void Init(TParams @params);
-}
+// public interface IDeviceSetting<out T, in TParams> : IDeviceSetting<T> {
+//     void Init(TParams @params);
+// }

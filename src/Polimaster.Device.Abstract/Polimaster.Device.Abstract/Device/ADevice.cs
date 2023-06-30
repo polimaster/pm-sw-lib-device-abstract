@@ -12,24 +12,27 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device;
 
 public abstract class ADevice<TData> : IDevice<TData> {
-    public ICommandFactory<TData> CommandFactory { get; }
-    public ISettingsFactory<TData> SettingsFactory { get; }
+    public ICommandBuilder CommandBuilder { get; }
+    public IDeviceSettingBuilder SettingBuilder { get; }
     
-    protected readonly ILogger<IDevice<TData>>? Logger;
     public DeviceInfo DeviceInfo { get; set; }
     public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
     public ITransport<TData> Transport { get; }
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
+    
+    protected readonly ILogger<IDevice<TData>>? Logger;
 
     /// <summary>
     /// Device constructor
     /// </summary>
     /// <param name="transport"><see cref="Transport"/></param>
+    /// <param name="commandBuilder"><see cref="CommandBuilder"/></param>
+    /// <param name="settingBuilder"><see cref="SettingBuilder"/></param>
     /// <param name="loggerFactory"></param>
-    protected ADevice(ITransport<TData> transport, ILoggerFactory? loggerFactory = null) {
-        CommandFactory = new CommandFactory<TData>(transport, loggerFactory);
-        SettingsFactory = new SettingsFactory<TData>(CommandFactory);
+    protected ADevice(ITransport<TData> transport, ICommandBuilder commandBuilder, IDeviceSettingBuilder settingBuilder, ILoggerFactory? loggerFactory = null) {
+        CommandBuilder = commandBuilder;
+        SettingBuilder = settingBuilder;
         Logger = loggerFactory?.CreateLogger<ADevice<TData>>();
         Transport = transport;
     }
@@ -45,7 +48,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
         if(cancellationToken.IsCancellationRequested) return;
         foreach (var info in ds) {
             if(cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read), cancellationToken);
+            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object, TData>.Read), cancellationToken);
         }
     }
     
@@ -55,7 +58,7 @@ public abstract class ADevice<TData> : IDevice<TData> {
         if(cancellationToken.IsCancellationRequested) return;
         foreach (var info in ds) {
             if(cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
+            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object, TData>.CommitChanges), cancellationToken);
         }
     }
 
@@ -75,6 +78,6 @@ public abstract class ADevice<TData> : IDevice<TData> {
     public IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
         var propertyInfos = GetType().GetProperties();
         return propertyInfos.Where(info => info.PropertyType.IsGenericType)
-            .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>)).ToList();
+            .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<object, TData>)).ToList(); // todo IDeviceSetting < object ?????, TData >
     }
 }

@@ -8,12 +8,13 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <summary>
 /// Device setting base class
 /// </summary>
-/// <typeparam name="T"><see cref="IDeviceSetting{T}.Value"/> type</typeparam>
+/// <typeparam name="T"><see cref="IDeviceSetting{T,TData}.Value"/> type</typeparam>
 /// <typeparam name="TData">Transport data type for <see cref="ICommand{TValue,TTransportData}"/></typeparam>
-public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
-    protected readonly ICommand<T, TData>? ReadCommand;
-    protected readonly ICommand<T, TData>? WriteCommand;
+public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
+
     private T? _value;
+    public ICommand<T, TData>? ReadCommand { get; set; }
+    public ICommand<T, TData>? WriteCommand { get; set; }
 
     public virtual T? Value {
         get => _value;
@@ -29,15 +30,9 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T> {
         }
     }
 
-    public bool IsDirty { get; protected set; }
-    public bool IsError => Exception != null;
-    public Exception? Exception { get; private set; }
-
-    public DeviceSettingBase(ICommand<T, TData>? readCommand = null, ICommand<T, TData>? writeCommand = null) {
-        ReadCommand = readCommand;
-        WriteCommand = writeCommand;
-    }
-
+    public virtual bool IsDirty { get; protected set; }
+    public virtual bool IsError => Exception != null;
+    public virtual Exception? Exception { get; private set; }
 
     /// <summary>
     /// Sets error while device communication

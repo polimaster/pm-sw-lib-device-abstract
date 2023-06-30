@@ -32,7 +32,7 @@ public abstract class AWriteCommand<TValue, TTransportData> : ICommand<TValue, T
 
     protected async Task<Stream> Prepare() {
         if (Transport == null) throw new NullReferenceException(
-            $"Transport for {GetType().Name} is null. Consider using {nameof(ICommandFactory<TTransportData>)} while creating commands.");
+            $"Transport for {GetType().Name} is null. Consider using {nameof(ICommandBuilder)} while creating commands.");
         Validate();
         var stream = await Transport!.Open();
         if (stream == null) throw new NullReferenceException("Transport stream is null");

@@ -23,14 +23,14 @@ public interface IDevice : IDisposable {
 public interface IDevice<TData> : IDevice {
     
     /// <summary>
-    /// Instance of see <see cref="ICommandFactory{TTransportData}"/>
+    /// Instance of see <see cref="ICommandBuilder"/>
     /// </summary>
-    ICommandFactory<TData> CommandFactory { get; }
+    ICommandBuilder CommandBuilder { get; }
     
     /// <summary>
     /// Instance of <see cref="ISettingsFactory{TData}"/>
     /// </summary>
-    ISettingsFactory<TData> SettingsFactory { get; }
+    IDeviceSettingBuilder SettingBuilder { get; }
     
     /// <summary>
     /// Transport layer
@@ -43,6 +43,9 @@ public interface IDevice<TData> : IDevice {
     /// </summary>
     Action? IsDisposing { get; set; }
 
+    /// <summary>
+    /// Device information data
+    /// </summary>
     DeviceInfo DeviceInfo { get; protected set; }
 
     /// <summary>
