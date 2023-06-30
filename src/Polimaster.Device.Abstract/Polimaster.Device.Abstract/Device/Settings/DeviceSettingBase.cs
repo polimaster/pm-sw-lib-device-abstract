@@ -13,8 +13,24 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
 
     private T? _value;
-    public ICommand<T, TData>? ReadCommand { get; set; }
-    public ICommand<T, TData>? WriteCommand { get; set; }
+    private ICommand<T, TData>? _readCommand;
+    private ICommand<T, TData>? _writeCommand;
+
+    public ICommand<T, TData>? ReadCommand {
+        get => _readCommand;
+        set {
+            _readCommand = value;
+            if (_readCommand != null) _readCommand.ValueChanged += v => _value = v;
+        }
+    }
+
+    public ICommand<T, TData>? WriteCommand {
+        get => _writeCommand;
+        set {
+            _writeCommand = value;
+            if (_writeCommand != null) _writeCommand.ValueChanged += v => _value = v;
+        }
+    }
 
     public virtual T? Value {
         get => _value;
@@ -48,7 +64,6 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         try {
             if (ReadCommand != null) {
                 await ReadCommand.Send(cancellationToken);
-                Value = ReadCommand.Value;
             }
             IsDirty = false;
         } catch (Exception e) { SetError(e); }
@@ -58,7 +73,6 @@ public class DeviceSettingBase<T, TData> : IDeviceSetting<T, TData> {
         if (!IsDirty) return;
         try {
             if (WriteCommand != null) {
-                WriteCommand.Value = Value;
                 await WriteCommand.Send(cancellationToken);
             }
         } catch (Exception e) { SetError(e); }

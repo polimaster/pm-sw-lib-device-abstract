@@ -48,8 +48,3 @@ public interface IDeviceSetting<T, TData> {
     /// <returns></returns>
     Task CommitChanges(CancellationToken cancellationToken);
 }
-
-
-// public interface IDeviceSetting<out T, in TParams> : IDeviceSetting<T> {
-//     void Init(TParams @params);
-// }

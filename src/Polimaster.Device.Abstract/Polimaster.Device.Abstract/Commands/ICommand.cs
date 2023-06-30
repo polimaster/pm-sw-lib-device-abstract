@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,8 @@ public interface ICommand<TValue, TTransportData> {
     /// Value of command. Either result of execution or it parameter.
     /// </summary>
     TValue? Value { get; set; }
+    
+    Action<TValue?>? ValueChanged { get; set; }
     
     /// <summary>
     /// Command transport

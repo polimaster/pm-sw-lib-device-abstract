@@ -16,5 +16,6 @@ public abstract class AReadCommand<TValue, TTransportData> : AWriteCommand<TValu
         if (cancellationToken.IsCancellationRequested) return;
         var res = await Transport!.Read(stream, Compile(), cancellationToken);
         Value = Parse(res);
+        ValueChanged?.Invoke(Value);
     }
 }

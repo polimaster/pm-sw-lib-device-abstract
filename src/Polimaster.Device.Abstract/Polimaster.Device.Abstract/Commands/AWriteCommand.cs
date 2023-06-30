@@ -13,6 +13,7 @@ namespace Polimaster.Device.Abstract.Commands;
 /// <typeparam name="TValue"><inheritdoc cref="ICommand{TValue,TTransportData}"/></typeparam>
 /// <typeparam name="TTransportData"><inheritdoc cref="ICommand{TValue,TTransportData}"/></typeparam>
 public abstract class AWriteCommand<TValue, TTransportData> : ICommand<TValue, TTransportData> {
+    public Action<TValue?>? ValueChanged { get; set; }
     public ITransport<TTransportData>? Transport { get; set; }
     public ILogger? Logger { get; set; }
     
@@ -44,5 +45,6 @@ public abstract class AWriteCommand<TValue, TTransportData> : ICommand<TValue, T
         var stream = await Prepare();
         if (cancellationToken.IsCancellationRequested) return;
         await Transport!.Write(stream, Compile(), cancellationToken);
+        ValueChanged?.Invoke(Value);
     }
 }
