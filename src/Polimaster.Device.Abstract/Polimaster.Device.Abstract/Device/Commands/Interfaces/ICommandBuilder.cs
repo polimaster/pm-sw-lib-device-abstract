@@ -9,7 +9,7 @@ public interface ICommandBuilder<TData> {
     ICommandBuilder<TData> With(ILoggerFactory? factory);
     ICommandBuilder<TData> With(ILogger? logger);
 
-    ICommand<TValue> Build<T, TValue>(IDevice<TData> device)
+    ICommand<TValue, TData> Build<T, TValue>(IDevice<TData> device)
         where T : class, ICommand<TValue, TData>, new();
 }
 
@@ -29,7 +29,7 @@ public class CommandBuilder<TData> : ICommandBuilder<TData> {
         return this;
     }
 
-    public ICommand<TValue> Build<T, TValue>(IDevice<TData> device)
+    public ICommand<TValue, TData> Build<T, TValue>(IDevice<TData> device)
         where T : class, ICommand<TValue, TData>, new() {
         var key = GetKey<T>(device);
         var found = _commands.FirstOrDefault(e => e.Key == key);

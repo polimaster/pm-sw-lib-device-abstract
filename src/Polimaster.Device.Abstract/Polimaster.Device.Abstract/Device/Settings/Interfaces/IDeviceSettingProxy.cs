@@ -27,6 +27,9 @@ public abstract class ADeviceSettingProxy<TIn, TValue> : ADeviceSettings<TIn>, I
     }
 
     public override async Task Read(CancellationToken cancellationToken) {
-        if (ProxiedSetting != null) await ProxiedSetting.Read(cancellationToken);
+        if (ProxiedSetting != null) {
+            if (ProxiedSetting.Value != null) return;
+            await ProxiedSetting.Read(cancellationToken);
+        }
     }
 }
