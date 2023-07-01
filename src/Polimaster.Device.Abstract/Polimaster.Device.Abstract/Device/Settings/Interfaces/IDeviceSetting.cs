@@ -5,9 +5,20 @@ using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
+/// <summary>
+/// Device setting
+/// </summary>
+/// <typeparam name="T">Type of setting <see cref="Value"/></typeparam>
 public interface IDeviceSetting<T> {
     
+    /// <summary>
+    /// Command for read data
+    /// </summary>
     ICommand<T>? ReadCommand { get; set; }
+    
+    /// <summary>
+    /// Command for write data
+    /// </summary>
     ICommand<T>? WriteCommand { get; set; }
     
     /// <summary>

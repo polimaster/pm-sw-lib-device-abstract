@@ -12,17 +12,21 @@ using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device;
 
-public abstract class ADevice<TData> : IDevice<TData> {
-    public ICommandBuilder<TData> CommandBuilder { get; }
-    public IDeviceSettingBuilder<TData> SettingBuilder { get; }
+/// <summary>
+/// Device abstract implementation
+/// </summary>
+/// <inheritdoc cref="IDevice{T}"/>
+public abstract class ADevice<T> : IDevice<T> {
+    public ICommandBuilder<T> CommandBuilder { get; }
+    public IDeviceSettingBuilder<T> SettingBuilder { get; }
 
     public DeviceInfo DeviceInfo { get; set; }
     public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
-    public ITransport<TData> Transport { get; }
+    public ITransport<T> Transport { get; }
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
 
-    protected readonly ILogger<IDevice<TData>>? Logger;
+    protected readonly ILogger<IDevice<T>>? Logger;
 
     /// <summary>
     /// Device constructor
@@ -31,11 +35,11 @@ public abstract class ADevice<TData> : IDevice<TData> {
     /// <param name="commandBuilder"><see cref="CommandBuilder"/></param>
     /// <param name="settingBuilder"><see cref="SettingBuilder"/></param>
     /// <param name="loggerFactory"></param>
-    protected ADevice(ITransport<TData> transport, ICommandBuilder<TData> commandBuilder,
-        IDeviceSettingBuilder<TData> settingBuilder, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(ITransport<T> transport, ICommandBuilder<T> commandBuilder,
+        IDeviceSettingBuilder<T> settingBuilder, ILoggerFactory? loggerFactory = null) {
         CommandBuilder = commandBuilder;
         SettingBuilder = settingBuilder;
-        Logger = loggerFactory?.CreateLogger<ADevice<TData>>();
+        Logger = loggerFactory?.CreateLogger<ADevice<T>>();
         Transport = transport;
     }
 

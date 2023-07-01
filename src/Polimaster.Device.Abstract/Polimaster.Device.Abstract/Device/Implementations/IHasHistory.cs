@@ -34,14 +34,14 @@ public interface IHasHistory<THistory> : IHasClock {
 /// <summary>
 /// Identifies a device can return history with parameters
 /// </summary>
-/// <typeparam name="THistory">Type of history record</typeparam>
-/// <typeparam name="TReadParams">History reading parameters</typeparam>
-public interface IHasHistory<THistory, in TReadParams> : IHasHistory<THistory> {
+/// <typeparam name="T">Type of history record</typeparam>
+/// <typeparam name="TParams">History reading parameters</typeparam>
+public interface IHasHistory<T, in TParams> : IHasHistory<T> {
     /// <summary>
     /// Reads history from device
     /// </summary>
     /// <param name="parameters">Parameters while reading history</param>
     /// <param name="cancellationToken"></param>
     /// <returns>Array of history records</returns>
-    Task<IEnumerable<THistory>> ReadHistory(TReadParams? parameters = default, CancellationToken cancellationToken = new());
+    Task<IEnumerable<T>> ReadHistory(TParams? parameters = default, CancellationToken cancellationToken = new());
 }

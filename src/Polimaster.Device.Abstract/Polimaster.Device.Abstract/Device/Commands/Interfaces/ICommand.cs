@@ -9,8 +9,8 @@ namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 /// <summary>
 /// Device command
 /// </summary>
-/// <typeparam name="TValue">Type of <see cref="Value"/></typeparam>
-public interface ICommand<TValue> {
+/// <typeparam name="T">Type of <see cref="Value"/></typeparam>
+public interface ICommand<T> {
     /// <summary>
     /// Send command to device
     /// </summary>
@@ -21,9 +21,9 @@ public interface ICommand<TValue> {
     /// <summary>
     /// Value of command. Either result of execution or it parameter.
     /// </summary>
-    TValue? Value { get; set; }
+    T? Value { get; set; }
     
-    Action<TValue?>? ValueChanged { get; set; }
+    Action<T?>? ValueChanged { get; set; }
     
     /// <summary>
     /// Logger
@@ -34,12 +34,12 @@ public interface ICommand<TValue> {
 /// <summary>
 /// Device command
 /// </summary>
-/// <typeparam name="TTransportData"><see cref="ITransport{TData}"/></typeparam>
-/// <typeparam name="TValue"><inheritdoc cref="ICommand{TValue}"/></typeparam>
-public interface ICommand<TValue, TTransportData> : ICommand<TValue> {
+/// <typeparam name="TTransport">Data type for <see cref="ITransport{T}"/></typeparam>
+/// <typeparam name="T"><inheritdoc cref="ICommand{TValue}"/></typeparam>
+public interface ICommand<T, TTransport> : ICommand<T> {
 
     /// <summary>
     /// Command transport
     /// </summary>
-    ITransport<TTransportData>? Transport { get; set; }
+    ITransport<TTransport>? Transport { get; set; }
 }

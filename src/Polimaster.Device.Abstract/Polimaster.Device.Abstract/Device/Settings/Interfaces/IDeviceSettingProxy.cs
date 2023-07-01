@@ -1,35 +1,30 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
-namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
+/// <summary>
+/// Proxied device setting. Converts underlying <see cref="IDeviceSetting{T}"/> value to its own.
+/// Usually, its required when device returns structured value like byte masks or complex strings.
+/// </summary>
+/// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
+/// <typeparam name="TProxied">Proxied <see cref="IDeviceSetting{T}"/> value type</typeparam>
 public interface IDeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
+    
+    /// <summary>
+    /// Proxied <see cref="IDeviceSetting{T}"/> 
+    /// </summary>
     IDeviceSetting<TProxied>? ProxiedSetting { get; set; }
+    
+    /// <summary>
+    /// Converts <see cref="ProxiedSetting"/> value to <see cref="IDeviceSetting{T}.Value"/>
+    /// </summary>
+    /// <param name="value"><see cref="ProxiedSetting"/> value</param>
+    /// <returns>Result of conversion</returns>
     T FromProxied(TProxied? value);
+    
+    /// <summary>
+    /// Converts <see cref="IDeviceSetting{T}.Value"/> to <see cref="ProxiedSetting"/> value
+    /// </summary>
+    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
+    /// <returns>Result of conversion</returns>
     TProxied FromCommand(T? value);
-}
-
-public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettings<T>, IDeviceSettingProxy<T, TProxied> {
-    public IDeviceSetting<TProxied>? ProxiedSetting { get; set; }
-
-    public override T? Value {
-        get => ProxiedSetting != null ? FromProxied(ProxiedSetting.Value) : default;
-        set {
-            if (ProxiedSetting != null) ProxiedSetting.Value = FromCommand(value);
-        }
-    }
-
-    public abstract T FromProxied(TProxied? value);
-    public abstract TProxied FromCommand(T? value);
-
-    public override async Task CommitChanges(CancellationToken cancellationToken) {
-        if (ProxiedSetting != null) await ProxiedSetting.CommitChanges(cancellationToken);
-    }
-
-    public override async Task Read(CancellationToken cancellationToken) {
-        if (ProxiedSetting != null) {
-            if (ProxiedSetting.Value != null) return;
-            await ProxiedSetting.Read(cancellationToken);
-        }
-    }
 }

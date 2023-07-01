@@ -6,6 +6,10 @@ using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
+/// <summary>
+/// <see cref="IDeviceSetting{T}"/> abstract implementation
+/// </summary>
+/// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSettings<T> : IDeviceSetting<T>{
     public virtual ICommand<T>? ReadCommand { get; set; }
     public virtual ICommand<T>? WriteCommand { get; set; }

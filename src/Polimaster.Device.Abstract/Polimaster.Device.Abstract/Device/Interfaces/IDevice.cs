@@ -9,6 +9,10 @@ using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Interfaces;
 
+
+/// <summary>
+/// Device with identifier
+/// </summary>
 public interface IDevice : IDisposable {
     
     /// <summary>
@@ -20,23 +24,24 @@ public interface IDevice : IDisposable {
 /// <summary>
 /// Device base
 /// </summary>
-public interface IDevice<TData> : IDevice {
+/// <typeparam name="T">Data type for <see cref="ITransport{T}"/> layer and internal builders</typeparam>
+public interface IDevice<T> : IDevice {
     
     /// <summary>
     /// Instance of see <see cref="ICommandBuilder{TData}"/>
     /// </summary>
-    ICommandBuilder<TData> CommandBuilder { get; }
+    ICommandBuilder<T> CommandBuilder { get; }
     
     /// <summary>
     /// Instance of <see cref="IDeviceSettingBuilder{TData}"/>
     /// </summary>
-    IDeviceSettingBuilder<TData> SettingBuilder { get; }
+    IDeviceSettingBuilder<T> SettingBuilder { get; }
     
     /// <summary>
     /// Transport layer
     /// </summary>
     /// <see cref="ITransport{TData, TConnectionParams}"/>
-    ITransport<TData> Transport { get; }
+    ITransport<T> Transport { get; }
     
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory

@@ -8,8 +8,8 @@ namespace Polimaster.Device.Abstract.Transport.Interfaces;
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
-/// <typeparam name="TData">Data type for device communication</typeparam>
-public interface ITransport<TData> : IDisposable {
+/// <typeparam name="T">Data type for device communication</typeparam>
+public interface ITransport<T> : IDisposable {
     
     string ConnectionId { get; }
     
@@ -19,7 +19,7 @@ public interface ITransport<TData> : IDisposable {
     /// <param name="stream"></param>
     /// <param name="command">Command</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    Task Write(Stream stream, TData command, CancellationToken cancellationToken);
+    Task Write(Stream stream, T command, CancellationToken cancellationToken);
 
     /// <summary>
     /// Read well-formatted command to device
@@ -28,7 +28,7 @@ public interface ITransport<TData> : IDisposable {
     /// <param name="command">Command</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns>Result of command</returns>
-    Task<TData> Read(Stream stream, TData command, CancellationToken cancellationToken);
+    Task<T> Read(Stream stream, T command, CancellationToken cancellationToken);
     
     /// <summary>
     /// Open connection
@@ -43,8 +43,8 @@ public interface ITransport<TData> : IDisposable {
 
 /// <inheritdoc cref="ITransport{TData}"/>
 /// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-/// <typeparam name="TData"><see cref="ITransport{TData}"/></typeparam>
-public interface ITransport<TData, TConnectionParams> : ITransport<TData> {
+/// <typeparam name="T"><inheritdoc cref="ITransport{T}"/></typeparam>
+public interface ITransport<T, TConnectionParams> : ITransport<T> {
     
     IClient<TConnectionParams> Client { get; }
 

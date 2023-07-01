@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <summary>
 /// Device setting base class
 /// </summary>
-/// <typeparam name="T"><see cref="IDeviceSetting{T}.Value"/> type</typeparam>
+/// <inheritdoc cref="IDeviceSetting{T}"/>
 public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
 
     private T? _value;
@@ -75,9 +75,9 @@ public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
     }
     
     /// <summary>
-    /// Validates value while assignment
+    /// Validates value while assignment.
     /// </summary>
-    /// <param name="value"></param>
-    /// <exception cref="SettingValidationException"></exception>
+    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
+    /// <exception cref="SettingValidationException">Throws if validation failed.</exception>
     protected virtual void Validate(T? value) { }
 }
