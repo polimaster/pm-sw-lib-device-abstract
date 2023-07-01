@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Transport.Interfaces;
