@@ -10,6 +10,6 @@ public interface IDeviceSettingBuilder<TData> {
     
     IDeviceSetting<TValue> Build<TValue>();
 
-    IDeviceSetting<TIn> BuildWithProxy<T, TIn, TValue>()
-        where T : class, IDeviceSettingProxy<TIn, TValue>, new();
+    IDeviceSetting<TValue> BuildWithProxy<T, TValue, TProxied>()
+        where T : class, IDeviceSettingProxy<TValue, TProxied>, new();
 }

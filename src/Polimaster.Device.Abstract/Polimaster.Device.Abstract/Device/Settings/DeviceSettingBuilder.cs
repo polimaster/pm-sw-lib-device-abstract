@@ -38,10 +38,10 @@ public class DeviceSettingBuilder<TData> : IDeviceSettingBuilder<TData> {
         return impl;
     }
 
-    public IDeviceSetting<TIn> BuildWithProxy<T, TIn, TValue>()
-        where T : class, IDeviceSettingProxy<TIn, TValue>, new() {
+    public IDeviceSetting<TValue> BuildWithProxy<T, TValue, TProxied>()
+        where T : class, IDeviceSettingProxy<TValue, TProxied>, new() {
         var proxy = Activator.CreateInstance<T>();
-        proxy.ProxiedSetting = Build<TValue>();
+        proxy.ProxiedSetting = Build<TProxied>();
         return proxy;
     }
 
