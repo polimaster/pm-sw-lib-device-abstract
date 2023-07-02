@@ -39,7 +39,7 @@ public class DeviceSettingBuilder<TTransport> : IDeviceSettingBuilder<TTransport
         return impl;
     }
 
-    public IDeviceSetting<TValue> BuildWithProxy<T, TValue, TProxied>()
+    public T BuildWithProxy<T, TValue, TProxied>()
         where T : class, IDeviceSettingProxy<TValue, TProxied>, new() {
         var proxy = Activator.CreateInstance<T>();
         proxy.ProxiedSetting = Build<TProxied>();

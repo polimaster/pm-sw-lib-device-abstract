@@ -49,6 +49,6 @@ public interface IDeviceSettingBuilder<TTransport> {
     /// <typeparam name="TSetting">Proxy <see cref="IDeviceSetting{T}.Value"/> type</typeparam>
     /// <typeparam name="TProxied"><see cref="ICommand{T}.Value"/> type of command</typeparam>
     /// <returns></returns>
-    IDeviceSetting<TSetting> BuildWithProxy<T, TSetting, TProxied>()
+    T BuildWithProxy<T, TSetting, TProxied>()
         where T : class, IDeviceSettingProxy<TSetting, TProxied>, new();
 }

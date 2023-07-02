@@ -33,6 +33,6 @@ public interface ICommandBuilder<TTransport> {
     /// <typeparam name="T">Command implementation</typeparam>
     /// <typeparam name="TCommand">Type of <see cref="ICommand{T}"/></typeparam>
     /// <returns></returns>
-    ICommand<TCommand, TTransport> Build<T, TCommand>(IDevice<TTransport> device)
+    T Build<T, TCommand>(IDevice<TTransport> device)
         where T : class, ICommand<TCommand, TTransport>, new();
 }

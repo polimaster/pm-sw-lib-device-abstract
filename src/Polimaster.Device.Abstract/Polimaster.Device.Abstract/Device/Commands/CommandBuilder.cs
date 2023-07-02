@@ -23,11 +23,11 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
         return this;
     }
 
-    public ICommand<TCommand, TTransport> Build<T, TCommand>(IDevice<TTransport> device)
+    public T Build<T, TCommand>(IDevice<TTransport> device)
         where T : class, ICommand<TCommand, TTransport>, new() {
         var key = GetKey<T>(device);
         var found = _commands.FirstOrDefault(e => e.Key == key);
-        if (found.Key != null) return (ICommand<TCommand, TTransport>)found.Value;
+        if (found.Key != null) return (T)found.Value;
 
         var result = new T {
             Transport = device.Transport,
