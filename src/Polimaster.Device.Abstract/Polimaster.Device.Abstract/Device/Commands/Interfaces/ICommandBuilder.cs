@@ -6,7 +6,8 @@ namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
 
 /// <summary>
-/// Device command builder. Make sure you are creating singleton for each <see cref="ICommandBuilder{TTransport}"/> implementation.
+/// Device command builder. Make sure you are creating singleton for each
+/// <see cref="ICommandBuilder{TTransport}"/> implementation in order to cache commands.
 /// </summary>
 /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
 public interface ICommandBuilder<TTransport> {

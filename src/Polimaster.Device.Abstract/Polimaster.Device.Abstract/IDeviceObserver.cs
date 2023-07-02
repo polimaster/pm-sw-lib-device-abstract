@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract; 
 
+
+/// <summary>
+/// Device observer finds devices on target (USB, IrDA, Bluetooth, etc)
+/// </summary>
 public interface IDeviceObserver {
     
     /// <summary>

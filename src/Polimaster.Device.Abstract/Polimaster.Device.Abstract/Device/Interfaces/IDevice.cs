@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport.Interfaces;
@@ -27,22 +28,24 @@ public interface IDevice : IDisposable {
 /// <typeparam name="T">Data type for <see cref="ITransport{T}"/> layer and internal builders</typeparam>
 public interface IDevice<T> : IDevice {
     
+    public ILogger<IDevice<T>>? Logger { get; set; }
+    
     /// <summary>
     /// Instance of see <see cref="ICommandBuilder{TData}"/>
     /// </summary>
-    ICommandBuilder<T> CommandBuilder { get; }
-    
+    ICommandBuilder<T> CommandBuilder { get; set; }
+
     /// <summary>
     /// Instance of <see cref="IDeviceSettingBuilder{TData}"/>
     /// </summary>
-    IDeviceSettingBuilder<T> SettingBuilder { get; }
-    
+    IDeviceSettingBuilder<T> SettingBuilder { get; set; }
+
     /// <summary>
     /// Transport layer
     /// </summary>
     /// <see cref="ITransport{TData, TConnectionParams}"/>
-    ITransport<T> Transport { get; }
-    
+    ITransport<T> Transport { get; set; }
+
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
@@ -77,6 +80,11 @@ public interface IDevice<T> : IDevice {
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task WriteSettings(CancellationToken cancellationToken = new());
+
+    /// <summary>
+    /// Builds device settings with <see cref="SettingBuilder"/>
+    /// </summary>
+    void BuildSettings();
     
     /// <summary>
     /// Search for <see cref="IDeviceSetting{T}"/> properties in device object

@@ -17,32 +17,18 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 /// <inheritdoc cref="IDevice{T}"/>
 public abstract class ADevice<T> : IDevice<T> {
-    public ICommandBuilder<T> CommandBuilder { get; }
-    public IDeviceSettingBuilder<T> SettingBuilder { get; }
+    public ICommandBuilder<T> CommandBuilder { get; set; } = null!;
+    public IDeviceSettingBuilder<T> SettingBuilder { get; set; } = null!;
+    public ITransport<T> Transport { get; set; } = null!;
 
     public DeviceInfo DeviceInfo { get; set; }
-    public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
-    public ITransport<T> Transport { get; }
+    
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
+    public ILogger<IDevice<T>>? Logger { get; set; }
 
-    protected readonly ILogger<IDevice<T>>? Logger;
-
-    /// <summary>
-    /// Device constructor
-    /// </summary>
-    /// <param name="transport"><see cref="Transport"/></param>
-    /// <param name="commandBuilder"><see cref="CommandBuilder"/></param>
-    /// <param name="settingBuilder"><see cref="SettingBuilder"/></param>
-    /// <param name="loggerFactory"></param>
-    protected ADevice(ITransport<T> transport, ICommandBuilder<T> commandBuilder,
-        IDeviceSettingBuilder<T> settingBuilder, ILoggerFactory? loggerFactory = null) {
-        CommandBuilder = commandBuilder;
-        SettingBuilder = settingBuilder;
-        Logger = loggerFactory?.CreateLogger<ADevice<T>>();
-        Transport = transport;
-    }
-
+    public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
+    
     public void Dispose() {
         IsDisposing?.Invoke();
         Transport.Dispose();
@@ -67,6 +53,8 @@ public abstract class ADevice<T> : IDevice<T> {
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
         }
     }
+
+    public abstract void BuildSettings();
 
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
         var method = info.PropertyType.GetMethod(methodName);

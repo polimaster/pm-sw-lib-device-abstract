@@ -6,14 +6,16 @@ using Polimaster.Device.Abstract.Device.Interfaces;
 
 namespace Polimaster.Device.Abstract;
 
-public abstract class ADeviceManager<T> : IDeviceManager<T> where T: IDevice {
-    protected readonly ILogger<ADeviceManager<T>>? Logger;
+public abstract class ADeviceManager<T, TTransport> : IDeviceManager<T, TTransport> where T: IDevice<TTransport> {
+    protected readonly IDeviceBuilder<TTransport> DeviceBuilder;
+    protected readonly ILogger<ADeviceManager<T, TTransport>>? Logger;
     public event Action<T>? Attached;
     public event Action<T>? Removed;
     public List<T> Devices { get; set; } = new();
 
-    protected ADeviceManager(ILoggerFactory? loggerFactory = null) { 
-        Logger = loggerFactory?.CreateLogger<ADeviceManager<T>>();
+    protected ADeviceManager(IDeviceBuilder<TTransport> deviceBuilder, ILoggerFactory? loggerFactory = null) {
+        DeviceBuilder = deviceBuilder;
+        Logger = loggerFactory?.CreateLogger<ADeviceManager<T, TTransport>>();
         
         Removed += dev => { Logger?.LogInformation("Device removed {D}", dev.Id); };
         Attached += dev => { Logger?.LogInformation("New device attached {D}", dev.Id); };
