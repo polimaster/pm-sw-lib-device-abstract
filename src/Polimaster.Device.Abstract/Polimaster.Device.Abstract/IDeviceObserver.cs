@@ -13,7 +13,7 @@ public interface IDeviceObserver {
     /// Starts finding devices in background
     /// </summary>
     /// <param name="token">Cancellation token</param>
-    /// <param name="timeout">Cycle timeout</param>
+    /// <param name="timeout">Cycle timeout (milliseconds)/></param>
     Task WatchForDevicesStart(CancellationToken token, int timeout = 20);
 
     /// <summary>
