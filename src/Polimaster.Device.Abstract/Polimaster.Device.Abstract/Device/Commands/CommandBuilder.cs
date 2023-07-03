@@ -8,14 +8,13 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 
 
 public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
-    private ILoggerFactory? _loggerFactory;
+    private readonly ILoggerFactory? _loggerFactory;
     private ILogger? _logger;
 
     private readonly Dictionary<string, object> _commands = new();
 
-    public ICommandBuilder<TTransport> With(ILoggerFactory? factory) {
-        _loggerFactory = factory;
-        return this;
+    public CommandBuilder(ILoggerFactory? loggerFactory) {
+        _loggerFactory = loggerFactory;
     }
 
     public ICommandBuilder<TTransport> With(ILogger? logger) {
@@ -31,7 +30,7 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
 
         var result = new T {
             Transport = device.Transport,
-            Logger = _loggerFactory?.CreateLogger<T>() ?? _logger
+            Logger = _logger ?? _loggerFactory?.CreateLogger<T>()
         };
 
         _commands.Add(key, result);
@@ -43,7 +42,6 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
     }
 
     private void CleanUp() {
-        _loggerFactory = null;
         _logger = null;
     }
 

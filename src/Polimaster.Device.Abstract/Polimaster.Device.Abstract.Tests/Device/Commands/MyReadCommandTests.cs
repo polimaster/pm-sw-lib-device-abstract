@@ -31,7 +31,7 @@ public class MyReadCommandTests : Mocks {
     [Fact]
     public async void ShouldCallValueChanged() {
         var transportMock = TransportMock;
-        var readValue = "READ-VALUE";
+        const string readValue = "READ-VALUE";
         transportMock.Setup(x => x.Open()).ReturnsAsync(StreamMock.Object);
         transportMock.Setup(x => x.Read(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(readValue);
@@ -46,7 +46,7 @@ public class MyReadCommandTests : Mocks {
 
         await command.Send();
 
-        Assert.Equal(expected?.Value, readValue);
+        Assert.Equal(readValue, expected?.Value);
         Assert.Equal(expected?.Value, command.Value.Value);
     }
 }

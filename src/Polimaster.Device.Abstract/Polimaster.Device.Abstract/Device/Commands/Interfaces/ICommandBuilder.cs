@@ -11,14 +11,7 @@ namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 /// </summary>
 /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
 public interface ICommandBuilder<TTransport> {
-    
-    /// <summary>
-    /// Add logger factory to command
-    /// </summary>
-    /// <param name="factory">Logger factory</param>
-    /// <returns><see cref="ICommandBuilder{TTransport}"/></returns>
-    ICommandBuilder<TTransport> With(ILoggerFactory? factory);
-    
+
     /// <summary>
     /// Add logger to command
     /// </summary>
