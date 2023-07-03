@@ -53,6 +53,6 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
     }
 
     private static string GetKey<T>(IDevice device) {
-        return $"{device.Id}>{nameof(T)}";
+        return $"{device.Id}>{typeof(T).Name}";
     }
 }
