@@ -12,6 +12,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 public abstract class AReadCommand<T, TTransport> : AWriteCommand<T, TTransport> {
     protected abstract T Parse(TTransport data);
     public override async Task Send(CancellationToken cancellationToken = new()) {
+        if (cancellationToken.IsCancellationRequested) return;
         var stream = await Prepare();
         if (cancellationToken.IsCancellationRequested) return;
         var res = await Transport!.Read(stream, Compile(), cancellationToken);

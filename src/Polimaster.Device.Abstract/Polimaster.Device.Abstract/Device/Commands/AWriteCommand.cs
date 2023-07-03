@@ -42,6 +42,7 @@ public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
     }
     
     public virtual async Task Send(CancellationToken cancellationToken = new()) {
+        if (cancellationToken.IsCancellationRequested) return;
         var stream = await Prepare();
         if (cancellationToken.IsCancellationRequested) return;
         await Transport!.Write(stream, Compile(), cancellationToken);

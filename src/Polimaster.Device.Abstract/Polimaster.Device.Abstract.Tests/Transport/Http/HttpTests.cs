@@ -2,7 +2,7 @@ using Moq;
 using Polimaster.Device.Abstract.Transport.Http;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
-namespace Polimaster.Device.Abstract.Tests;
+namespace Polimaster.Device.Abstract.Tests.Transport.Http;
 
 public class HttpTests {
     private readonly Mock<IClient<HttpConnectionParams>> _clientMock;
@@ -15,7 +15,7 @@ public class HttpTests {
 
     [Fact]
     public async void ConnectionStateTests() {
-        var http = new Http(_clientMock.Object, new HttpConnectionParams { Ip = HOST, Port = PORT });
+        var http = new Abstract.Transport.Http.Http(_clientMock.Object, new HttpConnectionParams { Ip = HOST, Port = PORT });
 
         _clientMock.Setup(s => s.Connected).Returns(false);
 
@@ -34,7 +34,7 @@ public class HttpTests {
     [Fact]
     public async void ShouldOpenConnection() {
         var httpConnectionParams = new HttpConnectionParams { Ip = HOST, Port = PORT };
-        var http = new Http(_clientMock.Object, httpConnectionParams);
+        var http = new Abstract.Transport.Http.Http(_clientMock.Object, httpConnectionParams);
         await http.Open();
 
         _clientMock.Verify(v => v.ConnectAsync(httpConnectionParams));
@@ -42,7 +42,7 @@ public class HttpTests {
 
     [Fact]
     public async void ShouldCloseConnection() {
-        var http = new Http(_clientMock.Object,
+        var http = new Abstract.Transport.Http.Http(_clientMock.Object,
             new HttpConnectionParams { Ip = HOST, Port = PORT });
         await http.Close();
 
@@ -51,7 +51,7 @@ public class HttpTests {
 
     [Fact]
     public void ShouldDisposeTcpClient() {
-        var http = new Http(_clientMock.Object,
+        var http = new Abstract.Transport.Http.Http(_clientMock.Object,
             new HttpConnectionParams { Ip = HOST, Port = PORT });
         http.Dispose();
 
