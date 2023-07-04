@@ -1,5 +1,9 @@
 namespace Polimaster.Device.Abstract.Transport.Interfaces;
 
+
+/// <summary>
+/// Client factory
+/// </summary>
 public interface IClientFactory {
     
     /// <summary>
