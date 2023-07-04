@@ -20,7 +20,9 @@ public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
         get => _readCommand;
         set {
             _readCommand = value;
-            if (_readCommand != null) _readCommand.ValueChanged += v => _value = v;
+            if (_readCommand == null) return;
+            SetValue(_readCommand.Value);
+            _readCommand.ValueChanged += SetValue;
         }
     }
 
@@ -28,7 +30,9 @@ public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
         get => _writeCommand;
         set {
             _writeCommand = value;
-            if (_writeCommand != null) _writeCommand.ValueChanged += v => _value = v;
+            if (_writeCommand == null) return;
+            SetValue(_writeCommand.Value);
+            _writeCommand.ValueChanged += SetValue;
         }
     }
 
@@ -37,41 +41,40 @@ public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
         set {
             try {
                 Validate(value);
+                SetValue(value);
                 IsDirty = true;
-                Exception = null;
-                _value = value;
             } catch (Exception e) {
-                SetError(e);
+                Exception = e;
             }
         }
     }
 
     /// <summary>
-    /// Sets error while device communication
+    /// Set value from internal Read/Write commands
     /// </summary>
-    /// <param name="exception"></param>
-    protected void SetError(Exception exception) {
-        Exception = exception;
+    /// <param name="value"></param>
+    protected void SetValue(T? value) {
         IsDirty = false;
-        Value = default;
+        Exception = null;
+        _value = value;
     }
 
     public override async Task Read(CancellationToken cancellationToken) {
         try {
-            if (ReadCommand != null) {
-                await ReadCommand.Send(cancellationToken);
-            }
-            IsDirty = false;
-        } catch (Exception e) { SetError(e); }
+            if (ReadCommand != null) await ReadCommand.Send(cancellationToken);
+        } catch (Exception e) {
+            SetValue(default);
+            Exception = e;
+        }
     }
 
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsDirty) return;
         try {
-            if (WriteCommand != null) {
-                await WriteCommand.Send(cancellationToken);
-            }
-        } catch (Exception e) { SetError(e); }
+            if (WriteCommand != null) await WriteCommand.Send(cancellationToken);
+        } catch (Exception e) {
+            Exception = e;
+        }
     }
     
     /// <summary>

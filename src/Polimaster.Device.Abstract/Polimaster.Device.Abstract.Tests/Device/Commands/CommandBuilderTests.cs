@@ -28,6 +28,21 @@ public class CommandBuilderTests : Mocks {
         
         Assert.Equal(command1, command2);
     }
-    
-    
+
+    [Fact]
+    public void ShouldBuildNewCommandWhenDeviceIsDisposed() {
+        var transportMock = TransportMock;
+        transportMock.Setup(x => x.ConnectionId).Returns("CONNECTION_ID");
+        var device = new MyDevice {
+            Transport = transportMock.Object,
+        };
+        
+        var command1 = _builder.Build<MyWriteCommand, MyParam>(device);
+        
+        device.Dispose();
+        
+        var command2 = _builder.Build<MyWriteCommand, MyParam>(device);
+        
+        Assert.NotEqual(command1, command2);
+    }
 }
