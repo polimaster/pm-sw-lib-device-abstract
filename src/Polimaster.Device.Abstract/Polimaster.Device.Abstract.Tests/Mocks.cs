@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Tests; 
@@ -15,4 +16,5 @@ public class Mocks {
     
     public static Mock<Stream> StreamMock => new();
     public static Mock<ICommand<string, string>> CommandMock => new();
+    public static Mock<IDeviceSetting<string>> SettingMockMock => new();
 }
