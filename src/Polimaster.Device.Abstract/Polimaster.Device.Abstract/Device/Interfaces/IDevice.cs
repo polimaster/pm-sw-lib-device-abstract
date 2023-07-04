@@ -54,7 +54,7 @@ public interface IDevice<T> : IDevice {
     /// <summary>
     /// Device information data
     /// </summary>
-    DeviceInfo DeviceInfo { get; protected set; }
+    DeviceInfo DeviceInfo { get; }
 
     /// <summary>
     /// Read device information

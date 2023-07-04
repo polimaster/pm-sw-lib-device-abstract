@@ -21,7 +21,7 @@ public abstract class ADevice<T> : IDevice<T> {
     public IDeviceSettingBuilder<T> SettingBuilder { get; set; } = null!;
     public ITransport<T> Transport { get; set; } = null!;
 
-    public DeviceInfo DeviceInfo { get; set; }
+    public DeviceInfo DeviceInfo { get; protected set; }
     
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
@@ -37,7 +37,6 @@ public abstract class ADevice<T> : IDevice<T> {
     public async Task ReadSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
-        if (cancellationToken.IsCancellationRequested) return;
         foreach (var info in ds) {
             if (cancellationToken.IsCancellationRequested) return;
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read), cancellationToken);
@@ -47,7 +46,6 @@ public abstract class ADevice<T> : IDevice<T> {
     public async Task WriteSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
-        if (cancellationToken.IsCancellationRequested) return;
         foreach (var info in ds) {
             if (cancellationToken.IsCancellationRequested) return;
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);

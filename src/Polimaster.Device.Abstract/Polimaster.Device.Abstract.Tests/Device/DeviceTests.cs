@@ -1,52 +1,46 @@
-// using System.IO;
-// using System.Threading;
-// using Moq;
-// using Polimaster.Device.Abstract.Tests.Device.Commands;
-// using Polimaster.Device.Abstract.Transport.Interfaces;
-//
-// namespace Polimaster.Device.Abstract.Tests.Device;
-//
-// public class DeviceTests {
-//     private readonly Mock<ITransport<string>> _transportMock;
-//
-//     public DeviceTests() {
-//         _transportMock = new Mock<ITransport<string>>();
-//         var stream = new Mock<Stream>();
-//         _transportMock.Setup(x => x.Open()).ReturnsAsync(stream.Object);
-//     }
-//
-//     [Fact]
-//     public async void ShouldWrite() {
-//         var myCommand = new MyWriteCommand {
-//             Param = new MyParam { CommandPid = 0, Value = "write test" },
-//             Transport = _transportMock.Object
-//         };
-//         
-//         // simulate compilation
-//         var compiled = $"{myCommand.Param?.CommandPid} : {myCommand.Param?.Value}";
-//
-//         await myCommand.Send();
-//
-//         _transportMock.Verify(v => v.Write(It.IsAny<Stream>(), compiled, CancellationToken.None));
-//     }
-//
-//     [Fact]
-//     public async void ShouldRead() {
-//
-//         var myCommand = new MyResultCommand {
-//             Param = new MyParam { CommandPid = 0, Value = "read test" },
-//             Transport = _transportMock.Object
-//         };
-//         
-//         // simulate compilation
-//         var compiled = $"{myCommand.Param?.CommandPid} : {myCommand.Param?.Value}";
-//
-//         _transportMock.Setup(x => x.Read(It.IsAny<Stream>(), compiled, CancellationToken.None)).ReturnsAsync(compiled);
-//         
-//         await myCommand.Send();
-//         var res = myCommand.Value;
-//
-//         _transportMock.Verify(v => v.Read(It.IsAny<Stream>(), compiled, CancellationToken.None));
-//         Assert.Equal(compiled, res);
-//     }
-// }
+using System.Linq;
+using System.Threading;
+
+namespace Polimaster.Device.Abstract.Tests.Device;
+
+public class DeviceTests : Mocks {
+
+    [Fact]
+    public void ShouldReturnProperties() {
+
+        var device = new MyDevice();
+        var settings = device.GetDeviceSettingsProperties();
+        
+        Assert.True(settings.Any());
+    }
+
+    [Fact]
+    public async void ShouldCallReadOnSetting() {
+        
+        var settingMock = SettingMockMock;
+        var device = new MyDevice {
+            TestSetting = settingMock.Object
+        };
+
+        var token = new CancellationToken();
+        await device.ReadSettings(token);
+        
+        settingMock.Verify(x => x.Read(token));
+
+    }
+    
+    [Fact]
+    public async void ShouldCallWriteOnSetting() {
+        
+        var settingMock = SettingMockMock;
+        var device = new MyDevice {
+            TestSetting = settingMock.Object
+        };
+
+        var token = new CancellationToken();
+        await device.WriteSettings(token);
+        
+        settingMock.Verify(x => x.CommitChanges(token));
+
+    }
+}
