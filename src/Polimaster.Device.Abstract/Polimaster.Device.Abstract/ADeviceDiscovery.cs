@@ -13,5 +13,5 @@ public abstract class ADeviceDiscovery<TData, TConnectionParams> : IDeviceDiscov
         LoggerFactory = loggerFactory;
     }
 
-    public abstract IEnumerable<ITransport<TData, TConnectionParams>> Discover();
+    public abstract IEnumerable<ITransport<TData, TConnectionParams>> Search();
 }
