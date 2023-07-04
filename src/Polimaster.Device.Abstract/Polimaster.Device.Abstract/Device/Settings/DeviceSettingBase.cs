@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device setting base class
 /// </summary>
 /// <inheritdoc cref="IDeviceSetting{T}"/>
-public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
+public class DeviceSettingBase<T> : ADeviceSettings<T> {
 
     private T? _value;
     private ICommand<T>? _readCommand;
@@ -69,7 +69,7 @@ public class DeviceSettingBase<T> : ADeviceSettings<T>, IDeviceSetting<T> {
     }
 
     public override async Task CommitChanges(CancellationToken cancellationToken) {
-        if (!IsDirty) return;
+        if (!IsDirty || !IsValid) return;
         try {
             if (WriteCommand != null) await WriteCommand.Send(cancellationToken);
         } catch (Exception e) {

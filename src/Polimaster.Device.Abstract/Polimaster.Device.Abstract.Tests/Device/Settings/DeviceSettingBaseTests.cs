@@ -1,8 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Moq;
-using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Device.Settings; 
 
@@ -11,7 +11,7 @@ public class DeviceSettingBaseTests : Mocks {
     [Fact]
     public async void ShouldSetDirtyAndDoNotCallWriteCommandSendUntilValueChanged() {
         var commandMock = CommandMock;
-        var setting = new DeviceSettingBase<string> {
+        var setting = new MyDeviceSetting {
             WriteCommand = commandMock.Object
         };
 
@@ -32,7 +32,7 @@ public class DeviceSettingBaseTests : Mocks {
         var ex = new Exception();
         commandMock.Setup(x => x.Send(It.IsAny<CancellationToken>())).ThrowsAsync(ex);
         
-        var setting = new DeviceSettingBase<string> {
+        var setting = new MyDeviceSetting {
             ReadCommand = commandMock.Object
         };
         
@@ -49,7 +49,7 @@ public class DeviceSettingBaseTests : Mocks {
         var ex = new Exception();
         commandMock.Setup(x => x.Send(It.IsAny<CancellationToken>())).ThrowsAsync(ex);
         
-        var setting = new DeviceSettingBase<string> {
+        var setting = new MyDeviceSetting {
             WriteCommand = commandMock.Object,
             Value = "value"
         };
@@ -68,7 +68,7 @@ public class DeviceSettingBaseTests : Mocks {
         var readCommandMock = CommandMock;
         readCommandMock.Setup(x => x.Value).Returns(commandValue);
 
-        var setting = new DeviceSettingBase<string> {
+        var setting = new MyDeviceSetting {
             ReadCommand = readCommandMock.Object
         };
 
@@ -89,7 +89,7 @@ public class DeviceSettingBaseTests : Mocks {
             Transport = transportMock.Object
         };
 
-        var setting = new DeviceSettingBase<string> {
+        var setting = new MyDeviceSetting {
             ReadCommand = readCommand
         };
         
@@ -105,7 +105,7 @@ public class DeviceSettingBaseTests : Mocks {
         const string value = "SETTING_VALUE";
         var writeCommandMock = CommandMock;
 
-        var setting = new DeviceSettingBase<string> {
+        var setting = new MyDeviceSetting {
             WriteCommand = writeCommandMock.Object,
             Value = value
         };
@@ -114,5 +114,22 @@ public class DeviceSettingBaseTests : Mocks {
         
         writeCommandMock.Verify(x => x.Send(It.IsAny<CancellationToken>()));
     }
-    
+
+    [Fact]
+    public async void ShouldCheckValidation() {
+        const string value = "SETTING_VALUE";
+        var writeCommandMock = CommandMock;
+
+        var setting = new MyDeviceSettingValidatable {
+            WriteCommand = writeCommandMock.Object,
+            Value = value
+        };
+        
+        Assert.False(setting.IsValid);
+        Assert.True(setting.ValidationErrors?.Any());
+        
+        await setting.CommitChanges(CancellationToken.None);
+        
+        writeCommandMock.Verify(x => x.Send(It.IsAny<CancellationToken>()), Times.Never);
+    }
 }

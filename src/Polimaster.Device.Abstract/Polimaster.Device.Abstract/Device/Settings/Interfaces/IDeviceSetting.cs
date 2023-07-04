@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
@@ -32,10 +33,20 @@ public interface IDeviceSetting<T> {
     bool IsDirty { get; }
     
     /// <summary>
+    /// Indicates if <see cref="Value"/> valid
+    /// </summary>
+    bool IsValid { get; }
+    
+    /// <summary>
     /// Check if <see cref="Exception"/> is not null while <see cref="Read"/> or <see cref="CommitChanges"/> operations
     /// </summary>
     bool IsError { get; }
     
+    /// <summary>
+    /// <see cref="Value"/> validation errors
+    /// </summary>
+    IEnumerable<SettingValidationException>? ValidationErrors { get; }
+
     /// <summary>
     /// Error while <see cref="Read"/> or <see cref="CommitChanges"/> operations
     /// </summary>
