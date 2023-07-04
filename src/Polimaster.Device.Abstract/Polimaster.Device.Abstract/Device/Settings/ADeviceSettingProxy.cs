@@ -12,12 +12,12 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettings<T>, IDe
     public override T? Value {
         get => ProxiedSetting != null ? FromProxied(ProxiedSetting.Value) : default;
         set {
-            if (ProxiedSetting != null) ProxiedSetting.Value = FromCommand(value);
+            if (ProxiedSetting != null) ProxiedSetting.Value = ToProxied(value);
         }
     }
 
-    public abstract T FromProxied(TProxied? value);
-    public abstract TProxied FromCommand(T? value);
+    public abstract T? FromProxied(TProxied? value);
+    public abstract TProxied? ToProxied(T? value);
 
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (ProxiedSetting != null) await ProxiedSetting.CommitChanges(cancellationToken);

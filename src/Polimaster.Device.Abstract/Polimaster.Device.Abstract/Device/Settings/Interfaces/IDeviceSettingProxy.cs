@@ -19,12 +19,12 @@ public interface IDeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     /// </summary>
     /// <param name="value"><see cref="ProxiedSetting"/> value</param>
     /// <returns>Result of conversion</returns>
-    T FromProxied(TProxied? value);
+    T? FromProxied(TProxied? value);
     
     /// <summary>
     /// Converts <see cref="IDeviceSetting{T}.Value"/> to <see cref="ProxiedSetting"/> value
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     /// <returns>Result of conversion</returns>
-    TProxied FromCommand(T? value);
+    TProxied? ToProxied(T? value);
 }

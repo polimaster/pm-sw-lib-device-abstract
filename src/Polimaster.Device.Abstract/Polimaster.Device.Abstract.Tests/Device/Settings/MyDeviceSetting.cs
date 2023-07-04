@@ -23,3 +23,13 @@ public class MyDeviceSettingValidatable : MyDeviceSetting {
         ValidationErrors = null;
     }
 }
+
+public class MyDeviceSettingProxy : ADeviceSettingProxy<string, string> {
+    public override string? FromProxied(string? value) {
+        return value;
+    }
+
+    public override string? ToProxied(string? value) {
+        return value;
+    }
+}
