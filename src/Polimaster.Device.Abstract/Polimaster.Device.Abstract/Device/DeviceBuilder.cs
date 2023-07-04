@@ -10,15 +10,15 @@ namespace Polimaster.Device.Abstract.Device;
 /// <inheritdoc cref="IDeviceBuilder{TTransport}"/>
 public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
-    private readonly ICommandBuilder<TTransport>? _commandBuilder;
-    private readonly IDeviceSettingBuilder<TTransport>? _settingsBuilder;
     private ITransport<TTransport>? _transport;
+    private readonly ICommandBuilder<TTransport> _commandBuilder;
+    private readonly IDeviceSettingBuilder<TTransport> _settingsBuilder;
 
-    public DeviceBuilder(ILoggerFactory? loggerFactory, ICommandBuilder<TTransport>? commandBuilder,
-        IDeviceSettingBuilder<TTransport>? settingsBuilder) {
-        _loggerFactory = loggerFactory;
+    public DeviceBuilder(ICommandBuilder<TTransport> commandBuilder,
+        IDeviceSettingBuilder<TTransport> settingsBuilder, ILoggerFactory? loggerFactory = null) {
         _commandBuilder = commandBuilder;
         _settingsBuilder = settingsBuilder;
+        _loggerFactory = loggerFactory;
     }
 
     public IDeviceBuilder<TTransport> With(ITransport<TTransport> transport) {
@@ -27,9 +27,7 @@ public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
     }
 
     public T Build<T>() where T : class, IDevice<TTransport>, new() {
-        if (_commandBuilder == null) throw new ArgumentException("Cant build device without command builder");
-        if (_settingsBuilder == null) throw new ArgumentException("Cant build device without settings builder");
-        if (_transport == null) throw new ArgumentException("Cant build device without transport layer");
+        if (_transport == null) throw new DeviceException("Cant build device without transport layer");
 
         var device = new T {
             Transport = _transport,

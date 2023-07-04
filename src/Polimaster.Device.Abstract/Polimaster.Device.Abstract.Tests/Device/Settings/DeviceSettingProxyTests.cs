@@ -10,7 +10,7 @@ public class DeviceSettingProxyTests : Mocks {
 
         const string value = "SETTING_VALUE";
         
-        var settingMock = SettingMockMock;
+        var settingMock = SettingMock;
         settingMock.Setup(x => x.Value).Returns(value);
 
         var proxy = new MyDeviceSettingProxy {
@@ -28,7 +28,7 @@ public class DeviceSettingProxyTests : Mocks {
 
     [Fact]
     public async void ShouldCallReadOfProxied() {
-        var settingMock = SettingMockMock;
+        var settingMock = SettingMock;
 
         var proxy = new MyDeviceSettingProxy {
             ProxiedSetting = settingMock.Object
@@ -41,7 +41,7 @@ public class DeviceSettingProxyTests : Mocks {
 
     [Fact]
     public async void ShouldCallCommitOfProxied() {
-        var settingMock = SettingMockMock;
+        var settingMock = SettingMock;
 
         var proxy = new MyDeviceSettingProxy {
             ProxiedSetting = settingMock.Object,

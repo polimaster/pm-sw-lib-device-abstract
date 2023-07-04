@@ -17,7 +17,7 @@ public class DeviceTests : Mocks {
     [Fact]
     public async void ShouldCallReadOnSetting() {
         
-        var settingMock = SettingMockMock;
+        var settingMock = SettingMock;
         var device = new MyDevice {
             TestSetting = settingMock.Object
         };
@@ -32,7 +32,7 @@ public class DeviceTests : Mocks {
     [Fact]
     public async void ShouldCallWriteOnSetting() {
         
-        var settingMock = SettingMockMock;
+        var settingMock = SettingMock;
         var device = new MyDevice {
             TestSetting = settingMock.Object
         };

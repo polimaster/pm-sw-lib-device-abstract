@@ -5,3 +5,4 @@ Abstractions library for Polimaster devices. C# implementation for *netstandard.
 # TODO
 
 - complete unit tests
+- write usage wiki

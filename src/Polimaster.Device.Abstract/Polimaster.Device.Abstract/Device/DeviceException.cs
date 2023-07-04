@@ -8,4 +8,7 @@ namespace Polimaster.Device.Abstract.Device;
 public class DeviceException : Exception {
     public DeviceException(Exception exception) : base("Error while device communication", exception) {
     }
+
+    public DeviceException(string message) : base(message) {
+    }
 }

@@ -16,5 +16,8 @@ public class Mocks {
     
     public static Mock<Stream> StreamMock => new();
     public static Mock<ICommand<string, string>> CommandMock => new();
-    public static Mock<IDeviceSetting<string>> SettingMockMock => new();
+    public static Mock<ICommandBuilder<string>> CommandBuilderMock => new();
+    
+    public static Mock<IDeviceSetting<string>> SettingMock => new();
+    public static Mock<IDeviceSettingBuilder<string>> SettingBuilderMock => new();
 }
