@@ -17,8 +17,6 @@ public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
     public Action<T?>? ValueChanged { get; set; }
     // public ITransport<TTransport>? Transport { get; set; }
     public IDevice<TTransport> Device { get; set; } = null!;
-
-    public ICommandBuilder<TTransport> CommandBuilder { get; set; } = null!;
     public ILogger? Logger { get; set; }
     
     public T? Value { get; set; }

@@ -4,23 +4,23 @@ using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
-/// <inheritdoc cref="IDeviceSettingBuilder{TTransport}"/>
-public class DeviceSettingBuilder<TTransport> : IDeviceSettingBuilder<TTransport> {
+/// <inheritdoc cref="IDeviceSettingBuilder"/>
+public class DeviceSettingBuilder : IDeviceSettingBuilder {
     private object? _readCommand;
     private object? _writeCommand;
     private object? _implementation;
 
-    public IDeviceSettingBuilder<TTransport> WithWriteCommand<TValue>(ICommand<TValue, TTransport> command) {
+    public IDeviceSettingBuilder WithWriteCommand<TValue, TTransport>(ICommand<TValue, TTransport> command) {
         _writeCommand = command;
         return this;
     }
 
-    public IDeviceSettingBuilder<TTransport> WithReadCommand<TValue>(ICommand<TValue, TTransport> command) {
+    public IDeviceSettingBuilder WithReadCommand<TValue, TTransport>(ICommand<TValue, TTransport> command) {
         _readCommand = command;
         return this;
     }
 
-    public IDeviceSettingBuilder<TTransport> WithImplementation<T, TValue>()
+    public IDeviceSettingBuilder WithImplementation<T, TValue>()
         where T : class, IDeviceSetting<TValue>, new() {
         _implementation = Activator.CreateInstance<T>();
         return this;
@@ -29,8 +29,8 @@ public class DeviceSettingBuilder<TTransport> : IDeviceSettingBuilder<TTransport
     public IDeviceSetting<TValue> Build<TValue>() {
         var impl = _implementation as IDeviceSetting<TValue> ?? new DeviceSettingBase<TValue>();
 
-        var readCommand = _readCommand as ICommand<TValue, TTransport>;
-        var writeCommand = _writeCommand as ICommand<TValue, TTransport>;
+        var readCommand = _readCommand as ICommand<TValue>;
+        var writeCommand = _writeCommand as ICommand<TValue>;
 
         impl.ReadCommand = readCommand;
         impl.WriteCommand = writeCommand;

@@ -18,7 +18,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// <inheritdoc cref="IDevice{T}"/>
 public abstract class ADevice<T> : IDevice<T> {
     public ICommandBuilder<T> CommandBuilder { get; set; } = null!;
-    public IDeviceSettingBuilder<T> SettingBuilder { get; set; } = null!;
+    public IDeviceSettingBuilder SettingBuilder { get; set; } = null!;
     public ITransport<T> Transport { get; set; } = null!;
 
     public DeviceInfo DeviceInfo { get; protected set; }

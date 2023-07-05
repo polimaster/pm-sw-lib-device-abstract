@@ -36,9 +36,9 @@ public interface IDevice<T> : IDevice {
     ICommandBuilder<T> CommandBuilder { get; set; }
 
     /// <summary>
-    /// Instance of <see cref="IDeviceSettingBuilder{TData}"/>
+    /// Instance of <see cref="IDeviceSettingBuilder"/>
     /// </summary>
-    IDeviceSettingBuilder<T> SettingBuilder { get; set; }
+    IDeviceSettingBuilder SettingBuilder { get; set; }
 
     /// <summary>
     /// Transport layer

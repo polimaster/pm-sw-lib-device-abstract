@@ -11,10 +11,10 @@ public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
     private ITransport<TTransport>? _transport;
     private readonly ICommandBuilder _commandBuilder;
-    private readonly IDeviceSettingBuilder<TTransport> _settingsBuilder;
+    private readonly IDeviceSettingBuilder _settingsBuilder;
 
-    public DeviceBuilder(ICommandBuilder commandBuilder,
-        IDeviceSettingBuilder<TTransport> settingsBuilder, ILoggerFactory? loggerFactory = null) {
+    public DeviceBuilder(ICommandBuilder commandBuilder, IDeviceSettingBuilder settingsBuilder,
+        ILoggerFactory? loggerFactory = null) {
         _commandBuilder = commandBuilder;
         _settingsBuilder = settingsBuilder;
         _loggerFactory = loggerFactory;
@@ -34,7 +34,6 @@ public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
             Logger = _loggerFactory?.CreateLogger<IDevice<TTransport>>()
         };
         device.CommandBuilder = _commandBuilder.Create(device);
-        
         device.BuildSettings();
 
         CleanUp();
