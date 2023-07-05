@@ -20,8 +20,7 @@ public interface ICommandBuilder {
 
 
 /// <summary>
-/// Device command builder. Make sure you are creating singleton for each
-/// <see cref="ICommandBuilder{TTransport}"/> implementation in order to cache commands.
+/// Device command builder.
 /// </summary>
 /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
 public interface ICommandBuilder<TTransport> {
