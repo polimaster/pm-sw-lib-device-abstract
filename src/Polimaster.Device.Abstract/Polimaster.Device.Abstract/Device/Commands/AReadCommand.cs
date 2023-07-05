@@ -15,7 +15,7 @@ public abstract class AReadCommand<T, TTransport> : AWriteCommand<T, TTransport>
         if (cancellationToken.IsCancellationRequested) return;
         var stream = await Prepare();
         if (cancellationToken.IsCancellationRequested) return;
-        var res = await Transport!.Read(stream, Compile(), cancellationToken);
+        var res = await Device.Transport.Read(stream, Compile(), cancellationToken);
         Value = Parse(res);
         ValueChanged?.Invoke(Value);
     }

@@ -30,7 +30,6 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
 
         var result = new T {
             Device = device,
-            Transport = device.Transport,
             Logger = _logger ?? _loggerFactory?.CreateLogger<T>(),
             CommandBuilder = this
         };

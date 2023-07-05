@@ -14,7 +14,7 @@ public class CommandBuilderTests : Mocks {
         
         var command = _builder.Build<MyWriteCommand, MyParam>(deviceMock.Object);
         
-        Assert.Equal(transportMock.Object, command.Transport);
+        Assert.Equal(transportMock.Object, command.Device.Transport);
         Assert.NotNull(command.Logger);
     }
 

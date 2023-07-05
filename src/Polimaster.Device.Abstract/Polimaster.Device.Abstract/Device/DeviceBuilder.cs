@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Interfaces;

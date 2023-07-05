@@ -40,11 +40,6 @@ public interface ICommand<T> {
 public interface ICommand<T, TTransport> : ICommand<T> {
 
     /// <summary>
-    /// Command transport
-    /// </summary>
-    ITransport<TTransport>? Transport { get; set; }
-    
-    /// <summary>
     /// Device command belongs to
     /// </summary>
     IDevice<TTransport> Device { get; set; }

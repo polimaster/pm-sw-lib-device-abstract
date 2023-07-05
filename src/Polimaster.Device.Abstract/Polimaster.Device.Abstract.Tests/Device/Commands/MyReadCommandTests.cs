@@ -20,7 +20,7 @@ public class MyReadCommandTests : Mocks {
         transportMock.Setup(x => x.Open()).ReturnsAsync(StreamMock.Object);
 
         var command = new MyReadCommand {
-            Transport = transportMock.Object
+            Device = new MyDevice { Transport = transportMock.Object }
         };
 
         await command.Send(token);
@@ -37,7 +37,7 @@ public class MyReadCommandTests : Mocks {
             .ReturnsAsync(readValue);
 
         var command = new MyReadCommand {
-            Transport = transportMock.Object,
+            Device = new MyDevice { Transport = transportMock.Object },
             Value = new MyParam { CommandPid = 1 }
         };
 

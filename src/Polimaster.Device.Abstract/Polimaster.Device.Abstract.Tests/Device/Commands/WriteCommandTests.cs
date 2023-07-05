@@ -22,7 +22,7 @@ public class WriteCommandTests : Mocks {
         transportMock.Setup( x => x.Open()).ReturnsAsync(StreamMock.Object);
         
         var command = new MyWriteCommand {
-            Transport = transportMock.Object
+            Device = new MyDevice { Transport = transportMock.Object }
         };
 
         await command.Send(token);
@@ -36,7 +36,7 @@ public class WriteCommandTests : Mocks {
         transportMock.Setup( x => x.Open()).ReturnsAsync(StreamMock.Object);
         
         var command = new MyWriteCommand {
-            Transport = transportMock.Object,
+            Device = new MyDevice { Transport = transportMock.Object },
             Value = new MyParam { CommandPid = 1, Value = "test"}
         };
 
@@ -55,7 +55,7 @@ public class WriteCommandTests : Mocks {
         transportMock.Setup( x => x.Open()).ReturnsAsync(StreamMock.Object);
         
         var command = new MyWriteCommand {
-            Transport = transportMock.Object,
+            Device = new MyDevice { Transport = transportMock.Object },
             Value = new MyParam { CommandPid = 1, Value = "test"}
         };
         

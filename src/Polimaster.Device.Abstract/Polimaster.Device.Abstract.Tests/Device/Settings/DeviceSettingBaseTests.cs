@@ -86,7 +86,7 @@ public class DeviceSettingBaseTests : Mocks {
         transportMock.Setup(x => x.Read(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(commandValue);
         var readCommand = new MyResultCommand {
-            Transport = transportMock.Object
+            Device = new MyDevice { Transport = transportMock.Object }
         };
 
         var setting = new MyDeviceSetting {

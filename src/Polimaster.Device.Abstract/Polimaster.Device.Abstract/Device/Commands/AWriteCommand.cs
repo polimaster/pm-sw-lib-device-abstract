@@ -15,7 +15,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <inheritdoc cref="ICommand{T,TTransport}"/>
 public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
     public Action<T?>? ValueChanged { get; set; }
-    public ITransport<TTransport>? Transport { get; set; }
+    // public ITransport<TTransport>? Transport { get; set; }
     public IDevice<TTransport> Device { get; set; } = null!;
 
     public ICommandBuilder<TTransport> CommandBuilder { get; set; } = null!;
@@ -36,10 +36,10 @@ public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
     protected virtual void Validate(){}
 
     protected async Task<Stream> Prepare() {
-        if (Transport == null) throw new NullReferenceException(
+        if (Device.Transport == null) throw new NullReferenceException(
             $"Transport for {GetType().Name} is null. Consider using {nameof(ICommandBuilder<TTransport>)} while creating commands.");
         Validate();
-        var stream = await Transport!.Open();
+        var stream = await Device.Transport.Open();
         if (stream == null) throw new NullReferenceException("Transport stream is null");
         Logger?.LogDebug("Executing command {C}", GetType().Name);
         return stream;
@@ -49,7 +49,7 @@ public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
         if (cancellationToken.IsCancellationRequested) return;
         var stream = await Prepare();
         if (cancellationToken.IsCancellationRequested) return;
-        await Transport!.Write(stream, Compile(), cancellationToken);
+        await Device.Transport.Write(stream, Compile(), cancellationToken);
         ValueChanged?.Invoke(Value);
     }
 }

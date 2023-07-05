@@ -1,4 +1,3 @@
-using System;
 using Polimaster.Device.Abstract.Device;
 
 namespace Polimaster.Device.Abstract.Tests.Device; 
@@ -41,7 +40,7 @@ public class DeviceBuilderTests : Mocks {
 
         try {
             device = builder.Build<MyDevice>();    
-        } catch (DeviceException e) {
+        } catch (DeviceException) {
             
         }
         
