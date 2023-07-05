@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 public class CommandBuilder : ICommandBuilder {
     
     private readonly ILoggerFactory? _loggerFactory;
-    public CommandBuilder(ILoggerFactory? loggerFactory) {
+    public CommandBuilder(ILoggerFactory? loggerFactory = null) {
         _loggerFactory = loggerFactory;
     }
     
@@ -25,7 +25,7 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
     private ILogger? _logger;
 
-    public CommandBuilder(ILoggerFactory? loggerFactory) {
+    public CommandBuilder(ILoggerFactory? loggerFactory = null) {
         _loggerFactory = loggerFactory;
     }
 
