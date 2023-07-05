@@ -10,10 +10,10 @@ namespace Polimaster.Device.Abstract.Device;
 public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
     private ITransport<TTransport>? _transport;
-    private readonly ICommandBuilder<TTransport> _commandBuilder;
+    private readonly ICommandBuilder _commandBuilder;
     private readonly IDeviceSettingBuilder<TTransport> _settingsBuilder;
 
-    public DeviceBuilder(ICommandBuilder<TTransport> commandBuilder,
+    public DeviceBuilder(ICommandBuilder commandBuilder,
         IDeviceSettingBuilder<TTransport> settingsBuilder, ILoggerFactory? loggerFactory = null) {
         _commandBuilder = commandBuilder;
         _settingsBuilder = settingsBuilder;
@@ -30,10 +30,11 @@ public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
 
         var device = new T {
             Transport = _transport,
-            CommandBuilder = _commandBuilder,
             SettingBuilder = _settingsBuilder,
             Logger = _loggerFactory?.CreateLogger<IDevice<TTransport>>()
         };
+        device.CommandBuilder = _commandBuilder.Create(device);
+        
         device.BuildSettings();
 
         CleanUp();

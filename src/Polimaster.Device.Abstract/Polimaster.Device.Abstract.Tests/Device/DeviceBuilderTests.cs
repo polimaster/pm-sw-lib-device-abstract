@@ -1,4 +1,5 @@
 using Polimaster.Device.Abstract.Device;
+using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Tests.Device; 
 
@@ -6,16 +7,19 @@ public class DeviceBuilderTests : Mocks {
 
     [Fact]
     public void ShouldBuildDeviceAndTrackTransport() {
-
-        var commandBuilderMock = CommandBuilderMock;
+        
         var settingBuilderMock = SettingBuilderMock;
         var transportMock = TransportMock;
-
-        var builder = new DeviceBuilder<string>(commandBuilderMock.Object, settingBuilderMock.Object, LOGGER_FACTORY);
+        
+        var commandBuilder = new CommandBuilder(LOGGER_FACTORY);
+        var builder = new DeviceBuilder<string>(commandBuilder, settingBuilderMock.Object, LOGGER_FACTORY);
 
         var device = builder.With(transportMock.Object).Build<MyDevice>();
+
+        // var commandBuilder = new CommandBuilder<string>(LOGGER_FACTORY) { Device = device };
+        // commandBuilderMock.Setup(x => x.Create(device)).Returns(commandBuilder);
         
-        Assert.Equal(commandBuilderMock.Object, device.CommandBuilder);
+        Assert.NotNull(device.CommandBuilder);
         Assert.Equal(settingBuilderMock.Object, device.SettingBuilder);
         Assert.Equal(transportMock.Object, device.Transport);
         
@@ -31,10 +35,10 @@ public class DeviceBuilderTests : Mocks {
     [Fact]
     public void ShouldNotBuildWithoutTransport() {
         
-        var commandBuilderMock = CommandBuilderMock;
         var settingBuilderMock = SettingBuilderMock;
 
-        var builder = new DeviceBuilder<string>(commandBuilderMock.Object, settingBuilderMock.Object, LOGGER_FACTORY);
+        var commandBuilder = new CommandBuilder(LOGGER_FACTORY);
+        var builder = new DeviceBuilder<string>(commandBuilder, settingBuilderMock.Object, LOGGER_FACTORY);
         
         MyDevice? device = null;
 
