@@ -29,8 +29,10 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
         if (found.Key != null) return (T)found.Value;
 
         var result = new T {
+            Device = device,
             Transport = device.Transport,
-            Logger = _logger ?? _loggerFactory?.CreateLogger<T>()
+            Logger = _logger ?? _loggerFactory?.CreateLogger<T>(),
+            CommandBuilder = this
         };
 
         _commands.Add(key, result);

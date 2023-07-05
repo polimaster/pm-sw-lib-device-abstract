@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Interfaces;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
@@ -15,6 +16,9 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
     public Action<T?>? ValueChanged { get; set; }
     public ITransport<TTransport>? Transport { get; set; }
+    public IDevice<TTransport> Device { get; set; } = null!;
+
+    public ICommandBuilder<TTransport> CommandBuilder { get; set; } = null!;
     public ILogger? Logger { get; set; }
     
     public T? Value { get; set; }

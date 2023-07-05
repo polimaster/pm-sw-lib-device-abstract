@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Interfaces;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
@@ -42,4 +43,14 @@ public interface ICommand<T, TTransport> : ICommand<T> {
     /// Command transport
     /// </summary>
     ITransport<TTransport>? Transport { get; set; }
+    
+    /// <summary>
+    /// Device command belongs to
+    /// </summary>
+    IDevice<TTransport> Device { get; set; }
+    
+    /// <summary>
+    /// Underlying command builder in case if command should have underlying commands to execute.
+    /// </summary>
+    ICommandBuilder<TTransport> CommandBuilder { get; set; }
 }
