@@ -11,22 +11,12 @@ public class CommandBuilderTests : Mocks {
         var deviceMock = DeviceMock;
         var transportMock = TransportMock;
         deviceMock.Setup(x => x.Transport).Returns(transportMock.Object);
-        
-        var command = _builder.Build<MyWriteCommand, MyParam>(deviceMock.Object);
+
+        _builder.Device = deviceMock.Object;
+        var command = _builder.Build<MyWriteCommand, MyParam>();
         
         Assert.Equal(transportMock.Object, command.Device.Transport);
         Assert.NotNull(command.Logger);
-    }
-
-    [Fact]
-    public void ShouldCacheIdenticalCommands() {
-        var deviceMock = DeviceMock;
-        deviceMock.Setup(x => x.Id).Returns("DEVICE_ID");
-        
-        var command1 = _builder.Build<MyWriteCommand, MyParam>(deviceMock.Object);
-        var command2 = _builder.Build<MyWriteCommand, MyParam>(deviceMock.Object);
-        
-        Assert.Equal(command1, command2);
     }
 
     [Fact]
@@ -36,12 +26,13 @@ public class CommandBuilderTests : Mocks {
         var device = new MyDevice {
             Transport = transportMock.Object,
         };
-        
-        var command1 = _builder.Build<MyWriteCommand, MyParam>(device);
+
+        _builder.Device = device;
+        var command1 = _builder.Build<MyWriteCommand, MyParam>();
         
         device.Dispose();
         
-        var command2 = _builder.Build<MyWriteCommand, MyParam>(device);
+        var command2 = _builder.Build<MyWriteCommand, MyParam>();
         
         Assert.NotEqual(command1, command2);
     }

@@ -4,6 +4,20 @@ using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
+/// <summary>
+/// Creates <see cref="ICommandBuilder{TTransport}"/> for target device
+/// </summary>
+public interface ICommandBuilder {
+    
+    /// <summary>
+    /// Creates <see cref="ICommandBuilder{TTransport}"/> for target device
+    /// </summary>
+    /// <param name="device">Target <see cref="IDevice{T}"/></param>
+    /// <typeparam name="TTransport">Device <see cref="ITransport{T}"/> type</typeparam>
+    /// <returns><see cref="ICommandBuilder{TTransport}"/></returns>
+    ICommandBuilder<TTransport> Create<TTransport>(IDevice<TTransport> device);
+}
+
 
 /// <summary>
 /// Device command builder. Make sure you are creating singleton for each
@@ -12,6 +26,11 @@ namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
 public interface ICommandBuilder<TTransport> {
 
+    /// <summary>
+    /// Target device
+    /// </summary>
+    IDevice<TTransport>? Device { get; set; }
+    
     /// <summary>
     /// Add logger to command
     /// </summary>
@@ -22,10 +41,9 @@ public interface ICommandBuilder<TTransport> {
     /// <summary>
     /// Build command
     /// </summary>
-    /// <param name="device">Target <see cref="IDevice{T}"/></param>
+    /// <param name="initialValue">Initial value for command</param>
     /// <typeparam name="T">Command implementation</typeparam>
     /// <typeparam name="TCommand">Type of <see cref="ICommand{T}"/></typeparam>
     /// <returns></returns>
-    T Build<T, TCommand>(IDevice<TTransport> device)
-        where T : class, ICommand<TCommand, TTransport>, new();
+    T Build<T, TCommand>(TCommand? initialValue = default) where T : class, ICommand<TCommand, TTransport>, new();
 }

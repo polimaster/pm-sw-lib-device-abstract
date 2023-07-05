@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Interfaces;
@@ -7,35 +6,44 @@ using Polimaster.Device.Abstract.Device.Interfaces;
 namespace Polimaster.Device.Abstract.Device.Commands;
 
 
+/// <inheritdoc cref="ICommandBuilder"/>
+public class CommandBuilder : ICommandBuilder {
+    
+    private readonly ILoggerFactory? _loggerFactory;
+    public CommandBuilder(ILoggerFactory? loggerFactory) {
+        _loggerFactory = loggerFactory;
+    }
+    
+    public ICommandBuilder<TTransport> Create<TTransport>(IDevice<TTransport> device) {
+        return new CommandBuilder<TTransport>(_loggerFactory) {
+            Device = device
+        };
+    }
+}
+
 public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
     private ILogger? _logger;
 
-    private readonly Dictionary<string, object> _commands = new();
-
     public CommandBuilder(ILoggerFactory? loggerFactory) {
         _loggerFactory = loggerFactory;
     }
+
+    public IDevice<TTransport>? Device { get; set; }
 
     public ICommandBuilder<TTransport> With(ILogger? logger) {
         _logger = logger;
         return this;
     }
 
-    public T Build<T, TCommand>(IDevice<TTransport> device)
-        where T : class, ICommand<TCommand, TTransport>, new() {
-        var key = GetKey<T>(device);
-        var found = _commands.FirstOrDefault(e => e.Key == key);
-        if (found.Key != null) return (T)found.Value;
+    public T Build<T, TCommand>(TCommand? initialData = default) where T : class, ICommand<TCommand, TTransport>, new() {
+        if (Device == null) throw new NullReferenceException($"{nameof(Device)} parameter for command is null");
 
         var result = new T {
-            Device = device,
+            Device = Device,
             Logger = _logger ?? _loggerFactory?.CreateLogger<T>(),
-            CommandBuilder = this
+            Value = initialData
         };
-
-        _commands.Add(key, result);
-        device.IsDisposing += () => CleanUpDevice(device);
 
         CleanUp();
 
@@ -44,14 +52,5 @@ public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
 
     private void CleanUp() {
         _logger = null;
-    }
-
-    private void CleanUpDevice(IDevice device) {
-        var found = _commands.Where(e => e.Key.StartsWith($"{device.Id}>"));
-        foreach (var pair in found) _commands.Remove(pair.Key);
-    }
-
-    private static string GetKey<T>(IDevice device) {
-        return $"{device.Id}>{typeof(T).Name}";
     }
 }

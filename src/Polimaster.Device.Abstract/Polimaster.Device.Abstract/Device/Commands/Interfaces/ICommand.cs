@@ -43,9 +43,4 @@ public interface ICommand<T, TTransport> : ICommand<T> {
     /// Device command belongs to
     /// </summary>
     IDevice<TTransport> Device { get; set; }
-    
-    /// <summary>
-    /// Underlying command builder in case if command should have underlying commands to execute.
-    /// </summary>
-    ICommandBuilder<TTransport> CommandBuilder { get; set; }
 }
