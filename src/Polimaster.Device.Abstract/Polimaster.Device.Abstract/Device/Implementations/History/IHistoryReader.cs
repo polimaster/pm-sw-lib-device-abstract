@@ -16,7 +16,7 @@ public interface IHistoryReader<THistory, TTransport> {
     /// <summary>
     /// Occurs when new data got from device
     /// </summary>
-    Action<HistoryChunk<THistory>> HasNext { get; set; }
+    Action<HistoryChunk<THistory>>? HasNext { get; set; }
 
     /// <summary>
     /// Device <see cref="IHistoryReader{THistory,TTransport}"/> belongs to
