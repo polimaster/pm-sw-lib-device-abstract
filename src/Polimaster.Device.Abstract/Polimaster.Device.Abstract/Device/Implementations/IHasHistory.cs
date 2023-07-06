@@ -21,7 +21,7 @@ public interface IHasHistory<THistory> : IHasClock {
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>Array of history records</returns>
-    Task<IEnumerable<THistory>> ReadHistory(CancellationToken cancellationToken = new());
+    Task<IEnumerable<THistory>?> ReadHistory(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Wipe history from device
