@@ -18,5 +18,5 @@ public class Mocks {
     protected static Mock<ICommand<string, string>> CommandMock => new();
 
     protected static Mock<IDeviceSetting<string>> SettingMock => new();
-    protected static Mock<IDeviceSettingBuilder> SettingBuilderMock => new();
+    protected static Mock<ISettingBuilder> SettingBuilderMock => new();
 }

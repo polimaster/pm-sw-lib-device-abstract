@@ -7,15 +7,15 @@ namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 /// <summary>
 /// Device settings builder
 /// </summary>
-public interface IDeviceSettingBuilder {
+public interface ISettingBuilder {
     /// <summary>
     /// Add write command
     /// </summary>
     /// <param name="command"><see cref="ICommand{T, TTransport}"/></param>
     /// <typeparam name="TCommand">Command value type</typeparam>
     /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
-    /// <returns><see cref="IDeviceSettingBuilder"/></returns>
-    IDeviceSettingBuilder WithWriteCommand<TCommand, TTransport>(ICommand<TCommand, TTransport> command);
+    /// <returns><see cref="ISettingBuilder"/></returns>
+    ISettingBuilder WithWriteCommand<TCommand, TTransport>(ICommand<TCommand, TTransport> command);
 
     /// <summary>
     /// Add read command
@@ -23,8 +23,8 @@ public interface IDeviceSettingBuilder {
     /// <param name="command"><see cref="ICommand{T, TTransport}"/></param>
     /// <typeparam name="TCommand">Command value type</typeparam>
     /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
-    /// <returns><see cref="IDeviceSettingBuilder"/></returns>
-    IDeviceSettingBuilder WithReadCommand<TCommand, TTransport>(ICommand<TCommand, TTransport> command);
+    /// <returns><see cref="ISettingBuilder"/></returns>
+    ISettingBuilder WithReadCommand<TCommand, TTransport>(ICommand<TCommand, TTransport> command);
 
     /// <summary>
     /// Define custom <see cref="IDeviceSetting{T}"/> implementation
@@ -32,7 +32,7 @@ public interface IDeviceSettingBuilder {
     /// <typeparam name="T">Implementation type</typeparam>
     /// <typeparam name="TSetting">Implementation <see cref="IDeviceSetting{T}.Value"/> type</typeparam>
     /// <returns></returns>
-    IDeviceSettingBuilder WithImplementation<T, TSetting>() where T : class, IDeviceSetting<TSetting>, new();
+    ISettingBuilder WithImplementation<T, TSetting>() where T : class, IDeviceSetting<TSetting>, new();
     
     /// <summary>
     /// Build setting

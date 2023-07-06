@@ -6,7 +6,7 @@ public class DeviceSettingsBuilderTests : Mocks {
 
     [Fact]
     public void ShouldBuildSettingAndTrackCommandInstances() {
-        var builder = new DeviceSettingBuilder();
+        var builder = new SettingBuilder();
 
         var readCommandMock = CommandMock;
         var writeCommandMock = CommandMock;
@@ -30,7 +30,7 @@ public class DeviceSettingsBuilderTests : Mocks {
 
     [Fact]
     public void ShouldCreateTargetInstance() {
-        var builder = new DeviceSettingBuilder();
+        var builder = new SettingBuilder();
         
         var setting = builder.WithImplementation<MyDeviceSetting, string>().Build<string>();
         
@@ -39,7 +39,7 @@ public class DeviceSettingsBuilderTests : Mocks {
 
     [Fact]
     public void ShouldCreateProxy() {
-        var builder = new DeviceSettingBuilder();
+        var builder = new SettingBuilder();
 
         var setting = builder.BuildWithProxy<MyDeviceSettingProxy, string, string>();
         

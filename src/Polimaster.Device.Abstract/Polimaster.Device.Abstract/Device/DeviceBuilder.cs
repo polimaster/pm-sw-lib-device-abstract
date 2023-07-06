@@ -11,9 +11,9 @@ public class DeviceBuilder<TTransport> : IDeviceBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
     private ITransport<TTransport>? _transport;
     private readonly ICommandBuilder _commandBuilder;
-    private readonly IDeviceSettingBuilder _settingsBuilder;
+    private readonly ISettingBuilder _settingsBuilder;
 
-    public DeviceBuilder(ICommandBuilder commandBuilder, IDeviceSettingBuilder settingsBuilder,
+    public DeviceBuilder(ICommandBuilder commandBuilder, ISettingBuilder settingsBuilder,
         ILoggerFactory? loggerFactory = null) {
         _commandBuilder = commandBuilder;
         _settingsBuilder = settingsBuilder;
