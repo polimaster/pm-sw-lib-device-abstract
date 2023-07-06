@@ -16,5 +16,5 @@ public struct HistoryChunk<THistory> {
     /// <summary>
     /// Retrieved history records
     /// </summary>
-    public IEnumerable<THistory> Records;
+    public IEnumerable<THistory>? Records;
 }
