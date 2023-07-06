@@ -17,4 +17,9 @@ public struct HistoryChunk<THistory> {
     /// Retrieved history records
     /// </summary>
     public IEnumerable<THistory>? Records;
+
+    public HistoryChunk() {
+        Available = null;
+        Completed = false;
+    }
 }
