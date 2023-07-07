@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Interfaces;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
@@ -12,6 +13,11 @@ namespace Polimaster.Device.Abstract.Device.Implementations.History;
 /// <typeparam name="THistory">Type of history record</typeparam>
 /// <typeparam name="TTransport">Data type for <see cref="ITransport{T}"/></typeparam>
 public interface IHistoryReader<THistory, TTransport> {
+    
+    /// <summary>
+    /// Logger
+    /// </summary>
+    ILogger? Logger { get; set; }
 
     /// <summary>
     /// Occurs when new data got from device

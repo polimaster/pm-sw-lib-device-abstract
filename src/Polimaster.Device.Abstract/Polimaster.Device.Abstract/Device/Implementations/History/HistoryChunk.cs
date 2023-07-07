@@ -6,7 +6,7 @@ public struct HistoryChunk<THistory> {
     /// <summary>
     /// History records available in device
     /// </summary>
-    public int? Available;
+    public int? Remaining;
 
     /// <summary>
     /// Indicates if reading process completed
@@ -19,7 +19,7 @@ public struct HistoryChunk<THistory> {
     public IEnumerable<THistory>? Records;
 
     public HistoryChunk() {
-        Available = null;
+        Remaining = null;
         Completed = false;
     }
 }
