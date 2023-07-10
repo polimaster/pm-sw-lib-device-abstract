@@ -12,7 +12,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <see cref="IDeviceSetting{T}"/> abstract implementation
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
-public abstract class ADeviceSettings<T> : IDeviceSetting<T>{
+public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public virtual ICommand<T>? ReadCommand { get; set; }
     public virtual ICommand<T>? WriteCommand { get; set; }
     public virtual T? Value { get; set; }
@@ -31,4 +31,8 @@ public abstract class ADeviceSettings<T> : IDeviceSetting<T>{
     public abstract Task Read(CancellationToken cancellationToken);
 
     public abstract Task CommitChanges(CancellationToken cancellationToken);
+
+    public override string ToString() {
+        return Value?.ToString() ?? string.Empty;
+    }
 }

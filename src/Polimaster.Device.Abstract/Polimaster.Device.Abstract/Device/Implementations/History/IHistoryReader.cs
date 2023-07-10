@@ -35,4 +35,10 @@ public interface IHistoryReader<THistory, TTransport> {
     /// <param name="cancellationToken"></param>
     /// <returns>Array of history records</returns>
     Task Read(CancellationToken cancellationToken = new());
+
+    /// <summary>
+    /// Cancels history reading
+    /// </summary>
+    /// <returns></returns>
+    Task Stop();
 }

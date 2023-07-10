@@ -20,6 +20,13 @@ public interface IDevice : IDisposable {
     /// Unique identifier of device
     /// </summary>
     string Id { get; }
+    
+    public ILogger<IDevice>? Logger { get; set; }
+    
+    /// <summary>
+    /// Indicates device is disconnected and will be removed from memory
+    /// </summary>
+    Action? IsDisposing { get; set; }
 }
 
 /// <summary>
@@ -27,9 +34,7 @@ public interface IDevice : IDisposable {
 /// </summary>
 /// <typeparam name="T">Data type for <see cref="ITransport{T}"/> layer and internal builders</typeparam>
 public interface IDevice<T> : IDevice {
-    
-    public ILogger<IDevice<T>>? Logger { get; set; }
-    
+
     /// <summary>
     /// Instance of see <see cref="ICommandBuilder{TData}"/>
     /// </summary>
@@ -45,11 +50,6 @@ public interface IDevice<T> : IDevice {
     /// </summary>
     /// <see cref="ITransport{TData, TConnectionParams}"/>
     ITransport<T> Transport { get; set; }
-
-    /// <summary>
-    /// Indicates device is disconnected and will be removed from memory
-    /// </summary>
-    Action? IsDisposing { get; set; }
 
     /// <summary>
     /// Device information data

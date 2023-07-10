@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device setting base class
 /// </summary>
 /// <inheritdoc cref="IDeviceSetting{T}"/>
-public class DeviceSettingBase<T> : ADeviceSettings<T> {
+public class DeviceSettingBase<T> : ADeviceSetting<T> {
 
     private T? _value;
     private ICommand<T>? _readCommand;

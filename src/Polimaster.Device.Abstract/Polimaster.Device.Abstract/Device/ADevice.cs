@@ -25,7 +25,7 @@ public abstract class ADevice<T> : IDevice<T> {
     
     public virtual string Id => Transport.ConnectionId;
     public Action? IsDisposing { get; set; }
-    public ILogger<IDevice<T>>? Logger { get; set; }
+    public ILogger<IDevice>? Logger { get; set; }
 
     public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
     

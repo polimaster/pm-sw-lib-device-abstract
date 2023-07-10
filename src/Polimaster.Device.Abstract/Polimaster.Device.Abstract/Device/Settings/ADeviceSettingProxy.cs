@@ -6,7 +6,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 
 
 /// <inheritdoc cref="IDeviceSettingProxy{T,TProxied}"/>
-public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettings<T>, IDeviceSettingProxy<T, TProxied> {
+public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDeviceSettingProxy<T, TProxied> {
     public IDeviceSetting<TProxied>? ProxiedSetting { get; set; }
 
     public override T? Value {
