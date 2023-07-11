@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
@@ -16,7 +17,7 @@ public interface ITransportDiscovery<TData, TConnectionParams> {
     /// Search for available devices
     /// </summary>
     /// <returns>List of devices transport</returns>
-    Task Search();
+    Task Search(CancellationToken token);
 
     /// <summary>
     /// Occurs when device found on interface

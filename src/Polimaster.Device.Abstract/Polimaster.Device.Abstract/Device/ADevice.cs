@@ -73,4 +73,8 @@ public abstract class ADevice<T> : IDevice<T> {
             .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
             .ToList();
     }
+
+    public bool Equals(IDevice other) {
+        return Id == other.Id;
+    }
 }
