@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Interfaces;
 using Polimaster.Device.Abstract.Transport.Interfaces;
 
@@ -15,16 +17,27 @@ public interface IDeviceManager<T, TTransport> : IDisposable where T : IDevice<T
     /// <summary>
     /// Occurs when device attached to computer
     /// </summary>
-    event Action<T>? Attached;
+    Action<T>? Attached { get; set; }
     
     /// <summary>
     /// Occurs when device detached from computer
     /// </summary>
-    event Action<T>? Removed;
-    
-    
+    Action<T>? Removed { get; set; }
+
     /// <summary>
     /// Current connected devices
     /// </summary>
     List<T> Devices { get; set; }
+
+    /// <summary>
+    /// Starts finding devices in background
+    /// </summary>
+    /// <param name="token">Cancellation token</param>
+    /// <param name="timeout">Cycle timeout (milliseconds)/></param>
+    void StartDeviceDiscovery(CancellationToken token, int timeout = 20);
+
+    /// <summary>
+    /// Stops finding devices in background
+    /// </summary>
+    void StopDeviceDiscovery();
 }

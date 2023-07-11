@@ -14,7 +14,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// </summary>
 /// <inheritdoc cref="ICommand{T,TTransport}"/>
 public abstract class AWriteCommand<T, TTransport> : ICommand<T, TTransport> {
-    public Action<T?>? ValueChanged { get; set; }
+    public Action<T?>? ValueChanged  { get; set; }
     // public ITransport<TTransport>? Transport { get; set; }
     public IDevice<TTransport> Device { get; set; } = null!;
     public ILogger? Logger { get; set; }

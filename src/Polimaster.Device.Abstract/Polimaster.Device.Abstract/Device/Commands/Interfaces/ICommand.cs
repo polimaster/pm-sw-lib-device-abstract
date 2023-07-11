@@ -23,7 +23,7 @@ public interface ICommand<T> {
     /// Value of command. Either result of execution or it parameter.
     /// </summary>
     T? Value { get; set; }
-    
+
     Action<T?>? ValueChanged { get; set; }
     
     /// <summary>
