@@ -14,10 +14,10 @@ namespace Polimaster.Device.Abstract;
 public interface ITransportDiscovery<TData, TConnectionParams> {
 
     /// <summary>
-    /// Search for available devices
+    /// Start search for available devices
     /// </summary>
     /// <returns>List of devices transport</returns>
-    Task Search(CancellationToken token);
+    Task Start(CancellationToken token);
 
     /// <summary>
     /// Occurs when device found on interface

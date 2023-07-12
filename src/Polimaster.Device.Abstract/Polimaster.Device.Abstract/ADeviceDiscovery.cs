@@ -16,7 +16,7 @@ public abstract class ATransportDiscovery<TData, TConnectionParams> : ITransport
         LoggerFactory = loggerFactory;
     }
 
-    public abstract Task Search(CancellationToken token = new());
+    public abstract Task Start(CancellationToken token);
 
     public Action<IEnumerable<ITransport<TData, TConnectionParams>>>? Found { get; set; }
     public Action<IEnumerable<ITransport<TData, TConnectionParams>>>? Lost { get; set; }
