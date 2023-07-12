@@ -1,6 +1,6 @@
 using Moq;
+using Polimaster.Device.Abstract.Transport;
 using Polimaster.Device.Abstract.Transport.Http;
-using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Tests.Transport.Http;
 

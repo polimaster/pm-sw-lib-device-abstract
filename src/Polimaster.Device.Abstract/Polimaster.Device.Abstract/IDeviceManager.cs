@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Polimaster.Device.Abstract.Device.Interfaces;
-using Polimaster.Device.Abstract.Transport.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract;
 

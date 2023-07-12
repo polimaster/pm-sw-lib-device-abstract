@@ -4,7 +4,7 @@ using Moq;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Interfaces;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
-using Polimaster.Device.Abstract.Transport.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests; 
 

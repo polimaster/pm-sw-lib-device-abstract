@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Transport;
 

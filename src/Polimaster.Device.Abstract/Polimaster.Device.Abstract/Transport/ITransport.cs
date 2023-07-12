@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Transport.Interfaces;
+namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)

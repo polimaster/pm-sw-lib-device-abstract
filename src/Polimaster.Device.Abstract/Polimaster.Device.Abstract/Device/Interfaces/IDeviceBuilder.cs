@@ -1,4 +1,4 @@
-using Polimaster.Device.Abstract.Transport.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Interfaces; 
 

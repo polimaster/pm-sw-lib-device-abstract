@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport.Interfaces;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 

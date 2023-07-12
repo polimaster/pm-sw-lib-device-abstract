@@ -1,4 +1,4 @@
-namespace Polimaster.Device.Abstract.Transport.Interfaces;
+namespace Polimaster.Device.Abstract.Transport;
 
 
 /// <summary>
