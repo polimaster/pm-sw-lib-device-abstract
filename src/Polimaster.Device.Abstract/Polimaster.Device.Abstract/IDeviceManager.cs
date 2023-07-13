@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Polimaster.Device.Abstract.Device.Interfaces;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract;
 
@@ -10,8 +9,7 @@ namespace Polimaster.Device.Abstract;
 /// Device manager
 /// </summary>
 /// <typeparam name="T">Device type</typeparam>
-/// <typeparam name="TTransport"><see cref="ITransport{T}"/></typeparam>
-public interface IDeviceManager<T, TTransport> : IDisposable where T : IDevice<TTransport> {
+public interface IDeviceManager<T> : IDisposable where T : IDevice {
 
     /// <summary>
     /// Occurs when device attached to computer

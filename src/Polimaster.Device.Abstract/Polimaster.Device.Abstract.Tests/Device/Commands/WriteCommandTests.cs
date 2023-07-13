@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using Moq;
 
@@ -16,24 +15,13 @@ public class WriteCommandTests : Mocks {
     }
 
     [Fact]
-    public async void ShouldCancelSend() {
-        var transportMock = TransportMock;
-        var token = new CancellationToken(true);
-        transportMock.Setup( x => x.Open()).ReturnsAsync(StreamMock.Object);
-        
-        var command = new MyWriteCommand {
-            Device = new MyDevice { Transport = transportMock.Object }
-        };
-
-        await command.Send(token);
-        
-        transportMock.Verify(x => x.Write(It.IsAny<Stream>(), It.IsAny<string>(), token), Times.Never);
-    }
-
-    [Fact]
     public async void ShouldCallValueChanged() {
+        var writerMock = WriterMock;
+        var readerMock = ReaderMock;
+
         var transportMock = TransportMock;
-        transportMock.Setup( x => x.Open()).ReturnsAsync(StreamMock.Object);
+        transportMock.Setup(x => x.GetWriter()).Returns(writerMock.Object);
+        transportMock.Setup(x => x.GetReader()).Returns(readerMock.Object);
         
         var command = new MyWriteCommand {
             Device = new MyDevice { Transport = transportMock.Object },
@@ -49,19 +37,4 @@ public class WriteCommandTests : Mocks {
         
     }
 
-    [Fact]
-    public async void ShouldSendCompiledCommand() {
-        var transportMock = TransportMock;
-        transportMock.Setup( x => x.Open()).ReturnsAsync(StreamMock.Object);
-        
-        var command = new MyWriteCommand {
-            Device = new MyDevice { Transport = transportMock.Object },
-            Value = new MyParam { CommandPid = 1, Value = "test"}
-        };
-        
-        await command.Send();
-        
-        transportMock.Verify(x => x.Write(It.IsAny<Stream>(), command.CompiledCommand, new CancellationToken()));
-    }
-    
 }

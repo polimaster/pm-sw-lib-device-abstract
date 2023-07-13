@@ -15,11 +15,11 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device abstract implementation
 /// </summary>
-/// <inheritdoc cref="IDevice{T}"/>
-public abstract class ADevice<T> : IDevice<T> {
-    public ICommandBuilder<T> CommandBuilder { get; set; } = null!;
+/// <inheritdoc cref="IDevice"/>
+public abstract class ADevice : IDevice {
+    public ICommandBuilder CommandBuilder { get; set; } = null!;
     public ISettingBuilder SettingBuilder { get; set; } = null!;
-    public ITransport<T> Transport { get; set; } = null!;
+    public ITransport Transport { get; set; } = null!;
 
     public DeviceInfo DeviceInfo { get; protected set; }
     

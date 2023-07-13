@@ -4,7 +4,7 @@ namespace Polimaster.Device.Abstract.Tests.Device.Commands;
 
 public class CommandBuilderTests : Mocks {
     
-    private readonly CommandBuilder<string> _builder = new (LOGGER_FACTORY);
+    private readonly CommandBuilder _builder = new (LOGGER_FACTORY);
 
     [Fact]
     public void ShouldBuildCommand() {
@@ -12,7 +12,7 @@ public class CommandBuilderTests : Mocks {
         var transportMock = TransportMock;
         deviceMock.Setup(x => x.Transport).Returns(transportMock.Object);
 
-        _builder.Device = deviceMock.Object;
+        _builder.With(deviceMock.Object);
         var command = _builder.Build<MyWriteCommand, MyParam>();
         
         Assert.Equal(transportMock.Object, command.Device.Transport);
@@ -27,7 +27,7 @@ public class CommandBuilderTests : Mocks {
             Transport = transportMock.Object,
         };
 
-        _builder.Device = device;
+        _builder.With(device);
         var command1 = _builder.Build<MyWriteCommand, MyParam>();
         
         device.Dispose();

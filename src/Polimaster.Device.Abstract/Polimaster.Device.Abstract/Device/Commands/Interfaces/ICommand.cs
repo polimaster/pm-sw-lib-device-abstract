@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Interfaces;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
@@ -30,17 +29,9 @@ public interface ICommand<T> {
     /// Logger
     /// </summary>
     ILogger? Logger { get; set; }
-}
-
-/// <summary>
-/// Device command
-/// </summary>
-/// <typeparam name="TTransport">Data type for <see cref="ITransport{T}"/></typeparam>
-/// <typeparam name="T"><inheritdoc cref="ICommand{TValue}"/></typeparam>
-public interface ICommand<T, TTransport> : ICommand<T> {
-
+    
     /// <summary>
     /// Device command belongs to
     /// </summary>
-    IDevice<TTransport> Device { get; set; }
+    IDevice Device { get; set; }
 }

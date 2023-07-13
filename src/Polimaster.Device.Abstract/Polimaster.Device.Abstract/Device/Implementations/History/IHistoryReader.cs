@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Interfaces;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
@@ -11,8 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Implementations.History;
 /// Device history reader
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
-/// <typeparam name="TTransport">Data type for <see cref="ITransport{T}"/></typeparam>
-public interface IHistoryReader<THistory, TTransport> {
+public interface IHistoryReader<THistory> {
     
     /// <summary>
     /// Logger
@@ -25,9 +23,9 @@ public interface IHistoryReader<THistory, TTransport> {
     Action<HistoryChunk<THistory>>? HasNext  { get; set; }
 
     /// <summary>
-    /// Device <see cref="IHistoryReader{THistory,TTransport}"/> belongs to
+    /// Device <see cref="IHistoryReader{THistory}"/> belongs to
     /// </summary>
-    IDevice<TTransport> Device { get; set; }
+    IDevice Device { get; set; }
 
     /// <summary>
     /// Reads history from device

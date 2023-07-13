@@ -12,7 +12,7 @@ public class DeviceSettingsBuilderTests : Mocks {
         var writeCommandMock = CommandMock;
 
         var setting = builder.WithReadCommand(readCommandMock.Object)
-            .WithWriteCommand(writeCommandMock.Object).Build<string>();
+            .WithWriteCommand(writeCommandMock.Object).Build<MyParam>();
         
         Assert.Equal(readCommandMock.Object, setting.ReadCommand);
         Assert.Equal(writeCommandMock.Object, setting.WriteCommand);
@@ -21,7 +21,7 @@ public class DeviceSettingsBuilderTests : Mocks {
         writeCommandMock = CommandMock;
         
         var setting1 = builder.WithReadCommand(readCommandMock.Object)
-            .WithWriteCommand(writeCommandMock.Object).Build<string>();
+            .WithWriteCommand(writeCommandMock.Object).Build<MyParam>();
         
         Assert.NotEqual(setting.ReadCommand, setting1.ReadCommand);
         Assert.NotEqual(setting.WriteCommand, setting1.WriteCommand);
@@ -32,7 +32,7 @@ public class DeviceSettingsBuilderTests : Mocks {
     public void ShouldCreateTargetInstance() {
         var builder = new SettingBuilder();
         
-        var setting = builder.WithImplementation<MyDeviceSetting, string>().Build<string>();
+        var setting = builder.WithImplementation<MyDeviceSetting, MyParam>().Build<MyParam>();
         
         Assert.True(setting.GetType() == typeof(MyDeviceSetting));
     }

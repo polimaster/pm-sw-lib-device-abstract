@@ -10,12 +10,12 @@ public class SettingBuilder : ISettingBuilder {
     private object? _writeCommand;
     private object? _implementation;
 
-    public ISettingBuilder WithWriteCommand<TValue, TTransport>(ICommand<TValue, TTransport> command) {
+    public ISettingBuilder WithWriteCommand<TValue>(ICommand<TValue> command) {
         _writeCommand = command;
         return this;
     }
 
-    public ISettingBuilder WithReadCommand<TValue, TTransport>(ICommand<TValue, TTransport> command) {
+    public ISettingBuilder WithReadCommand<TValue>(ICommand<TValue> command) {
         _readCommand = command;
         return this;
     }

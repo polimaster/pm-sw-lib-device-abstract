@@ -1,8 +1,8 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Moq;
+using Polimaster.Device.Abstract.Tests.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Tests.Device.Settings; 
 
@@ -19,7 +19,7 @@ public class DeviceSettingBaseTests : Mocks {
         Assert.False(setting.IsDirty);
         commandMock.Verify(x => x.Send(It.IsAny<CancellationToken>()), Times.Never);
 
-        setting.Value = "value";
+        setting.Value = new MyParam { Value = "COMMAND_VALUE" };
         Assert.True(setting.IsDirty);
         
         await setting.CommitChanges(CancellationToken.None);
@@ -51,7 +51,7 @@ public class DeviceSettingBaseTests : Mocks {
         
         var setting = new MyDeviceSetting {
             WriteCommand = commandMock.Object,
-            Value = "value"
+            Value = new MyParam { Value = "COMMAND_VALUE" }
         };
         
         await setting.CommitChanges(CancellationToken.None);
@@ -63,7 +63,7 @@ public class DeviceSettingBaseTests : Mocks {
 
     [Fact]
     public async void ShouldRead() {
-        const string commandValue = "COMMAND_VALUE";
+        var commandValue = new MyParam { Value = "COMMAND_VALUE" };
 
         var readCommandMock = CommandMock;
         readCommandMock.Setup(x => x.Value).Returns(commandValue);
@@ -79,13 +79,16 @@ public class DeviceSettingBaseTests : Mocks {
 
     [Fact]
     public async void ShouldCatchChangedCommandValue() {
-        const string commandValue = "COMMAND_VALUE";
-
+        const string commandValue = "READ-VALUE";
+        var writerMock = WriterMock;
+        var readerMock = ReaderMock;
+        readerMock.Setup(e => e.ReadToEndAsync()).ReturnsAsync(commandValue);
+        
         var transportMock = TransportMock;
-        transportMock.Setup(x => x.Open()).ReturnsAsync(StreamMock.Object);
-        transportMock.Setup(x => x.Read(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(commandValue);
-        var readCommand = new MyResultCommand {
+        transportMock.Setup(x => x.GetWriter()).Returns(writerMock.Object);
+        transportMock.Setup(x => x.GetReader()).Returns(readerMock.Object);
+        
+        var readCommand = new MyReadCommand {
             Device = new MyDevice { Transport = transportMock.Object }
         };
 
@@ -95,14 +98,14 @@ public class DeviceSettingBaseTests : Mocks {
         
         await setting.Read(CancellationToken.None);
         
-        Assert.Equal(commandValue, setting.Value); // check setting value changed on command ValueChanged event
+        Assert.Equal(commandValue, setting.Value?.Value); // check setting value changed on command ValueChanged event
         
     }
     
 
     [Fact]
     public async void ShouldCommit() {
-        const string value = "SETTING_VALUE";
+        var value = new MyParam { Value = "COMMAND_VALUE" };
         var writeCommandMock = CommandMock;
 
         var setting = new MyDeviceSetting {
@@ -117,7 +120,7 @@ public class DeviceSettingBaseTests : Mocks {
 
     [Fact]
     public async void ShouldCheckValidation() {
-        const string value = "SETTING_VALUE";
+        var value = new MyParam { Value = "COMMAND_VALUE" };
         var writeCommandMock = CommandMock;
 
         var setting = new MyDeviceSettingValidatable {

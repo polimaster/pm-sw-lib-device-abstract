@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -8,32 +7,26 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
-/// <typeparam name="T">Data type for device communication</typeparam>
-public interface ITransport<T> : IDisposable {
+public interface ITransport : IDisposable {
     
     string ConnectionId { get; }
-    
-    /// <summary>
-    /// Write well-formatted command to device
-    /// </summary>
-    /// <param name="stream"></param>
-    /// <param name="command">Command</param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    Task Write(Stream stream, T command, CancellationToken cancellationToken);
 
-    /// <summary>
-    /// Read well-formatted command to device
-    /// </summary>
-    /// <param name="stream"></param>
-    /// <param name="command">Command</param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns>Result of command</returns>
-    Task<T> Read(Stream stream, T command, CancellationToken cancellationToken);
-    
     /// <summary>
     /// Open connection
     /// </summary>
-    Task<Stream?> Open();
+    Stream Open();
+
+    /// <summary>
+    /// Connection stream writer
+    /// </summary>
+    /// <returns><see cref="StreamWriter"/></returns>
+    IWriter GetWriter();
+    
+    /// <summary>
+    /// Connection stream reader
+    /// </summary>
+    /// <returns><see cref="StreamReader"/></returns>
+    IReader GetReader();
 
     /// <summary>
     /// Close connection
@@ -41,10 +34,9 @@ public interface ITransport<T> : IDisposable {
     Task Close();
 }
 
-/// <inheritdoc cref="ITransport{TData}"/>
+/// <inheritdoc cref="ITransport"/>
 /// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-/// <typeparam name="T"><inheritdoc cref="ITransport{T}"/></typeparam>
-public interface ITransport<T, TConnectionParams> : ITransport<T> {
+public interface ITransport<TConnectionParams> : ITransport {
     
     IClient<TConnectionParams> Client { get; }
 

@@ -5,42 +5,30 @@ using Polimaster.Device.Abstract.Device.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
-
-/// <inheritdoc cref="ICommandBuilder"/>
 public class CommandBuilder : ICommandBuilder {
-    
-    private readonly ILoggerFactory? _loggerFactory;
-    public CommandBuilder(ILoggerFactory? loggerFactory = null) {
-        _loggerFactory = loggerFactory;
-    }
-    
-    public ICommandBuilder<TTransport> Create<TTransport>(IDevice<TTransport> device) {
-        return new CommandBuilder<TTransport>(_loggerFactory) {
-            Device = device
-        };
-    }
-}
-
-public class CommandBuilder<TTransport> : ICommandBuilder<TTransport> {
     private readonly ILoggerFactory? _loggerFactory;
     private ILogger? _logger;
+    private IDevice? _device;
 
     public CommandBuilder(ILoggerFactory? loggerFactory = null) {
         _loggerFactory = loggerFactory;
     }
 
-    public IDevice<TTransport>? Device { get; set; }
-
-    public ICommandBuilder<TTransport> With(ILogger? logger) {
+    public ICommandBuilder With(ILogger? logger) {
         _logger = logger;
         return this;
     }
 
-    public T Build<T, TCommand>(TCommand? initialData = default) where T : class, ICommand<TCommand, TTransport>, new() {
-        if (Device == null) throw new NullReferenceException($"{nameof(Device)} parameter for command is null");
+    public ICommandBuilder With(IDevice? device) {
+        _device = device;
+        return this;
+    }
+
+    public T Build<T, TCommand>(TCommand? initialData = default) where T : class, ICommand<TCommand>, new() {
+        if (_device == null) throw new NullReferenceException("Device for command is null");
 
         var result = new T {
-            Device = Device,
+            Device = _device,
             Logger = _logger ?? _loggerFactory?.CreateLogger<T>(),
             Value = initialData
         };

@@ -12,17 +12,13 @@ public class DeviceBuilderTests : Mocks {
         var transportMock = TransportMock;
         
         var commandBuilder = new CommandBuilder(LOGGER_FACTORY);
-        var builder = new DeviceBuilder<string>(commandBuilder, settingBuilderMock.Object, LOGGER_FACTORY);
+        var builder = new DeviceBuilder(commandBuilder, settingBuilderMock.Object, LOGGER_FACTORY);
 
         var device = builder.With(transportMock.Object).Build<MyDevice>();
 
-        // var commandBuilder = new CommandBuilder<string>(LOGGER_FACTORY) { Device = device };
-        // commandBuilderMock.Setup(x => x.Create(device)).Returns(commandBuilder);
-        
         Assert.NotNull(device.CommandBuilder);
         Assert.Equal(settingBuilderMock.Object, device.SettingBuilder);
         Assert.Equal(transportMock.Object, device.Transport);
-        
         
         transportMock = TransportMock;
         
@@ -38,7 +34,7 @@ public class DeviceBuilderTests : Mocks {
         var settingBuilderMock = SettingBuilderMock;
 
         var commandBuilder = new CommandBuilder(LOGGER_FACTORY);
-        var builder = new DeviceBuilder<string>(commandBuilder, settingBuilderMock.Object, LOGGER_FACTORY);
+        var builder = new DeviceBuilder(commandBuilder, settingBuilderMock.Object, LOGGER_FACTORY);
         
         MyDevice? device = null;
 

@@ -1,20 +1,15 @@
 ﻿using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport; 
 
-public abstract class ATransport<T, TConnectionParams> : ITransport<T, TConnectionParams> {
+public abstract class ATransport<TConnectionParams> : ITransport<TConnectionParams> {
     public string ConnectionId => $"{GetType().Name}:{ConnectionParams}";
-    public abstract Task Write(Stream stream, T command, CancellationToken cancellationToken);
-    public abstract Task<T> Read(Stream stream, T command, CancellationToken cancellationToken);
-    public abstract Task<Stream?> Open();
-    public abstract Task Close();
     public IClient<TConnectionParams> Client { get; protected set; }
     public TConnectionParams ConnectionParams { get; protected set; }
     
-    protected readonly ILogger<ITransport<T, TConnectionParams>>? Logger;
+    protected readonly ILogger<ITransport<TConnectionParams>>? Logger;
 
 
     /// <summary>
@@ -26,8 +21,34 @@ public abstract class ATransport<T, TConnectionParams> : ITransport<T, TConnecti
         ILoggerFactory? loggerFactory = null) {
         ConnectionParams = connectionParams;
         Client = client;
-        Logger = loggerFactory?.CreateLogger<ITransport<T, TConnectionParams>>();
+        Logger = loggerFactory?.CreateLogger<ITransport<TConnectionParams>>();
     }
     
-    public abstract void Dispose();
+    public virtual Stream Open() {
+        if (Client.Connected) return Client.GetStream();
+        Logger?.LogDebug("Opening transport connection to device {A}", ConnectionParams);
+        Client.Connect(ConnectionParams);
+        return Client.GetStream();
+    }
+    public virtual Task Close() {
+        Logger?.LogDebug("Closing transport connection to device {A}", ConnectionParams);
+        Client.Close();
+        return Task.CompletedTask;
+    }
+    
+    public IWriter GetWriter() {
+        var stream = Open();
+        var writer = new Writer(stream) { AutoFlush = true };
+        return writer;
+    }
+
+    public IReader GetReader() {
+        var stream = Open();
+        var reader = new Reader(stream);
+        return reader;
+    }
+    
+    public virtual void Dispose() {
+        Close();
+    }
 }

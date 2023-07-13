@@ -1,5 +1,4 @@
 ﻿using Polimaster.Device.Abstract.Device.Commands.Interfaces;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
@@ -11,20 +10,16 @@ public interface ISettingBuilder {
     /// <summary>
     /// Add write command
     /// </summary>
-    /// <param name="command"><see cref="ICommand{T, TTransport}"/></param>
     /// <typeparam name="TCommand">Command value type</typeparam>
-    /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithWriteCommand<TCommand, TTransport>(ICommand<TCommand, TTransport> command);
+    ISettingBuilder WithWriteCommand<TCommand>(ICommand<TCommand> command);
 
     /// <summary>
     /// Add read command
     /// </summary>
-    /// <param name="command"><see cref="ICommand{T, TTransport}"/></param>
     /// <typeparam name="TCommand">Command value type</typeparam>
-    /// <typeparam name="TTransport">Type of <see cref="ITransport{T}"/></typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithReadCommand<TCommand, TTransport>(ICommand<TCommand, TTransport> command);
+    ISettingBuilder WithReadCommand<TCommand>(ICommand<TCommand> command);
 
     /// <summary>
     /// Define custom <see cref="IDeviceSetting{T}"/> implementation

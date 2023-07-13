@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Tests.Device;
 
 
 
-public class MyDevice : ADevice<string> {
+public class MyDevice : ADevice {
     public IDeviceSetting<string>? TestSetting { get; set; }
     public IDeviceSetting<string>? EmptyTestSetting { get; set; }
 

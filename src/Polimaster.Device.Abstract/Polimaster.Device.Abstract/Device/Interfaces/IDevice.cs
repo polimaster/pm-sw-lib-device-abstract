@@ -27,18 +27,11 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
     Action? IsDisposing { get; set; }
-}
-
-/// <summary>
-/// Device base
-/// </summary>
-/// <typeparam name="T">Data type for <see cref="ITransport{T}"/> layer and internal builders</typeparam>
-public interface IDevice<T> : IDevice {
-
+    
     /// <summary>
-    /// Instance of see <see cref="ICommandBuilder{TData}"/>
+    /// Instance of see <see cref="ICommandBuilder"/>
     /// </summary>
-    ICommandBuilder<T> CommandBuilder { get; set; }
+    ICommandBuilder CommandBuilder { get; set; }
 
     /// <summary>
     /// Instance of <see cref="ISettingBuilder"/>
@@ -48,8 +41,8 @@ public interface IDevice<T> : IDevice {
     /// <summary>
     /// Transport layer
     /// </summary>
-    /// <see cref="ITransport{TData, TConnectionParams}"/>
-    ITransport<T> Transport { get; set; }
+    /// <see cref="ITransport{TConnectionParams}"/>
+    ITransport Transport { get; set; }
 
     /// <summary>
     /// Device information data
