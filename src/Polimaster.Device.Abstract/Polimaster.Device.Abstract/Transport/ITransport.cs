@@ -14,19 +14,19 @@ public interface ITransport : IDisposable {
     /// <summary>
     /// Open connection
     /// </summary>
-    Stream Open();
+    Task<Stream> Open();
 
     /// <summary>
     /// Connection stream writer
     /// </summary>
     /// <returns><see cref="StreamWriter"/></returns>
-    IWriter GetWriter();
+    Task<IWriter> GetWriter();
     
     /// <summary>
     /// Connection stream reader
     /// </summary>
     /// <returns><see cref="StreamReader"/></returns>
-    IReader GetReader();
+    Task<IReader> GetReader();
 
     /// <summary>
     /// Close connection

@@ -8,7 +8,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
 
     protected override async Task Write(CancellationToken cancellationToken = new()) {
         Validate();
-        var writer = Device.Transport.GetWriter();
+        var writer = await Device.Transport.GetWriter();
         var command = Compile();
         Logger?.LogDebug("Writing command: {C}", command);
         await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
@@ -19,7 +19,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         await Write(cancellationToken);
         Logger?.LogDebug("Reading command response data");
         
-        var reader = Device.Transport.GetReader();
+        var reader = await Device.Transport.GetReader();
         var response = await reader.ReadToEndAsync();
         Logger?.LogDebug("Got response: {A} ", response);
         

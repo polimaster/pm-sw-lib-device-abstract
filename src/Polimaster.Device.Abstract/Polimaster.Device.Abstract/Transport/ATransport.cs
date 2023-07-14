@@ -23,12 +23,12 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
         Client = client;
         Logger = loggerFactory?.CreateLogger<ITransport<TConnectionParams>>();
     }
-    
-    public virtual Stream Open() {
-        if (Client.Connected) return Client.GetStream();
+
+    public virtual Task<Stream> Open() {
+        if (Client.Connected) return Task.FromResult(Client.GetStream());
         Logger?.LogDebug("Opening transport connection to device {A}", ConnectionParams);
         Client.Connect(ConnectionParams);
-        return Client.GetStream();
+        return Task.FromResult(Client.GetStream());
     }
     public virtual Task Close() {
         Logger?.LogDebug("Closing transport connection to device {A}", ConnectionParams);
@@ -36,14 +36,16 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
         return Task.CompletedTask;
     }
     
-    public IWriter GetWriter() {
-        var stream = Open();
+    public async Task<IWriter> GetWriter() {
+        var stream = await Open();
+        if (stream == null) throw new TransportException("Stream is null");
         var writer = new Writer(stream) { AutoFlush = true };
         return writer;
     }
 
-    public IReader GetReader() {
-        var stream = Open();
+    public async Task<IReader> GetReader() {
+        var stream = await Open();
+        if (stream == null) throw new TransportException("Stream is null");
         var reader = new Reader(stream);
         return reader;
     }

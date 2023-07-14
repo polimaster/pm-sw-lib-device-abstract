@@ -9,7 +9,7 @@ public class IrdaTransport<TConnectionParams> : ATransport<TConnectionParams>, I
     /// <param name="client"></param>
     /// <param name="connectionParams">Parameters for underlying client, <see cref="IIrdaTransport{TConnectionParams}" /></param>
     /// <param name="loggerFactory"></param>
-    public IrdaTransport(IClient<TConnectionParams> client, TConnectionParams connectionParams,
+    protected IrdaTransport(IClient<TConnectionParams> client, TConnectionParams connectionParams,
         ILoggerFactory? loggerFactory = null) : base(client, connectionParams, loggerFactory) {
     }
     
