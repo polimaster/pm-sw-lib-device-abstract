@@ -13,4 +13,11 @@ public class IrdaTransport<TConnectionParams> : ATransport<TConnectionParams>, I
         ILoggerFactory? loggerFactory = null) : base(client, connectionParams, loggerFactory) {
     }
     
+    // public override async Task<Stream> Open() {
+    //     if (Client.Connected) return Client.GetStream();
+    //     Logger?.LogDebug("Opening transport connection to device {A}", ConnectionParams);
+    //     await Client.ConnectAsync(ConnectionParams);
+    //     return Client.GetStream();
+    // }
+    
 }

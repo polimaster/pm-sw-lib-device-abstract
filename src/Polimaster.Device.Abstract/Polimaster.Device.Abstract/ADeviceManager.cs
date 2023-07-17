@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Interfaces;
 
@@ -12,15 +11,15 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T: IDevice {
     public Action<T>? Attached  { get; set; }
     public Action<T>? Removed { get; set; }
     public List<T> Devices { get; set; } = new();
-    public abstract void StartDeviceDiscovery(CancellationToken token, int timeout = 20);
-    public abstract void StopDeviceDiscovery();
 
     protected ADeviceManager(IDeviceBuilder deviceBuilder, ILoggerFactory? loggerFactory = null) {
         DeviceBuilder = deviceBuilder;
         Logger = loggerFactory?.CreateLogger<ADeviceManager<T>>();
         
         Removed += dev => { Logger?.LogInformation("Device removed {D}", dev.Id); };
-        Attached += dev => { Logger?.LogInformation("New device attached {D}", dev.Id); };
+        Attached += dev => {
+            Logger?.LogInformation("New device attached {D}", dev.Id);
+        };
     }
 
     public virtual void Dispose() {

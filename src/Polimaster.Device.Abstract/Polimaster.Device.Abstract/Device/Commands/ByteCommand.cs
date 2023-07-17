@@ -12,10 +12,11 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
     protected const int MAX_DATA_LENGTH = 10000;
     
     protected override async Task Write(CancellationToken cancellationToken = new()) {
+        Logger?.LogDebug("Call {N} command {C}", nameof(Write), GetType().Name);
         Validate();
-        var stream = (await Device.Transport.GetWriter()).BaseStream;
+        var stream = await Device.Transport.Open();
         var command = Compile();
-        Logger?.LogDebug("Writing command: {C} byte(s)", command.Length);
+        Logger?.LogDebug("Writing {C} byte(s)", command.Length);
         await stream.WriteAsync(command, 0, command.Length, cancellationToken);
         ValueChanged?.Invoke(Value);
     }
@@ -23,9 +24,9 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
     protected override async Task Read(CancellationToken cancellationToken = new()) {
         await Write(cancellationToken);
         
-        Logger?.LogDebug("Reading command response data");
+        Logger?.LogDebug("Call {N} command {C}", nameof(Read), GetType().Name);
         
-        var stream = (await Device.Transport.GetReader()).BaseStream;
+        var stream = await Device.Transport.Open();
         
         // var data = Array.Empty<byte>();
         var buff = new byte[MAX_DATA_LENGTH];

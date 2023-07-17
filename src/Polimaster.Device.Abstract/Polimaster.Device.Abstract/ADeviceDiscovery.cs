@@ -16,9 +16,11 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
         LoggerFactory = loggerFactory;
     }
 
-    public abstract Task Start(CancellationToken token);
+    public abstract void Start(CancellationToken token);
+    public abstract void Stop();
 
     public Action<IEnumerable<ITransport<TConnectionParams>>>? Found { get; set; }
     public Action<IEnumerable<ITransport<TConnectionParams>>>? Lost { get; set; }
 
+    public abstract void Dispose();
 }

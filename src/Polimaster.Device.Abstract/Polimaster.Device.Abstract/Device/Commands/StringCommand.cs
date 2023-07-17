@@ -7,17 +7,18 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 public abstract class StringCommand<T> : ACommand<T, string> {
 
     protected override async Task Write(CancellationToken cancellationToken = new()) {
+        Logger?.LogDebug("Call {N} command {C}", nameof(Write), GetType().Name);
         Validate();
         var writer = await Device.Transport.GetWriter();
         var command = Compile();
-        Logger?.LogDebug("Writing command: {C}", command);
+        Logger?.LogDebug("Writing {C}", command);
         await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
         ValueChanged?.Invoke(Value);
     }
 
     protected override async Task Read(CancellationToken cancellationToken = new()) {
         await Write(cancellationToken);
-        Logger?.LogDebug("Reading command response data");
+        Logger?.LogDebug("Call {N} command {C}", nameof(Read), GetType().Name);
         
         var reader = await Device.Transport.GetReader();
         var response = await reader.ReadToEndAsync();

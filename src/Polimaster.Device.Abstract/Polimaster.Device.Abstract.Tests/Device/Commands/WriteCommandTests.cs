@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using Moq;
 
 namespace Polimaster.Device.Abstract.Tests.Device.Commands; 
@@ -20,8 +19,8 @@ public class WriteCommandTests : Mocks {
         var readerMock = ReaderMock;
 
         var transportMock = TransportMock;
-        transportMock.Setup(x => x.GetWriter()).Returns(writerMock.Object);
-        transportMock.Setup(x => x.GetReader()).Returns(readerMock.Object);
+        transportMock.Setup(x => x.GetWriter()).ReturnsAsync(writerMock.Object);
+        transportMock.Setup(x => x.GetReader()).ReturnsAsync(readerMock.Object);
         
         var command = new MyWriteCommand {
             Device = new MyDevice { Transport = transportMock.Object },

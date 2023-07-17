@@ -85,8 +85,8 @@ public class DeviceSettingBaseTests : Mocks {
         readerMock.Setup(e => e.ReadToEndAsync()).ReturnsAsync(commandValue);
         
         var transportMock = TransportMock;
-        transportMock.Setup(x => x.GetWriter()).Returns(writerMock.Object);
-        transportMock.Setup(x => x.GetReader()).Returns(readerMock.Object);
+        transportMock.Setup(x => x.GetWriter()).ReturnsAsync(writerMock.Object);
+        transportMock.Setup(x => x.GetReader()).ReturnsAsync(readerMock.Object);
         
         var readCommand = new MyReadCommand {
             Device = new MyDevice { Transport = transportMock.Object }

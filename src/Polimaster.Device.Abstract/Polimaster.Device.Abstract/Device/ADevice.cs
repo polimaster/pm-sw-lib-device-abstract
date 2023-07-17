@@ -75,6 +75,6 @@ public abstract class ADevice : IDevice {
     }
 
     public bool Equals(IDevice other) {
-        return Id == other.Id;
+        return Id.Equals(other.Id);
     }
 }

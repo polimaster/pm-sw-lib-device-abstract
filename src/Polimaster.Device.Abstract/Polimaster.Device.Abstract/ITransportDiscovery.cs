@@ -10,13 +10,19 @@ namespace Polimaster.Device.Abstract;
 /// Device discovery search for devices on particular interface (like IrDA or Bluetooth).
 /// </summary>
 /// <typeparam name="TConnectionParams"><see cref="ITransport{TConnectionParams}"/></typeparam>
-public interface ITransportDiscovery<TConnectionParams> {
+public interface ITransportDiscovery<TConnectionParams> : IDisposable {
 
     /// <summary>
     /// Start search for available devices
     /// </summary>
     /// <returns>List of devices transport</returns>
-    Task Start(CancellationToken token);
+    void Start(CancellationToken token);
+    
+    /// <summary>
+    /// Stop search for available devices
+    /// </summary>
+    /// <returns></returns>
+    void Stop();
 
     /// <summary>
     /// Occurs when device found on interface
