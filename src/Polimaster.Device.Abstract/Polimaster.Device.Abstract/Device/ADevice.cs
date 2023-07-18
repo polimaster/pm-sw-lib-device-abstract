@@ -30,6 +30,7 @@ public abstract class ADevice : IDevice {
     public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
     
     public void Dispose() {
+        Logger?.LogDebug("Disposing device {D}", Id);
         IsDisposing?.Invoke();
         Transport.Dispose();
     }
@@ -73,6 +74,8 @@ public abstract class ADevice : IDevice {
             .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
             .ToList();
     }
+
+    public SemaphoreSlim Semaphore { get; } = new(1,1);
 
     public bool Equals(IDevice other) {
         return Id.Equals(other.Id);

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport;
@@ -84,4 +85,10 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// </summary>
     /// <returns>Array of <see cref="PropertyInfo"/></returns>
     IEnumerable<PropertyInfo> GetDeviceSettingsProperties();
+    
+    /// <summary>
+    /// Semaphore for exclusive access to device while sending commands.
+    /// See <see cref="StringCommand{T}.Write"/> as example.
+    /// </summary>
+    SemaphoreSlim Semaphore { get; }
 }
