@@ -26,7 +26,7 @@ public abstract class ACommand<T, TTransport> : ICommand<T>{
     /// <exception cref="CommandValidationException">Throws if validation failed.</exception>
     protected virtual void Validate(){}
 
-    protected abstract T? Parse(TTransport value);
+    protected abstract T? Parse(TTransport? value);
     
     public abstract Task Send(CancellationToken cancellationToken = new());
 

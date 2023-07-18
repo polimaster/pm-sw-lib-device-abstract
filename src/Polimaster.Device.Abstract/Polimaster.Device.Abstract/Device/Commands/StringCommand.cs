@@ -31,12 +31,11 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         
         try {
             await WriteInternal(cancellationToken);
-        
-            await Write(cancellationToken);
+
             Logger?.LogDebug("Call {N} command {C}", nameof(Read), GetType().Name);
         
             var reader = await Device.Transport.GetReader();
-            var response = await reader.ReadToEndAsync();
+            var response = await reader.ReadLineAsync();
             Logger?.LogDebug("Got response: {A} ", response);
         
             Value = Parse(response);
