@@ -31,7 +31,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         
         try {
             await WriteInternal(cancellationToken);
-            Thread.Sleep(100);
+            Thread.Sleep(10);
 
             Logger?.LogDebug("Call {N} with command {C}", nameof(Read), GetType().Name);
         
