@@ -21,7 +21,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
     }
 
     private async Task WriteInternal(CancellationToken cancellationToken = new()) {
-        Logger?.LogDebug("Call {N} command {C}", nameof(Write), GetType().Name);
+        Logger?.LogDebug("Call {N} with command {C}", nameof(Write), GetType().Name);
         Validate();
         var stream = await Device.Transport.Open();
         var command = Compile();
@@ -37,7 +37,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
         try {
             await WriteInternal(cancellationToken);
         
-            Logger?.LogDebug("Call {N} command {C}", nameof(Read), GetType().Name);
+            Logger?.LogDebug("Call {N} with command {C}", nameof(Read), GetType().Name);
         
             var stream = await Device.Transport.Open();
         

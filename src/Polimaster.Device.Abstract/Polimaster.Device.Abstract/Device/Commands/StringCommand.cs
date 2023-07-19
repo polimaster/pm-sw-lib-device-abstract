@@ -16,7 +16,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
     }
     
     private async Task WriteInternal(CancellationToken cancellationToken = new()) {
-        Logger?.LogDebug("Call {N} command {C}", nameof(Write), GetType().Name);
+        Logger?.LogDebug("Call {N} with command {C}", nameof(Write), GetType().Name);
         Validate();
         var writer = await Device.Transport.GetWriter();
         var command = Compile();
@@ -31,8 +31,9 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         
         try {
             await WriteInternal(cancellationToken);
+            Thread.Sleep(100);
 
-            Logger?.LogDebug("Call {N} command {C}", nameof(Read), GetType().Name);
+            Logger?.LogDebug("Call {N} with command {C}", nameof(Read), GetType().Name);
         
             var reader = await Device.Transport.GetReader();
             var response = await reader.ReadLineAsync();
