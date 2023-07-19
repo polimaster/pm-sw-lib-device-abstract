@@ -9,7 +9,7 @@ public class MyReadCommand : StringCommand<MyParam> {
         return $"{Value?.CommandPid} : {Value?.Value}";
     }
 
-    protected override MyParam? Parse(string data) {
+    protected override MyParam? Parse(string? data) {
         Value ??= new MyParam();
         Value.Value = data;
         return Value;

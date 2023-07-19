@@ -15,7 +15,7 @@ public class MyDeviceSettingValidatable : MyDeviceSetting {
     /// </summary>
     /// <param name="value"></param>
     protected override void Validate(MyParam? value) {
-        if (value?.Value.Length > 0) {
+        if (value?.Value?.Length > 0) {
             ValidationErrors = new[] { new SettingValidationException("Value greater than 10") };
             return;
         }

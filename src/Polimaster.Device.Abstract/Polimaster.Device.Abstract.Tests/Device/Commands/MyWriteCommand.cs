@@ -12,7 +12,7 @@ public class MyWriteCommand : StringCommand<MyParam> {
         return $"{Value?.CommandPid} : {Value?.Value}";
     }
 
-    protected override MyParam Parse(string value) {
+    protected override MyParam Parse(string? value) {
         throw new System.NotImplementedException();
     }
 
