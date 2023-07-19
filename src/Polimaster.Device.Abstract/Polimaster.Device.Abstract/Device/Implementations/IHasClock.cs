@@ -8,13 +8,13 @@ namespace Polimaster.Device.Abstract.Device.Implementations;
 /// Identifies a device with internal clock
 /// </summary>
 public interface IHasClock {
-    
     /// <summary>
     /// Sets date and time on device
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <param name="dateTime">Time</param>
     /// <returns></returns>
-    Task SetTime(DateTime? dateTime = default);
+    Task SetTime(CancellationToken cancellationToken = new(), DateTime? dateTime = default);
 
     /// <summary>
     /// Reads current date and time from device
