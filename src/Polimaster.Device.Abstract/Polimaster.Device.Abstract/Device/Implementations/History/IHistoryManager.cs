@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Implementations.History;
 /// Device history reader
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
-public interface IHistoryReader<THistory> {
+public interface IHistoryManager<THistory> {
     
     /// <summary>
     /// Logger
@@ -23,7 +23,7 @@ public interface IHistoryReader<THistory> {
     Action<HistoryChunk<THistory>>? HasNext  { get; set; }
 
     /// <summary>
-    /// Device <see cref="IHistoryReader{THistory}"/> belongs to
+    /// Device <see cref="IHistoryManager{THistory}"/> belongs to
     /// </summary>
     IDevice Device { get; set; }
 
@@ -31,7 +31,6 @@ public interface IHistoryReader<THistory> {
     /// Reads history from device
     /// </summary>
     /// <param name="cancellationToken"></param>
-    /// <returns>Array of history records</returns>
     Task Read(CancellationToken cancellationToken = new());
 
     /// <summary>
@@ -39,4 +38,11 @@ public interface IHistoryReader<THistory> {
     /// </summary>
     /// <returns></returns>
     Task Stop();
+    
+    /// <summary>
+    /// Wipe history from device
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task Wipe(CancellationToken cancellationToken = new());
 }
