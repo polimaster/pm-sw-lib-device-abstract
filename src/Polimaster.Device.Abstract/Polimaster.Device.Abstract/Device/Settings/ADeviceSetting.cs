@@ -32,7 +32,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
 
     public abstract Task CommitChanges(CancellationToken cancellationToken);
 
-    public override string ToString() {
-        return Value?.ToString() ?? string.Empty;
+    public override string? ToString() {
+        return Value != null ? Value.ToString() : null;
     }
 }
