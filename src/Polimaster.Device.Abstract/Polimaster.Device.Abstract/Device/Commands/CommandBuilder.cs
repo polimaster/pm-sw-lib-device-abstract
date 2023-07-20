@@ -25,12 +25,17 @@ public class CommandBuilder : ICommandBuilder {
     }
 
     public T Build<T, TCommand>(TCommand? initialData = default) where T : class, ICommand<TCommand>, new() {
+        var result = Build<T>();
+        result.Value = initialData;
+        return result;
+    }
+
+    public T Build<T>() where T : class, ICommand, new() {
         if (_device == null) throw new NullReferenceException("Device for command is null");
 
         var result = new T {
             Device = _device,
-            Logger = _logger ?? _loggerFactory?.CreateLogger<T>(),
-            Value = initialData
+            Logger = _logger ?? _loggerFactory?.CreateLogger<T>()
         };
 
         CleanUp();

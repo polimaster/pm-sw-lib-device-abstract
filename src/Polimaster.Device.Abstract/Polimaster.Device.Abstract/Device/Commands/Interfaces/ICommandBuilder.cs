@@ -22,11 +22,18 @@ public interface ICommandBuilder {
     ICommandBuilder With(IDevice? device);
 
     /// <summary>
-    /// Build command
+    /// Build command with identified value
     /// </summary>
     /// <param name="initialValue">Initial value for command</param>
     /// <typeparam name="T">Command implementation</typeparam>
     /// <typeparam name="TCommand">Type of <see cref="ICommand{T}"/></typeparam>
-    /// <returns></returns>
+    /// <returns><see cref="T"/></returns>
     T Build<T, TCommand>(TCommand? initialValue = default) where T : class, ICommand<TCommand>, new();
+    
+    /// <summary>
+    /// Build typeless command
+    /// </summary>
+    /// <typeparam name="T">Command implementation</typeparam>
+    /// <returns><see cref="T"/></returns>
+    T Build<T>() where T : class, ICommand, new();
 }

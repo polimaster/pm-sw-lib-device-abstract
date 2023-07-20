@@ -6,24 +6,14 @@ using Polimaster.Device.Abstract.Device.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
-/// <summary>
-/// Device command
-/// </summary>
-/// <typeparam name="T">Type of <see cref="Value"/></typeparam>
-public interface ICommand<T> {
+
+public interface ICommand {
     /// <summary>
     /// Send command to device
     /// </summary>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns></returns>
     Task Send(CancellationToken cancellationToken = new ());
-    
-    /// <summary>
-    /// Value of command. Either result of execution or it parameter.
-    /// </summary>
-    T? Value { get; set; }
-
-    Action<T?>? ValueChanged { get; set; }
     
     /// <summary>
     /// Logger
@@ -34,4 +24,18 @@ public interface ICommand<T> {
     /// Device command belongs to
     /// </summary>
     IDevice Device { get; set; }
+}
+
+
+/// <summary>
+/// Device command
+/// </summary>
+/// <typeparam name="T">Type of <see cref="Value"/></typeparam>
+public interface ICommand<T> : ICommand {
+    /// <summary>
+    /// Value of command. Either result of execution or it parameter.
+    /// </summary>
+    T? Value { get; set; }
+
+    Action<T?>? ValueChanged { get; set; }
 }
