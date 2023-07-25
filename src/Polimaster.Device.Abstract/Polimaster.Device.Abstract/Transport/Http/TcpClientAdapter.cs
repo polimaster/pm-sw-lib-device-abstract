@@ -1,9 +1,14 @@
+using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
 public class TcpClientAdapter : AClient<HttpConnectionParams>, IClient<HttpConnectionParams> {
+    
+    public override Action? Opened { get; set; }
+    public override Action? Closed { get; set; }
+
     private readonly TcpClient _wrapped;
 
     public TcpClientAdapter() {
@@ -28,6 +33,7 @@ public class TcpClientAdapter : AClient<HttpConnectionParams>, IClient<HttpConne
         await _wrapped.ConnectAsync(connectionParams.Ip, connectionParams.Port);
     }
 
+    
     public override void Dispose() {
         _wrapped.Dispose();
     }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -11,4 +12,6 @@ public abstract class AClient<TConnectionParams> : IClient<TConnectionParams> {
     public abstract Task<IDeviceStream> GetStream();
     public abstract void Open(TConnectionParams connectionParams);
     public abstract Task OpenAsync(TConnectionParams connectionParams);
+    public abstract Action? Opened { get; set; }
+    public abstract Action? Closed { get; set; }
 }

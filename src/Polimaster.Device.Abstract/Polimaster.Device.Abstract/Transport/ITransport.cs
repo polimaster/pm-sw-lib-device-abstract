@@ -20,6 +20,10 @@ public interface ITransport : IDisposable {
     /// Close connection
     /// </summary>
     Task Close();
+    
+    Action? Opened { get; set; }
+    Action? Closed { get; set; }
+
 }
 
 /// <inheritdoc cref="ITransport"/>

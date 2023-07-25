@@ -18,4 +18,7 @@ public interface IClient<in TConnectionParams> : IDisposable {
     void Open(TConnectionParams connectionParams);
     
     Task OpenAsync(TConnectionParams connectionParams);
+    
+    Action? Opened { get; set; }
+    Action? Closed { get; set; }
 }
