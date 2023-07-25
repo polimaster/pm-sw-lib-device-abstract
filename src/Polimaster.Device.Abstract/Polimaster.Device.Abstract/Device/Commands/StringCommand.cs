@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -10,19 +11,23 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         await Device.Semaphore.WaitAsync(cancellationToken);
         try {
             await WriteInternal(cancellationToken);
+            ValueChanged?.Invoke(Value);
+        } catch (Exception e) {
+            Logger?.LogError(e, "Error while sending {N} command {C}",nameof(Write), GetType().Name);
+            await Device.Transport.Close();
         } finally {
             Device.Semaphore.Release();
         }
     }
     
-    private async Task WriteInternal(CancellationToken cancellationToken = new()) {
+    private async Task WriteInternal(CancellationToken cancellationToken) {
         Logger?.LogDebug("Call {N} with command {C}", nameof(Write), GetType().Name);
         Validate();
-        var writer = await Device.Transport.GetWriter();
+        var stream = await Device.Transport.Open();
         var command = Compile();
         Logger?.LogDebug("Writing {C}", command);
-        await writer.WriteLineAsync(command.ToCharArray(), cancellationToken);
-        ValueChanged?.Invoke(Value);
+        await stream.WriteLineAsync(command, cancellationToken);
+        Thread.Sleep(1);
     }
 
     protected override async Task Read(CancellationToken cancellationToken = new()) {
@@ -31,17 +36,19 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         
         try {
             await WriteInternal(cancellationToken);
-            Thread.Sleep(10);
 
             Logger?.LogDebug("Call {N} with command {C}", nameof(Read), GetType().Name);
         
-            var reader = await Device.Transport.GetReader();
-            var response = await reader.ReadLineAsync();
-            Logger?.LogDebug("Got response: {A} ", response);
-        
-            Value = Parse(response);
+            var reader = await Device.Transport.Open();
+            var data = await reader.ReadLineAsync(cancellationToken);
+            Thread.Sleep(1);
+
+            Value = Parse(data);
             ValueChanged?.Invoke(Value);
             
+        } catch (Exception e) {
+            Logger?.LogError(e, "Error while sending {N} command {C}",nameof(Read), GetType().Name);
+            await Device.Transport.Close();
         } finally {
             Device.Semaphore.Release();
         }

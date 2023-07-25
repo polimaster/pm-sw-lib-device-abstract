@@ -80,14 +80,12 @@ public class DeviceSettingBaseTests : Mocks {
     [Fact]
     public async void ShouldCatchChangedCommandValue() {
         const string commandValue = "READ-VALUE";
-        var writerMock = WriterMock;
-        var readerMock = ReaderMock;
-        readerMock.Setup(e => e.ReadToEndAsync()).ReturnsAsync(commandValue);
+        var writerMock = DeviceStreamMock;
+        writerMock.Setup(e => e.ReadLineAsync(It.IsAny<CancellationToken>())).ReturnsAsync(commandValue);
         
         var transportMock = TransportMock;
-        transportMock.Setup(x => x.GetWriter()).ReturnsAsync(writerMock.Object);
-        transportMock.Setup(x => x.GetReader()).ReturnsAsync(readerMock.Object);
-        
+        transportMock.Setup(x => x.Open()).ReturnsAsync(writerMock.Object);
+
         var readCommand = new MyReadCommand {
             Device = new MyDevice { Transport = transportMock.Object }
         };

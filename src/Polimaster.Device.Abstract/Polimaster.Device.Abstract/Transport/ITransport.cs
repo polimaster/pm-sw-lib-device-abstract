@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -12,21 +11,10 @@ public interface ITransport : IDisposable {
     string ConnectionId { get; }
 
     /// <summary>
-    /// Open connection
+    /// Open device stream reader/writer
     /// </summary>
-    Task<Stream> Open();
-
-    /// <summary>
-    /// Connection stream writer
-    /// </summary>
-    /// <returns><see cref="StreamWriter"/></returns>
-    Task<IWriter> GetWriter();
-    
-    /// <summary>
-    /// Connection stream reader
-    /// </summary>
-    /// <returns><see cref="StreamReader"/></returns>
-    Task<IReader> GetReader();
+    /// <returns></returns>
+    Task<IDeviceStream> Open();
 
     /// <summary>
     /// Close connection

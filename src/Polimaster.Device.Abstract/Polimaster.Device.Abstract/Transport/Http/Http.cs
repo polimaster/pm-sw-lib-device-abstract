@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -16,11 +15,11 @@ public class Http : ATransport<HttpConnectionParams>, IHttpTransport {
         ILoggerFactory? loggerFactory = null) : base(client, connectionParams, loggerFactory) {
     }
 
-    public override Task<Stream> Open() {
+    public override Task<IDeviceStream> Open() {
         if (Client.Connected) Client.GetStream();
-        var connected = Client.ConnectAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
+        var connected = Client.OpenAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
         if (!connected)
             throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
-        return Task.FromResult(Client.GetStream());
+        return Client.GetStream();
     }
 }

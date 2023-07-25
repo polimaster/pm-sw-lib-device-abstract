@@ -16,8 +16,7 @@ public class Mocks {
     protected static Mock<IDevice> DeviceMock => new ();
 
     protected static Mock<Stream> StreamMock => new();
-    protected static Mock<IWriter> WriterMock => new();
-    protected static Mock<IReader> ReaderMock => new();
+    protected static Mock<IDeviceStream> DeviceStreamMock => new();
     protected static Mock<ICommand<MyParam>> CommandMock => new();
 
     protected static Mock<IDeviceSetting<string>> SettingMock => new();

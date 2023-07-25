@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Moq;
 
 namespace Polimaster.Device.Abstract.Tests.Device.Commands;
@@ -15,13 +16,11 @@ public class MyReadCommandTests : Mocks {
     public async void ShouldCallValueChanged() {
         
         const string readValue = "READ-VALUE";
-        var writerMock = WriterMock;
-        var readerMock = ReaderMock;
-        readerMock.Setup(e => e.ReadToEndAsync()).ReturnsAsync(readValue);
+        var writerMock = DeviceStreamMock;
+        writerMock.Setup(e => e.ReadLineAsync(It.IsAny<CancellationToken>())).ReturnsAsync(readValue);
         
         var transportMock = TransportMock;
-        transportMock.Setup(x => x.GetWriter()).ReturnsAsync(writerMock.Object);
-        transportMock.Setup(x => x.GetReader()).ReturnsAsync(readerMock.Object);
+        transportMock.Setup(x => x.Open()).ReturnsAsync(writerMock.Object);
 
         var command = new MyReadCommand {
             Device = new MyDevice { Transport = transportMock.Object },

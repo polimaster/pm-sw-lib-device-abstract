@@ -32,12 +32,13 @@ public class HttpTests {
 
 
     [Fact]
-    public void ShouldOpenConnection() {
+    public async void ShouldOpenConnection() {
         var httpConnectionParams = new HttpConnectionParams { Ip = HOST, Port = PORT };
         var http = new Abstract.Transport.Http.Http(_clientMock.Object, httpConnectionParams);
-        http.Open();
+        await http.Open();
 
-        _clientMock.Verify(v => v.ConnectAsync(httpConnectionParams));
+        _clientMock.Verify(v => v.OpenAsync(httpConnectionParams));
+        _clientMock.Verify(v => v.GetStream());
     }
 
     [Fact]

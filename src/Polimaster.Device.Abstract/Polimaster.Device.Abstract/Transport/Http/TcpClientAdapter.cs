@@ -1,4 +1,3 @@
-using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -17,15 +16,15 @@ public class TcpClientAdapter : IClient<HttpConnectionParams> {
         _wrapped.Close();
     }
 
-    public Stream GetStream() {
-        return _wrapped.GetStream();
+    public Task<IDeviceStream> GetStream() {
+        return Task.FromResult<IDeviceStream>(new TcpStream(_wrapped.GetStream()));
     }
 
-    public void Connect(HttpConnectionParams connectionParams) {
+    public void Open(HttpConnectionParams connectionParams) {
         _wrapped.Connect(connectionParams.Ip, connectionParams.Port);
     }
 
-    public async Task ConnectAsync(HttpConnectionParams connectionParams) {
+    public async Task OpenAsync(HttpConnectionParams connectionParams) {
         await _wrapped.ConnectAsync(connectionParams.Ip, connectionParams.Port);
     }
 

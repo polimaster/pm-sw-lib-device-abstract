@@ -15,13 +15,11 @@ public class WriteCommandTests : Mocks {
 
     [Fact]
     public async void ShouldCallValueChanged() {
-        var writerMock = WriterMock;
-        var readerMock = ReaderMock;
+        var writerMock = DeviceStreamMock;
 
         var transportMock = TransportMock;
-        transportMock.Setup(x => x.GetWriter()).ReturnsAsync(writerMock.Object);
-        transportMock.Setup(x => x.GetReader()).ReturnsAsync(readerMock.Object);
-        
+        transportMock.Setup(x => x.Open()).ReturnsAsync(writerMock.Object);
+
         var command = new MyWriteCommand {
             Device = new MyDevice { Transport = transportMock.Object },
             Value = new MyParam { CommandPid = 1, Value = "test"}

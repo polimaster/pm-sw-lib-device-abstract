@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -12,9 +11,9 @@ public interface IClient<in TConnectionParams> : IDisposable {
     bool Connected { get; }
     void Close();
 
-    Stream GetStream();
+    Task<IDeviceStream> GetStream();
 
-    void Connect(TConnectionParams connectionParams);
+    void Open(TConnectionParams connectionParams);
     
-    Task ConnectAsync(TConnectionParams connectionParams);
+    Task OpenAsync(TConnectionParams connectionParams);
 }
