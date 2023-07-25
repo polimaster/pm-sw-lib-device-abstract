@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -13,7 +12,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
             await WriteInternal(cancellationToken);
             ValueChanged?.Invoke(Value);
         } catch (Exception e) {
-            Logger?.LogError(e, "Error while sending {N} command {C}",nameof(Write), GetType().Name);
+            LogError(e, nameof(Write));
             await Device.Transport.Close();
         } finally {
             Device.Semaphore.Release();
@@ -21,11 +20,10 @@ public abstract class StringCommand<T> : ACommand<T, string> {
     }
     
     private async Task WriteInternal(CancellationToken cancellationToken) {
-        Logger?.LogDebug("Call {N} with command {C}", nameof(Write), GetType().Name);
+        LogCommand(nameof(Write));
         Validate();
         var stream = await Device.Transport.Open();
         var command = Compile();
-        Logger?.LogDebug("Writing {C}", command);
         await stream.WriteLineAsync(command, cancellationToken);
         Thread.Sleep(1);
     }
@@ -36,9 +34,9 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         
         try {
             await WriteInternal(cancellationToken);
+            
+            LogCommand(nameof(Read));
 
-            Logger?.LogDebug("Call {N} with command {C}", nameof(Read), GetType().Name);
-        
             var reader = await Device.Transport.Open();
             var data = await reader.ReadLineAsync(cancellationToken);
             Thread.Sleep(1);
@@ -47,7 +45,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
             ValueChanged?.Invoke(Value);
             
         } catch (Exception e) {
-            Logger?.LogError(e, "Error while sending {N} command {C}",nameof(Read), GetType().Name);
+            LogError(e, nameof(Read));
             await Device.Transport.Close();
         } finally {
             Device.Semaphore.Release();

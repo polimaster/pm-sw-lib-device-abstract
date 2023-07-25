@@ -8,7 +8,7 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
     public IClient<TConnectionParams> Client { get; protected set; }
     public TConnectionParams ConnectionParams { get; protected set; }
     
-    protected readonly ILogger<ITransport<TConnectionParams>>? Logger;
+    // protected readonly ILogger<ITransport<TConnectionParams>>? Logger;
 
 
     /// <summary>
@@ -20,7 +20,8 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
         ILoggerFactory? loggerFactory = null) {
         ConnectionParams = connectionParams;
         Client = client;
-        Logger = loggerFactory?.CreateLogger<ITransport<TConnectionParams>>();
+        Client.LoggerFactory = loggerFactory;
+        // Logger = loggerFactory?.CreateLogger<ITransport<TConnectionParams>>();
     }
 
     public virtual Task<IDeviceStream> Open() {
@@ -29,7 +30,6 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
     }
 
     public virtual Task Close() {
-        Logger?.LogDebug("Closing transport connection to device {A}", ConnectionParams);
         Client.Close();
         return Task.CompletedTask;
     }

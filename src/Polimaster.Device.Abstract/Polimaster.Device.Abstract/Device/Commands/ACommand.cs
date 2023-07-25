@@ -34,4 +34,12 @@ public abstract class ACommand<T, TTransport> : ICommand<T>{
 
     protected abstract Task Read(CancellationToken cancellationToken = new());
 
+
+    protected void LogCommand(string methodName) {
+        Logger?.LogDebug("Call {N} with command {C}", methodName, GetType().Name);
+    }
+
+    protected void LogError(Exception e, string methodName) {
+        Logger?.LogError(e, "Error while sending {N} command {C}",methodName, GetType().Name);
+    }
 }

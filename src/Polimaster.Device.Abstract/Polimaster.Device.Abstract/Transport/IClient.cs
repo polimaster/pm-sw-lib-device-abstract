@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport;
 
@@ -9,6 +10,7 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <typeparam name="TConnectionParams">Type of device connection parameters</typeparam>
 public interface IClient<in TConnectionParams> : IDisposable {
     bool Connected { get; }
+    ILoggerFactory? LoggerFactory { get; set; }
     void Close();
 
     Task<IDeviceStream> GetStream();

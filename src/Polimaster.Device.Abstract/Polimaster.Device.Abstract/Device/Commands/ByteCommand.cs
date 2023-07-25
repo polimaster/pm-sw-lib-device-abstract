@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -12,7 +11,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
             await WriteInternal(cancellationToken);
             ValueChanged?.Invoke(Value);
         } catch (Exception e) {
-            Logger?.LogError(e, "Error while sending {N} command {C}",nameof(Write), GetType().Name);
+            LogError(e, nameof(Write));
             await Device.Transport.Close();
         } finally {
             Device.Semaphore.Release();
@@ -20,7 +19,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
     }
 
     private async Task WriteInternal(CancellationToken cancellationToken = new()) {
-        Logger?.LogDebug("Call {N} with command {C}", nameof(Write), GetType().Name);
+        LogCommand(nameof(Write));
         Validate();
         var command = Compile();
         var stream = await Device.Transport.Open();
@@ -33,7 +32,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
         try {
             await WriteInternal(cancellationToken);
 
-            Logger?.LogDebug("Call {N} with command {C}", nameof(Read), GetType().Name);
+            LogCommand(nameof(Read));
             
             var stream = await Device.Transport.Open();
             var data = await stream.ReadAsync(cancellationToken);
@@ -42,7 +41,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
             ValueChanged?.Invoke(Value);
             
         } catch (Exception e) {
-            Logger?.LogError(e, "Error while sending {N} command {C}",nameof(Read), GetType().Name);
+            LogError(e, nameof(Read));
             await Device.Transport.Close();
         } finally {
             Device.Semaphore.Release();
