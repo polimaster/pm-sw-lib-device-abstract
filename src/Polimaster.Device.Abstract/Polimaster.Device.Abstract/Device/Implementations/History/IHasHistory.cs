@@ -16,5 +16,5 @@ public interface IHasHistory<THistory> : IHasClock {
     /// <summary>
     /// <see cref="IHistoryManager{THistory}"/>
     /// </summary>
-    IHistoryManager<THistory> HistoryManager { get; set; }
+    IHistoryManager<THistory> HistoryManager { get; }
 }

@@ -1,3 +1,5 @@
+using System;
+
 namespace Polimaster.Device.Abstract.Device;
 
 /// <summary>
@@ -19,4 +21,14 @@ public struct DeviceInfo {
     /// Firmware number or ID
     /// </summary>
     public string? Firmware;
+
+    /// <summary>
+    /// Hardware version
+    /// </summary>
+    public Version? HardwareVersion;
+    
+    /// <summary>
+    /// Firmware version
+    /// </summary>
+    public Version? FirmwareVersion;
 }
