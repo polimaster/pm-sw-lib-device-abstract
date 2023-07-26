@@ -15,15 +15,12 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public virtual ICommand<T>? ReadCommand { get; set; }
     public virtual ICommand<T>? WriteCommand { get; set; }
+    
+    public bool ReadOnly => WriteCommand == null;
     public virtual T? Value { get; set; }
     public bool IsDirty { get; protected set; }
 
-    public bool IsValid {
-        get {
-            if (ValidationErrors == null || !ValidationErrors.Any()) return true;
-            return false;
-        }
-    }
+    public bool IsValid => ValidationErrors == null || !ValidationErrors.Any();
 
     public bool IsError => Exception != null;
     public IEnumerable<SettingValidationException>? ValidationErrors { get; protected set; }

@@ -23,6 +23,11 @@ public interface IDeviceSetting<T> {
     ICommand<T>? WriteCommand { get; set; }
     
     /// <summary>
+    /// Indicates if setting is readonly
+    /// </summary>
+    bool ReadOnly { get; }
+
+    /// <summary>
     /// Setting value
     /// </summary>
     T? Value { get; set; }
