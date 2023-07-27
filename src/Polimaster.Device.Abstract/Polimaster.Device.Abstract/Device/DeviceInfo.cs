@@ -8,9 +8,14 @@ namespace Polimaster.Device.Abstract.Device;
 public struct DeviceInfo {
 
     /// <summary>
-    /// Model of device
+    /// Model of device. Eq "PM1703"
     /// </summary>
     public string? Model;
+
+    /// <summary>
+    /// Device modification. Eq "MO II BT"
+    /// </summary>
+    public string? Modification;
 
     /// <summary>
     /// Serial number
