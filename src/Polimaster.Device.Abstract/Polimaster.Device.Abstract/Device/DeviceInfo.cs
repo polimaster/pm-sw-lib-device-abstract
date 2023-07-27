@@ -20,7 +20,7 @@ public struct DeviceInfo {
     /// <summary>
     /// Firmware number or ID
     /// </summary>
-    public string? Firmware;
+    public string? Id;
 
     /// <summary>
     /// Hardware version
