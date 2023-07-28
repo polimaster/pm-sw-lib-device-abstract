@@ -2,14 +2,6 @@
 
 Abstractions library for Polimaster devices. C# implementation for *netstandard.2*.
 
-# Setup
+# Usage
 
-How to setup project dev environment.
-
-# Build
-
-How to build instructions should be here.
-
-# Deploy
-
-How to deploy or install compiled software.
+How to use library.
