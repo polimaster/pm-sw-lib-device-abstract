@@ -6,7 +6,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract;
 
 /// <summary>
-/// Device discovery search for devices on particular interface (like IrDA or Bluetooth).
+/// Transport discovery searches for devices on particular interface (like IrDA or Bluetooth).
 /// </summary>
 /// <typeparam name="TConnectionParams"><see cref="ITransport{TConnectionParams}"/></typeparam>
 public interface ITransportDiscovery<TConnectionParams> : IDisposable {
