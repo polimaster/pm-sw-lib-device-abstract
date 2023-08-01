@@ -4,7 +4,13 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
+/// <summary>
+/// For sending commands as byte array
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class ByteCommand<T> : ACommand<T, byte[]> {
+    
+    /// <inheritdoc />
     protected override async Task Write(CancellationToken cancellationToken = new()) {
         await Device.Semaphore.WaitAsync(cancellationToken);
         try {
@@ -27,6 +33,7 @@ public abstract class ByteCommand<T> : ACommand<T, byte[]> {
         Thread.Sleep(10);
     }
 
+    /// <inheritdoc />
     protected override async Task Read(CancellationToken cancellationToken = new()) {
         await Device.Semaphore.WaitAsync(cancellationToken);
         try {

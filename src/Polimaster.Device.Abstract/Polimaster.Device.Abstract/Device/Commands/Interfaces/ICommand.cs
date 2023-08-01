@@ -6,7 +6,9 @@ using Polimaster.Device.Abstract.Device.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Interfaces;
 
-
+/// <summary>
+/// Device command
+/// </summary>
 public interface ICommand {
     /// <summary>
     /// Send command to device
@@ -37,5 +39,8 @@ public interface ICommand<T> : ICommand {
     /// </summary>
     T? Value { get; set; }
 
+    /// <summary>
+    /// Occurs when value is changed
+    /// </summary>
     Action<T?>? ValueChanged { get; set; }
 }
