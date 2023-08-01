@@ -16,6 +16,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     private ICommand<T>? _readCommand;
     private ICommand<T>? _writeCommand;
 
+    /// <inheritdoc />
     public override ICommand<T>? ReadCommand {
         get => _readCommand;
         set {
@@ -26,6 +27,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         }
     }
 
+    /// <inheritdoc />
     public override ICommand<T>? WriteCommand {
         get => _writeCommand;
         set {
@@ -36,6 +38,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         }
     }
 
+    /// <inheritdoc />
     public override T? Value {
         get => _value;
         set {
@@ -59,6 +62,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         _value = value;
     }
 
+    /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
         try {
             if (ReadCommand != null) await ReadCommand.Send(cancellationToken);
@@ -68,6 +72,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         }
     }
 
+    /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsDirty || !IsValid) return;
         try {

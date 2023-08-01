@@ -2,14 +2,23 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Polimaster.Device.Abstract.Transport; 
+namespace Polimaster.Device.Abstract.Transport;
 
+/// <inheritdoc />
 public abstract class ATransport<TConnectionParams> : ITransport<TConnectionParams> {
+    /// <inheritdoc />
     public string ConnectionId => $"{GetType().Name}:{ConnectionParams}";
+
+    /// <inheritdoc />
     public IClient<TConnectionParams> Client { get; protected set; }
+
+    /// <inheritdoc />
     public TConnectionParams ConnectionParams { get; protected set; }
-    
+
+    /// <inheritdoc />
     public Action? Opened { get; set; }
+
+    /// <inheritdoc />
     public Action? Closed { get; set; }
     
     // protected readonly ILogger<ITransport<TConnectionParams>>? Logger;
@@ -32,18 +41,20 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
         // Logger = loggerFactory?.CreateLogger<ITransport<TConnectionParams>>();
     }
 
+    /// <inheritdoc />
     public virtual Task<IDeviceStream> Open() {
         Client.Open(ConnectionParams);
         return Client.GetStream();
     }
 
+    /// <inheritdoc />
     public virtual Task Close() {
         Client.Close();
         return Task.CompletedTask;
     }
 
-    
 
+    /// <inheritdoc />
     public virtual void Dispose() {
         Close();
         Client.Dispose();

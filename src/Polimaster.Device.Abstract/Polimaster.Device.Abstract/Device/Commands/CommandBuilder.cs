@@ -5,31 +5,40 @@ using Polimaster.Device.Abstract.Device.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
+/// <inheritdoc />
 public class CommandBuilder : ICommandBuilder {
     private readonly ILoggerFactory? _loggerFactory;
     private ILogger? _logger;
     private IDevice? _device;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="loggerFactory"></param>
     public CommandBuilder(ILoggerFactory? loggerFactory = null) {
         _loggerFactory = loggerFactory;
     }
 
+    /// <inheritdoc />
     public ICommandBuilder With(ILogger? logger) {
         _logger = logger;
         return this;
     }
 
+    /// <inheritdoc />
     public ICommandBuilder With(IDevice? device) {
         _device = device;
         return this;
     }
 
+    /// <inheritdoc />
     public T Build<T, TCommand>(TCommand? initialData = default) where T : class, ICommand<TCommand>, new() {
         var result = Build<T>();
         result.Value = initialData;
         return result;
     }
 
+    /// <inheritdoc />
     public T Build<T>() where T : class, ICommand, new() {
         if (_device == null) throw new NullReferenceException("Device for command is null");
 

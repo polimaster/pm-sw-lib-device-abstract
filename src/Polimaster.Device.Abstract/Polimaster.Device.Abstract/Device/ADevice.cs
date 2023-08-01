@@ -17,24 +17,38 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 /// <inheritdoc cref="IDevice"/>
 public abstract class ADevice : IDevice {
+    /// <inheritdoc />
     public ICommandBuilder CommandBuilder { get; set; } = null!;
+
+    /// <inheritdoc />
     public ISettingBuilder SettingBuilder { get; set; } = null!;
+
+    /// <inheritdoc />
     public ITransport Transport { get; set; } = null!;
 
+    /// <inheritdoc />
     public DeviceInfo DeviceInfo { get; protected set; }
-    
+
+    /// <inheritdoc />
     public virtual string Id => Transport.ConnectionId;
+
+    /// <inheritdoc />
     public Action? IsDisposing { get; set; }
+
+    /// <inheritdoc />
     public ILogger<IDevice>? Logger { get; set; }
 
+    /// <inheritdoc />
     public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
-    
+
+    /// <inheritdoc />
     public void Dispose() {
         Logger?.LogDebug("Disposing device {D}", Id);
         IsDisposing?.Invoke();
         Transport.Dispose();
     }
 
+    /// <inheritdoc />
     public async Task ReadSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
@@ -44,6 +58,7 @@ public abstract class ADevice : IDevice {
         }
     }
 
+    /// <inheritdoc />
     public async Task WriteSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
@@ -53,6 +68,7 @@ public abstract class ADevice : IDevice {
         }
     }
 
+    /// <inheritdoc />
     public abstract void BuildSettings();
 
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
@@ -68,6 +84,7 @@ public abstract class ADevice : IDevice {
         if (task != null) await task;
     }
 
+    /// <inheritdoc />
     public IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
         var propertyInfos = GetType().GetProperties();
         return propertyInfos.Where(info => info.PropertyType.IsGenericType)
@@ -75,8 +92,10 @@ public abstract class ADevice : IDevice {
             .ToList();
     }
 
+    /// <inheritdoc />
     public SemaphoreSlim Semaphore { get; } = new(1,1);
 
+    /// <inheritdoc />
     public bool Equals(IDevice other) {
         return Id.Equals(other.Id);
     }
