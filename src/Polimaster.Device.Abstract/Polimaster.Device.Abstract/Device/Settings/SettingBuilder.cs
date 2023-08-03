@@ -10,22 +10,26 @@ public class SettingBuilder : ISettingBuilder {
     private object? _writeCommand;
     private object? _implementation;
 
+    /// <inheritdoc />
     public ISettingBuilder WithWriteCommand<TValue>(ICommand<TValue> command) {
         _writeCommand = command;
         return this;
     }
 
+    /// <inheritdoc />
     public ISettingBuilder WithReadCommand<TValue>(ICommand<TValue> command) {
         _readCommand = command;
         return this;
     }
 
+    /// <inheritdoc />
     public ISettingBuilder WithImplementation<T, TValue>()
         where T : class, IDeviceSetting<TValue>, new() {
         _implementation = Activator.CreateInstance<T>();
         return this;
     }
 
+    /// <inheritdoc />
     public IDeviceSetting<TValue> Build<TValue>() {
         var impl = _implementation as IDeviceSetting<TValue> ?? new DeviceSettingBase<TValue>();
 
@@ -39,6 +43,7 @@ public class SettingBuilder : ISettingBuilder {
         return impl;
     }
 
+    /// <inheritdoc />
     public T BuildWithProxy<T, TValue, TProxied>()
         where T : class, IDeviceSettingProxy<TValue, TProxied>, new() {
         var proxy = Activator.CreateInstance<T>();

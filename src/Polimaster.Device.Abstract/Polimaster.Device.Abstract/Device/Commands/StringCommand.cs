@@ -4,8 +4,14 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
-public abstract class StringCommand<T> : ACommand<T, string> {
 
+/// <summary>
+/// For sending string commands to device
+/// </summary>
+/// <typeparam name="T">Type of command value</typeparam>
+public abstract class StringCommand<T> : ACommand<T, string> {
+    
+    /// <inheritdoc />
     protected override async Task Write(CancellationToken cancellationToken = new()) {
         await Device.Semaphore.WaitAsync(cancellationToken);
         try {
@@ -28,6 +34,7 @@ public abstract class StringCommand<T> : ACommand<T, string> {
         Thread.Sleep(1);
     }
 
+    /// <inheritdoc />
     protected override async Task Read(CancellationToken cancellationToken = new()) {
         
         await Device.Semaphore.WaitAsync(cancellationToken);

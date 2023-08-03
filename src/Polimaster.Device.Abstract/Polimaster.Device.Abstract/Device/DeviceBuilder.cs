@@ -13,6 +13,12 @@ public class DeviceBuilder : IDeviceBuilder {
     private readonly ICommandBuilder _commandBuilder;
     private readonly ISettingBuilder _settingsBuilder;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="commandBuilder"></param>
+    /// <param name="settingsBuilder"></param>
+    /// <param name="loggerFactory"></param>
     public DeviceBuilder(ICommandBuilder commandBuilder, ISettingBuilder settingsBuilder,
         ILoggerFactory? loggerFactory = null) {
         _commandBuilder = commandBuilder;
@@ -20,11 +26,13 @@ public class DeviceBuilder : IDeviceBuilder {
         _loggerFactory = loggerFactory;
     }
 
+    /// <inheritdoc />
     public IDeviceBuilder With(ITransport transport) {
         _transport = transport;
         return this;
     }
 
+    /// <inheritdoc />
     public T Build<T>() where T : class, IDevice, new() {
         if (_transport == null) throw new DeviceException("Cant build device without transport layer");
 

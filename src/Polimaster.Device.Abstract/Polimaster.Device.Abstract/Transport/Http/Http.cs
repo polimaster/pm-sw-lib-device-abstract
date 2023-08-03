@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
+/// <summary>
+/// Http transport implementation
+/// </summary>
 public class Http : ATransport<HttpConnectionParams>, IHttpTransport {
     /// <summary>
     /// 
@@ -15,6 +18,7 @@ public class Http : ATransport<HttpConnectionParams>, IHttpTransport {
         ILoggerFactory? loggerFactory = null) : base(client, connectionParams, loggerFactory) {
     }
 
+    /// <inheritdoc />
     public override Task<IDeviceStream> Open() {
         if (Client.Connected) Client.GetStream();
         var connected = Client.OpenAsync(ConnectionParams).Wait(ConnectionParams.Timeout);

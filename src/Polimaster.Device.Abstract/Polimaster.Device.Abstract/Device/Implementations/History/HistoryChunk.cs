@@ -2,6 +2,10 @@
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
+/// <summary>
+/// Part of history returned from device
+/// </summary>
+/// <typeparam name="THistory"></typeparam>
 public struct HistoryChunk<THistory> {
     /// <summary>
     /// History records available in device
@@ -18,6 +22,9 @@ public struct HistoryChunk<THistory> {
     /// </summary>
     public IEnumerable<THistory>? Records;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public HistoryChunk() {
         Remaining = null;
         Completed = false;

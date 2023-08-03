@@ -22,6 +22,9 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// </summary>
     string Id { get; }
     
+    /// <summary>
+    /// 
+    /// </summary>
     public ILogger<IDevice>? Logger { get; set; }
     
     /// <summary>

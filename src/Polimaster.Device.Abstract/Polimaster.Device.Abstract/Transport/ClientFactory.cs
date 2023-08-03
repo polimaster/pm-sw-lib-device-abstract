@@ -4,7 +4,9 @@ using System.Reflection;
 
 namespace Polimaster.Device.Abstract.Transport;
 
+/// <inheritdoc />
 public class ClientFactory : IClientFactory {
+    /// <inheritdoc />
     public T CreateClient<T, TConnectionParams>() where T : IClient<TConnectionParams> {
         var t = typeof(T);
         if (!t.IsInterface) throw new TypeLoadException("Client type should be an interface");
