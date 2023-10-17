@@ -76,7 +76,10 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsDirty || !IsValid) return;
         try {
-            if (WriteCommand != null) await WriteCommand.Send(cancellationToken);
+            if (WriteCommand != null) {
+                WriteCommand.Value = Value;
+                await WriteCommand.Send(cancellationToken);
+            }
         } catch (Exception e) {
             Exception = e;
         }
