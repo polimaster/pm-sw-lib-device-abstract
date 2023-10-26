@@ -15,7 +15,7 @@ public class HttpTests {
 
     [Fact]
     public void ConnectionStateTests() {
-        var http = new Abstract.Transport.Http.Http(_clientMock.Object, new HttpConnectionParams { Ip = HOST, Port = PORT });
+        var http = new Abstract.Transport.Http.Http(new HttpConnectionParams { Ip = HOST, Port = PORT });
 
         _clientMock.Setup(s => s.Connected).Returns(false);
 
@@ -34,7 +34,7 @@ public class HttpTests {
     [Fact]
     public async void ShouldOpenConnection() {
         var httpConnectionParams = new HttpConnectionParams { Ip = HOST, Port = PORT };
-        var http = new Abstract.Transport.Http.Http(_clientMock.Object, httpConnectionParams);
+        var http = new Abstract.Transport.Http.Http(httpConnectionParams);
         await http.Open();
 
         _clientMock.Verify(v => v.OpenAsync(httpConnectionParams));
@@ -43,8 +43,7 @@ public class HttpTests {
 
     [Fact]
     public async void ShouldCloseConnection() {
-        var http = new Abstract.Transport.Http.Http(_clientMock.Object,
-            new HttpConnectionParams { Ip = HOST, Port = PORT });
+        var http = new Abstract.Transport.Http.Http(new HttpConnectionParams { Ip = HOST, Port = PORT });
         await http.Close();
 
         _clientMock.Verify(v => v.Close());
@@ -52,8 +51,7 @@ public class HttpTests {
 
     [Fact]
     public void ShouldCloseTcpClient() {
-        var http = new Abstract.Transport.Http.Http(_clientMock.Object,
-            new HttpConnectionParams { Ip = HOST, Port = PORT });
+        var http = new Abstract.Transport.Http.Http(new HttpConnectionParams { Ip = HOST, Port = PORT });
         http.Close();
 
         _clientMock.Verify(v => v.Close());
