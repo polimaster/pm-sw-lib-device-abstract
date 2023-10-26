@@ -69,6 +69,13 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
+    public async Task Execute(Func<Task> action) {
+        await Transport.Open();
+        await action.Invoke();
+        await Transport.Close();
+    }
+
+    /// <inheritdoc />
     public abstract void BuildSettings();
 
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {

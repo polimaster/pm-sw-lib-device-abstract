@@ -36,11 +36,13 @@ public interface ITransport : IDisposable {
 
 /// <inheritdoc cref="ITransport"/>
 /// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-public interface ITransport<TConnectionParams> : ITransport {
+/// <typeparam name="TClient">Client type</typeparam>
+public interface ITransport<out TClient, out TConnectionParams> : ITransport
+    where TClient : IClient<TConnectionParams>, new() {
     /// <summary>
     /// Transport client
     /// </summary>
-    IClient<TConnectionParams> Client { get; }
+    TClient? Client { get; }
 
     /// <summary>
     /// Parameters for connection

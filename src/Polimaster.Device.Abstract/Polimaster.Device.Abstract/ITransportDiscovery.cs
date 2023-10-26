@@ -8,8 +8,7 @@ namespace Polimaster.Device.Abstract;
 /// <summary>
 /// Transport discovery searches for devices on particular interface (like IrDA or Bluetooth).
 /// </summary>
-/// <typeparam name="TConnectionParams"><see cref="ITransport{TConnectionParams}"/></typeparam>
-public interface ITransportDiscovery<TConnectionParams> : IDisposable {
+public interface ITransportDiscovery : IDisposable {
 
     /// <summary>
     /// Start search for available devices
@@ -26,10 +25,10 @@ public interface ITransportDiscovery<TConnectionParams> : IDisposable {
     /// <summary>
     /// Occurs when device found on interface
     /// </summary>
-    Action<IEnumerable<ITransport<TConnectionParams>>>? Found { get; set; }
+    Action<IEnumerable<ITransport>>? Found { get; set; }
 
     /// <summary>
     /// Occurs when device detached from interface
     /// </summary>
-    Action<IEnumerable<ITransport<TConnectionParams>>>? Lost { get; set; }
+    Action<IEnumerable<ITransport>>? Lost { get; set; }
 }

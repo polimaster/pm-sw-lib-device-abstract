@@ -45,7 +45,7 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// <summary>
     /// Transport layer
     /// </summary>
-    /// <see cref="ITransport{TConnectionParams}"/>
+    /// <see cref="ITransport"/>
     ITransport Transport { get; set; }
 
     /// <summary>
@@ -77,6 +77,19 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task WriteSettings(CancellationToken cancellationToken = new());
+
+    /// <summary>
+    /// Read/write device data with managed transport connection. Connection will be opened and closed after execution.
+    /// This prevents situation when opened connection times out while idle and following calls throws exceptions.
+    /// </summary>
+    /// <example>
+    /// await device.Execute(async () =&gt; {
+    ///     await device.ReadDeviceInfo(stoppingToken);
+    /// });
+    /// </example>
+    /// <param name="action">Function to call</param>
+    /// <returns></returns>
+    Task Execute(Func<Task> action);
 
     /// <summary>
     /// Builds device settings with <see cref="SettingBuilder"/>

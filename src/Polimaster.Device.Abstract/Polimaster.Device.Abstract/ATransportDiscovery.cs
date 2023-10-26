@@ -7,11 +7,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract;
 
 /// <inheritdoc />
-public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscovery<TConnectionParams> {
-    /// <summary>
-    /// 
-    /// </summary>
-    protected readonly IClientFactory ClientFactory;
+public abstract class ATransportDiscovery : ITransportDiscovery {
     /// <summary>
     /// 
     /// </summary>
@@ -20,10 +16,8 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="factory"></param>
     /// <param name="loggerFactory"></param>
-    protected ATransportDiscovery(IClientFactory factory, ILoggerFactory? loggerFactory = null) {
-        ClientFactory = factory;
+    protected ATransportDiscovery(ILoggerFactory? loggerFactory = null) {
         LoggerFactory = loggerFactory;
     }
 
@@ -34,10 +28,10 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
     public abstract void Stop();
 
     /// <inheritdoc />
-    public Action<IEnumerable<ITransport<TConnectionParams>>>? Found { get; set; }
+    public Action<IEnumerable<ITransport>>? Found { get; set; }
 
     /// <inheritdoc />
-    public Action<IEnumerable<ITransport<TConnectionParams>>>? Lost { get; set; }
+    public Action<IEnumerable<ITransport>>? Lost { get; set; }
 
     /// <inheritdoc />
     public abstract void Dispose();

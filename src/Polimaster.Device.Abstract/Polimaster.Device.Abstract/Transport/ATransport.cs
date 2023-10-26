@@ -5,51 +5,55 @@ using Microsoft.Extensions.Logging;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class ATransport<TConnectionParams> : ITransport<TConnectionParams> {
+public abstract class ATransport<TClient, TConnectionParams> : ITransport<TClient, TConnectionParams>
+    where TClient : class, IClient<TConnectionParams>, new() {
+    private readonly ILoggerFactory? _loggerFactory;
+
     /// <inheritdoc />
     public string ConnectionId => $"{GetType().Name}:{ConnectionParams}";
 
     /// <inheritdoc />
-    public IClient<TConnectionParams> Client { get; protected set; }
+    public TClient? Client { get; protected set; }
 
     /// <inheritdoc />
-    public TConnectionParams ConnectionParams { get; protected set; }
+    public TConnectionParams ConnectionParams { get; }
 
     /// <inheritdoc />
     public Action? Opened { get; set; }
 
     /// <inheritdoc />
     public Action? Closed { get; set; }
-    
-    // protected readonly ILogger<ITransport<TConnectionParams>>? Logger;
-
 
     /// <summary>
+    /// 
     /// </summary>
-    /// <param name="client"></param>
-    /// <param name="connectionParams">Parameters for underlying client, <see cref="ConnectionParams" /></param>
+    /// <param name="connectionParams"></param>
     /// <param name="loggerFactory"></param>
-    protected ATransport(IClient<TConnectionParams> client, TConnectionParams connectionParams,
-        ILoggerFactory? loggerFactory = null) {
+    protected ATransport(TConnectionParams connectionParams, ILoggerFactory? loggerFactory = null) {
+        _loggerFactory = loggerFactory;
         ConnectionParams = connectionParams;
-        Client = client;
-        Client.LoggerFactory = loggerFactory;
-
-        Client.Opened += () => Opened?.Invoke();
-        Client.Closed += () => Closed?.Invoke();
-
-        // Logger = loggerFactory?.CreateLogger<ITransport<TConnectionParams>>();
     }
 
     /// <inheritdoc />
     public virtual Task<IDeviceStream> Open() {
+        if (Client == null) {
+            Client = new TClient();
+            Client.LoggerFactory = _loggerFactory;
+            Client.Opened += () => Opened?.Invoke();
+            Client.Closed += () => Closed?.Invoke();
+        }
+
         Client.Open(ConnectionParams);
         return Client.GetStream();
     }
 
     /// <inheritdoc />
     public virtual Task Close() {
+        if (Client == null) return Task.CompletedTask;
         Client.Close();
+        Client.Opened -= () => Opened?.Invoke();
+        Client.Closed -= () => Closed?.Invoke();
+        Client = default;
         return Task.CompletedTask;
     }
 
@@ -57,6 +61,6 @@ public abstract class ATransport<TConnectionParams> : ITransport<TConnectionPara
     /// <inheritdoc />
     public virtual void Dispose() {
         Close();
-        Client.Dispose();
+        Client?.Dispose();
     }
 }

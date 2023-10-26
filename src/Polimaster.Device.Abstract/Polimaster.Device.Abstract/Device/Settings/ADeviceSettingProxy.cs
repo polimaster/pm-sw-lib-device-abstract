@@ -4,7 +4,6 @@ using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
-
 /// <inheritdoc cref="IDeviceSettingProxy{T,TProxied}"/>
 public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDeviceSettingProxy<T, TProxied> {
     /// <inheritdoc />
