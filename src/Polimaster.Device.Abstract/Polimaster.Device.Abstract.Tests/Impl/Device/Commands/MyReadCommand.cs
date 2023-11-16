@@ -1,11 +1,13 @@
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Commands; 
 
-public class MyReadCommand : StringCommand<MyParam> {
+public class MyReadCommand : StringCommandRead<MyParam> {
+    public MyReadCommand(ILoggerFactory? loggerFactory = null) : base(loggerFactory) {
+    }
+
     protected override string Compile() {
         return $"{Value?.CommandPid} : {Value?.Value}";
     }
@@ -14,9 +16,5 @@ public class MyReadCommand : StringCommand<MyParam> {
         Value ??= new MyParam();
         Value.Value = data;
         return Value;
-    }
-
-    public override async Task Send(CancellationToken cancellationToken = new CancellationToken()) {
-        await Read(cancellationToken);
     }
 }

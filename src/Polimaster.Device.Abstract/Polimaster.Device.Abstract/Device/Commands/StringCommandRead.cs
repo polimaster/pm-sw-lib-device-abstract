@@ -15,6 +15,10 @@ public abstract class StringCommandRead<T> : ReadCommand<T, string> {
     }
 
     /// <inheritdoc />
+    protected override async Task WriteData(IDeviceStream stream, string command, CancellationToken cancellationToken) =>
+        await stream.WriteLineAsync(command, cancellationToken);
+
+    /// <inheritdoc />
     protected override async Task<string> ReadData(IDeviceStream stream, CancellationToken cancellationToken) => 
         await stream.ReadLineAsync(cancellationToken);
 }

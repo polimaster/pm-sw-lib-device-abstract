@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
@@ -18,11 +17,10 @@ public class Http : ATransport<TcpClientAdapter, HttpConnectionParams>, IHttpTra
     }
 
     /// <inheritdoc />
-    public override Task OpenAsync() {
-        if (Client is { Connected: true }) return Client.GetStream();
-        var connected = Client != null && Client.OpenAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
-        if (!connected)
-            throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
-        return Client?.GetStream() ?? throw new InvalidOperationException();
+    public override void Open() {
+        if (Client.Connected) return;
+        Logger?.LogDebug("Open transport connection");
+        var connected = Client.OpenAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
+        if (!connected) throw new TimeoutException($"Connection to {ConnectionParams.Ip}:{ConnectionParams.Port} timed out");
     }
 }

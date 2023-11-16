@@ -20,8 +20,8 @@ public class MyDevice : ADevice, IMyDevice {
     public MyDevice(ITransport transport, ILoggerFactory? loggerFactory = null) : base(transport, loggerFactory) {
         
         // building device commands and settings
-        var testSettingsReadCommand = CommandBuilder.Build<MyReadCommand>();
-        var testSettingsWriteCommand = CommandBuilder.Build<MyWriteCommand>();
+        var testSettingsReadCommand = new MyReadCommand(loggerFactory);
+        var testSettingsWriteCommand = new MyWriteCommand(loggerFactory);
         MyParamSetting = SettingBuilder.
             WithReadCommand(testSettingsReadCommand).
             WithWriteCommand(testSettingsWriteCommand).

@@ -11,8 +11,11 @@ public abstract class ATransport<TClient, TConnectionParams> : ITransport
     
     /// <inheritdoc />
     public string ConnectionId => $"{GetType().Name}:{ConnectionParams}";
-    
-    private readonly TClient _client;
+
+    /// <summary>
+    /// Underlying client
+    /// </summary>
+    protected TClient Client;
     private SemaphoreSlim Semaphore { get; } = new(1,1);
     
     /// <summary>
@@ -43,34 +46,34 @@ public abstract class ATransport<TClient, TConnectionParams> : ITransport
     protected ATransport(TConnectionParams connectionParams, ILoggerFactory? loggerFactory = null) {
         ConnectionParams = connectionParams;
         Logger = loggerFactory?.CreateLogger(GetType());
-        _client = new TClient();
+        Client = new TClient();
     }
 
     
 
     /// <inheritdoc />
-    public async Task OpenAsync() {
-        if (_client.Connected) return;
+    public virtual async Task OpenAsync() {
+        if (Client.Connected) return;
         Logger?.LogDebug("Open transport connection (async)");
-        await _client.OpenAsync(ConnectionParams);
+        await Client.OpenAsync(ConnectionParams);
     }
 
     /// <inheritdoc />
     public virtual void Open() {
-        if(_client.Connected) return;
+        if(Client.Connected) return;
         Logger?.LogDebug("Open transport connection");
-        _client.Open(ConnectionParams);
+        Client.Open(ConnectionParams);
     }
 
     /// <inheritdoc />
-    public virtual void Close() => _client.Close();
+    public virtual void Close() => Client.Close();
 
     /// <inheritdoc />
-    public async Task Exec(ICommand command, CancellationToken cancellationToken = new()) {
+    public virtual async Task Exec(ICommand command, CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Executing command {Name}", command.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = await _client.GetStream();
+            var stream = await Client.GetStream();
             await command.Send(stream, Sleep, cancellationToken);
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
@@ -81,6 +84,6 @@ public abstract class ATransport<TClient, TConnectionParams> : ITransport
     public virtual void Dispose() {
         Logger?.LogDebug("Disposing transport connection");
         Close();
-        _client.Dispose();
+        Client.Dispose();
     }
 }
