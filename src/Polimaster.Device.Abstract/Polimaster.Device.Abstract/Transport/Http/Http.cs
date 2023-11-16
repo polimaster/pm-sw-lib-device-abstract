@@ -18,7 +18,7 @@ public class Http : ATransport<TcpClientAdapter, HttpConnectionParams>, IHttpTra
     }
 
     /// <inheritdoc />
-    public override Task<IDeviceStream> Open() {
+    public override Task OpenAsync() {
         if (Client is { Connected: true }) return Client.GetStream();
         var connected = Client != null && Client.OpenAsync(ConnectionParams).Wait(ConnectionParams.Timeout);
         if (!connected)

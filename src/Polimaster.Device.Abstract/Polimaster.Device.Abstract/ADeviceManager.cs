@@ -7,10 +7,6 @@ namespace Polimaster.Device.Abstract;
 
 /// <inheritdoc />
 public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
-    /// <summary>
-    /// Device builder
-    /// </summary>
-    protected readonly IDeviceBuilder DeviceBuilder;
 
     /// <summary>
     /// Logger
@@ -29,10 +25,8 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="deviceBuilder"></param>
     /// <param name="loggerFactory"></param>
-    protected ADeviceManager(IDeviceBuilder deviceBuilder, ILoggerFactory? loggerFactory = null) {
-        DeviceBuilder = deviceBuilder;
+    protected ADeviceManager(ILoggerFactory? loggerFactory = null) {
         Logger = loggerFactory?.CreateLogger<ADeviceManager<T>>();
 
         Removed += dev => { Logger?.LogInformation("Device removed {D}", dev.Id); };

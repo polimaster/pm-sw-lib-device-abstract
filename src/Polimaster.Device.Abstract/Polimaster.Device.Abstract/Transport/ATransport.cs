@@ -1,66 +1,86 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class ATransport<TClient, TConnectionParams> : ITransport<TClient, TConnectionParams>
+public abstract class ATransport<TClient, TConnectionParams> : ITransport
     where TClient : class, IClient<TConnectionParams>, new() {
-    private readonly ILoggerFactory? _loggerFactory;
-
+    
     /// <inheritdoc />
     public string ConnectionId => $"{GetType().Name}:{ConnectionParams}";
+    
+    private readonly TClient _client;
+    private SemaphoreSlim Semaphore { get; } = new(1,1);
+    
+    /// <summary>
+    /// If enabled, only one call of <see cref="Exec"/> will be executed at a time
+    /// </summary>
+    protected virtual bool SyncStreamAccess => true;
+    
+    /// <summary>
+    /// Amount of milliseconds to sleep after command execution
+    /// </summary>
+    protected virtual ushort Sleep => 1;
 
-    /// <inheritdoc />
-    public TClient? Client { get; protected set; }
-
-    /// <inheritdoc />
-    public TConnectionParams ConnectionParams { get; }
-
-    /// <inheritdoc />
-    public Action? Opened { get; set; }
-
-    /// <inheritdoc />
-    public Action? Closed { get; set; }
+    /// <summary>
+    /// Parameters for connection
+    /// </summary>
+    protected TConnectionParams ConnectionParams { get; }
+    
+    /// <summary>
+    /// Logger
+    /// </summary>
+    protected ILogger? Logger { get; }
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="connectionParams"></param>
+    /// <param name="connectionParams">Parameters for connection</param>
     /// <param name="loggerFactory"></param>
     protected ATransport(TConnectionParams connectionParams, ILoggerFactory? loggerFactory = null) {
-        _loggerFactory = loggerFactory;
         ConnectionParams = connectionParams;
+        Logger = loggerFactory?.CreateLogger(GetType());
+        _client = new TClient();
+    }
+
+    
+
+    /// <inheritdoc />
+    public async Task OpenAsync() {
+        if (_client.Connected) return;
+        Logger?.LogDebug("Open transport connection (async)");
+        await _client.OpenAsync(ConnectionParams);
     }
 
     /// <inheritdoc />
-    public virtual Task<IDeviceStream> Open() {
-        if (Client == null) {
-            Client = new TClient();
-            Client.LoggerFactory = _loggerFactory;
-            Client.Opened += () => Opened?.Invoke();
-            Client.Closed += () => Closed?.Invoke();
+    public virtual void Open() {
+        if(_client.Connected) return;
+        Logger?.LogDebug("Open transport connection");
+        _client.Open(ConnectionParams);
+    }
+
+    /// <inheritdoc />
+    public virtual void Close() => _client.Close();
+
+    /// <inheritdoc />
+    public async Task Exec(ICommand command, CancellationToken cancellationToken = new()) {
+        Logger?.LogDebug("Executing command {Name}", command.GetType().Name);
+        if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+        try {
+            var stream = await _client.GetStream();
+            await command.Send(stream, Sleep, cancellationToken);
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
         }
-
-        Client.Open(ConnectionParams);
-        return Client.GetStream();
     }
-
-    /// <inheritdoc />
-    public virtual Task Close() {
-        if (Client == null) return Task.CompletedTask;
-        Client.Close();
-        Client.Opened -= () => Opened?.Invoke();
-        Client.Closed -= () => Closed?.Invoke();
-        Client = default;
-        return Task.CompletedTask;
-    }
-
 
     /// <inheritdoc />
     public virtual void Dispose() {
+        Logger?.LogDebug("Disposing transport connection");
         Close();
-        Client?.Dispose();
+        _client.Dispose();
     }
 }

@@ -1,14 +1,25 @@
 ﻿using System;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc cref="ISettingBuilder"/>
 public class SettingBuilder : ISettingBuilder {
+    private readonly ITransport _transport;
     private object? _readCommand;
     private object? _writeCommand;
-    private object? _implementation;
+    private Type? _implementation;
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="transport">Device transport</param>
+    public SettingBuilder(ITransport transport) {
+        _transport = transport;
+    }
 
     /// <inheritdoc />
     public ISettingBuilder WithWriteCommand<TValue>(ICommand<TValue> command) {
@@ -23,21 +34,19 @@ public class SettingBuilder : ISettingBuilder {
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithImplementation<T, TValue>()
-        where T : class, IDeviceSetting<TValue>, new() {
-        _implementation = Activator.CreateInstance<T>();
+    public ISettingBuilder WithImplementation<T, TSetting>() where T : ADeviceSetting<TSetting> {
+        _implementation = typeof(T);
         return this;
     }
 
     /// <inheritdoc />
     public IDeviceSetting<TValue> Build<TValue>() {
-        var impl = _implementation as IDeviceSetting<TValue> ?? new DeviceSettingBase<TValue>();
-
-        var readCommand = _readCommand as ICommand<TValue>;
+        if (_readCommand is not ICommand<TValue> readCommand) throw new NullReferenceException("Read command cant be null");
         var writeCommand = _writeCommand as ICommand<TValue>;
 
-        impl.ReadCommand = readCommand;
-        impl.WriteCommand = writeCommand;
+        var impl = _implementation == null
+            ? new DeviceSettingBase<TValue>(_transport, readCommand, writeCommand)
+            : (IDeviceSetting<TValue>)Activator.CreateInstance(_implementation, _transport, readCommand, writeCommand);
 
         CleanUp();
         return impl;
@@ -45,9 +54,9 @@ public class SettingBuilder : ISettingBuilder {
 
     /// <inheritdoc />
     public T BuildWithProxy<T, TValue, TProxied>()
-        where T : class, IDeviceSettingProxy<TValue, TProxied>, new() {
-        var proxy = Activator.CreateInstance<T>();
-        proxy.ProxiedSetting = Build<TProxied>();
+        where T : ADeviceSettingProxy<TValue, TProxied> {
+        var proxied = Build<TProxied>();
+        var proxy = (T)Activator.CreateInstance(typeof(T), proxied);
         return proxy;
     }
 

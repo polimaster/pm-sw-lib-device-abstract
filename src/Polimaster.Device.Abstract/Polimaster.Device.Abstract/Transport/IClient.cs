@@ -9,15 +9,11 @@ namespace Polimaster.Device.Abstract.Transport;
 /// </summary>
 /// <typeparam name="TConnectionParams">Type of device connection parameters</typeparam>
 public interface IClient<in TConnectionParams> : IDisposable {
+
     /// <summary>
     /// Returns true if client connected
     /// </summary>
     bool Connected { get; }
-
-    /// <summary>
-    /// Logger factory
-    /// </summary>
-    ILoggerFactory? LoggerFactory { get; set; }
 
     /// <summary>
     /// Close connection
@@ -42,14 +38,4 @@ public interface IClient<in TConnectionParams> : IDisposable {
     /// <param name="connectionParams"></param>
     /// <returns></returns>
     Task OpenAsync(TConnectionParams connectionParams);
-
-    /// <summary>
-    /// Occurs when connection opened
-    /// </summary>
-    Action? Opened { get; set; }
-
-    /// <summary>
-    /// Occurs when connection closed
-    /// </summary>
-    Action? Closed { get; set; }
 }

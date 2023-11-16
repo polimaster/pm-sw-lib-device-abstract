@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -13,17 +14,36 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
-    /// <inheritdoc />
-    public virtual ICommand<T>? ReadCommand { get; set; }
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="transport"></param>
+    /// <param name="readCommand">Command for read data</param>
+    /// <param name="writeCommand">Command for write data. If null it creates readonly setting.</param>
+    protected ADeviceSetting(ITransport transport,ICommand<T> readCommand, ICommand<T>? writeCommand = null) {
+        Transport = transport;
+        ReadCommand = readCommand;
+        WriteCommand = writeCommand;
+    }
 
-    /// <inheritdoc />
-    public virtual ICommand<T>? WriteCommand { get; set; }
+    /// <see cref="ITransport"/>
+    protected ITransport Transport { get; }
+
+    /// <summary>
+    /// Command for read data
+    /// </summary>
+    protected ICommand<T> ReadCommand { get; }
+
+    /// <summary>
+    /// Command for write data
+    /// </summary>
+    protected ICommand<T>? WriteCommand { get; }
 
     /// <inheritdoc />
     public bool ReadOnly => WriteCommand == null;
 
     /// <inheritdoc />
-    public virtual T? Value { get; set; }
+    public abstract T? Value { get; set; }
 
     /// <inheritdoc />
     public bool IsDirty { get; protected set; }

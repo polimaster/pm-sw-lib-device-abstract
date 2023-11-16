@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Commands;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Interfaces;
 
@@ -23,42 +19,21 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     string Id { get; }
     
     /// <summary>
-    /// 
-    /// </summary>
-    public ILogger<IDevice>? Logger { get; set; }
-    
-    /// <summary>
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
     Action? IsDisposing { get; set; }
-    
-    /// <summary>
-    /// Instance of see <see cref="ICommandBuilder"/>
-    /// </summary>
-    ICommandBuilder CommandBuilder { get; set; }
-
-    /// <summary>
-    /// Instance of <see cref="ISettingBuilder"/>
-    /// </summary>
-    ISettingBuilder SettingBuilder { get; set; }
-
-    /// <summary>
-    /// Transport layer
-    /// </summary>
-    /// <see cref="ITransport"/>
-    ITransport Transport { get; set; }
 
     /// <summary>
     /// Device information data
     /// </summary>
-    DeviceInfo DeviceInfo { get; }
+    DeviceInfo? DeviceInfo { get; }
 
     /// <summary>
     /// Read device information
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
+    Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken = new());
     
     /// <summary>
     ///  Reads device settings.
@@ -90,11 +65,6 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// <param name="action">Function to call</param>
     /// <returns></returns>
     Task Execute(Func<Task> action);
-
-    /// <summary>
-    /// Builds device settings with <see cref="SettingBuilder"/>
-    /// </summary>
-    void BuildSettings();
     
     /// <summary>
     /// Search for <see cref="IDeviceSetting{T}"/> properties in device object
@@ -106,5 +76,5 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// Semaphore for exclusive access to device while sending commands.
     /// See <see cref="StringCommand{T}.Write"/> as example.
     /// </summary>
-    SemaphoreSlim Semaphore { get; }
+    // SemaphoreSlim Semaphore { get; }
 }

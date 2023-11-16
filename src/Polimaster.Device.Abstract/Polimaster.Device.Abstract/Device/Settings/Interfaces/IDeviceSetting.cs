@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
+using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
@@ -11,16 +11,6 @@ namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 /// </summary>
 /// <typeparam name="T">Type of setting <see cref="Value"/></typeparam>
 public interface IDeviceSetting<T> {
-    
-    /// <summary>
-    /// Command for read data
-    /// </summary>
-    ICommand<T>? ReadCommand { get; set; }
-    
-    /// <summary>
-    /// Command for write data
-    /// </summary>
-    ICommand<T>? WriteCommand { get; set; }
     
     /// <summary>
     /// Indicates if setting is readonly

@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
 using Polimaster.Device.Abstract.Device.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport;
 
@@ -17,39 +17,47 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 /// <inheritdoc cref="IDevice"/>
 public abstract class ADevice : IDevice {
-    /// <inheritdoc />
-    public ICommandBuilder CommandBuilder { get; set; } = null!;
+
+    /// <see cref="ISettingBuilder"/>
+    protected readonly ISettingBuilder SettingBuilder;
+
+    /// <summary>
+    /// Transport layer
+    /// </summary>
+    /// <see cref="ITransport"/>
+    private readonly ITransport _transport;
 
     /// <inheritdoc />
-    public ISettingBuilder SettingBuilder { get; set; } = null!;
+    public DeviceInfo? DeviceInfo { get; protected set; }
 
     /// <inheritdoc />
-    public ITransport Transport { get; set; } = null!;
-
-    /// <inheritdoc />
-    public DeviceInfo DeviceInfo { get; protected set; }
-
-    /// <inheritdoc />
-    public virtual string Id => Transport.ConnectionId;
+    public virtual string Id => _transport.ConnectionId;
 
     /// <inheritdoc />
     public Action? IsDisposing { get; set; }
-
-    /// <inheritdoc />
-    public ILogger<IDevice>? Logger { get; set; }
-
-    /// <inheritdoc />
-    public abstract Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new());
-
-    /// <inheritdoc />
-    public void Dispose() {
-        Logger?.LogDebug("Disposing device {D}", Id);
-        IsDisposing?.Invoke();
-        Transport.Dispose();
+    
+    /// <summary>
+    /// Logger
+    /// </summary>
+    protected ILogger<IDevice>? Logger { get; }
+    
+    /// <summary>
+    /// Device constructor
+    /// </summary>
+    /// <param name="transport">Device transport layer</param>
+    /// <param name="loggerFactory">Logger factory</param>
+    protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
+        _transport = transport;
+        SettingBuilder = new SettingBuilder(transport);
+        Logger = loggerFactory?.CreateLogger<IDevice>();
     }
+    
 
     /// <inheritdoc />
-    public async Task ReadSettings(CancellationToken cancellationToken) {
+    public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken = new());
+
+    /// <inheritdoc />
+    public virtual async Task ReadSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) {
@@ -59,7 +67,7 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public async Task WriteSettings(CancellationToken cancellationToken) {
+    public virtual async Task WriteSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) {
@@ -70,13 +78,19 @@ public abstract class ADevice : IDevice {
 
     /// <inheritdoc />
     public async Task Execute(Func<Task> action) {
-        await Transport.Open();
+        await _transport.OpenAsync();
         await action.Invoke();
-        await Transport.Close();
+        _transport.Close();
+        // await Execute(async stream => {
+        //     await stream.WriteLineAsync("0dsd", new CancellationToken());
+        // });
     }
 
-    /// <inheritdoc />
-    public abstract void BuildSettings();
+    // public async Task Execute(Func<IDeviceStream, Task> action) {
+    //     var stream = await Transport.Open();
+    //     await action.Invoke(stream);
+    //     await Transport.Close();
+    // }
 
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
         var method = info.PropertyType.GetMethod(methodName);
@@ -100,10 +114,14 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public SemaphoreSlim Semaphore { get; } = new(1,1);
-
-    /// <inheritdoc />
     public bool Equals(IDevice other) {
         return Id.Equals(other.Id);
+    }
+    
+    /// <inheritdoc />
+    public void Dispose() {
+        Logger?.LogDebug("Disposing device {D}", Id);
+        IsDisposing?.Invoke();
+        _transport.Dispose();
     }
 }

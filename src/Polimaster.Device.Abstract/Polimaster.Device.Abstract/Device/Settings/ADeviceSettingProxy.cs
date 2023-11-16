@@ -1,38 +1,72 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
-/// <inheritdoc cref="IDeviceSettingProxy{T,TProxied}"/>
-public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDeviceSettingProxy<T, TProxied> {
-    /// <inheritdoc />
-    public IDeviceSetting<TProxied>? ProxiedSetting { get; set; }
+/// <summary>
+/// Proxied device setting. Converts underlying <see cref="IDeviceSetting{T}"/> value to its own.
+/// Usually, its required when device returns structured value like byte masks or complex strings.
+/// </summary>
+public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="proxiedSetting">Setting to proxy</param>
+    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting) {
+        ProxiedSetting = proxiedSetting;
+    }
+
+    /// <summary>
+    /// Proxied <see cref="IDeviceSetting{T}"/> 
+    /// </summary>
+    protected IDeviceSetting<TProxied> ProxiedSetting { get; set; }
 
     /// <inheritdoc />
-    public override T? Value {
-        get => ProxiedSetting != null ? FromProxied(ProxiedSetting.Value) : default;
-        set {
-            if (ProxiedSetting != null) ProxiedSetting.Value = ToProxied(value);
-        }
+    public bool ReadOnly => ProxiedSetting.ReadOnly;
+
+    /// <inheritdoc />
+    public virtual T? Value {
+        get => FromProxied(ProxiedSetting.Value);
+        set => ProxiedSetting.Value = ToProxied(value);
     }
 
     /// <inheritdoc />
-    public abstract T? FromProxied(TProxied? value);
+    public bool IsDirty => ProxiedSetting.IsDirty;
 
     /// <inheritdoc />
-    public abstract TProxied? ToProxied(T? value);
+    public bool IsValid => ProxiedSetting.IsValid;
 
     /// <inheritdoc />
-    public override async Task CommitChanges(CancellationToken cancellationToken) {
-        if (ProxiedSetting != null) await ProxiedSetting.CommitChanges(cancellationToken);
-    }
+    public bool IsError => ProxiedSetting.IsError;
 
     /// <inheritdoc />
-    public override async Task Read(CancellationToken cancellationToken) {
-        if (ProxiedSetting != null) {
-            if (ProxiedSetting.Value != null) return;
-            await ProxiedSetting.Read(cancellationToken);
-        }
-    }
+    public IEnumerable<SettingValidationException>? ValidationErrors => ProxiedSetting.ValidationErrors;
+
+    /// <inheritdoc />
+    public Exception? Exception => ProxiedSetting.Exception;
+
+    /// <summary>
+    /// Converts <see cref="ProxiedSetting"/> value to <see cref="IDeviceSetting{T}.Value"/>
+    /// </summary>
+    /// <param name="value"><see cref="ProxiedSetting"/> value</param>
+    /// <returns>Result of conversion</returns>
+    protected abstract T? FromProxied(TProxied? value);
+
+    /// <summary>
+    /// Converts <see cref="IDeviceSetting{T}.Value"/> to <see cref="ProxiedSetting"/> value
+    /// </summary>
+    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
+    /// <returns>Result of conversion</returns>
+    protected abstract TProxied? ToProxied(T? value);
+
+    /// <inheritdoc />
+    public virtual async Task CommitChanges(CancellationToken cancellationToken) => 
+        await ProxiedSetting.CommitChanges(cancellationToken);
+
+    /// <inheritdoc />
+    public virtual async Task Read(CancellationToken cancellationToken) => 
+        await ProxiedSetting.Read(cancellationToken);
 }
