@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <summary>
 /// Write command
 /// </summary>
-/// <typeparam name="TValue">Type of command result <see cref="ICommand"/></typeparam>
+/// <typeparam name="TValue">Type of command result <see cref="ICommand{TValue,TStream}"/></typeparam>
 /// <typeparam name="TCommand">Command type</typeparam>
 public abstract class WriteCommand<TValue, TCommand> : ACommand<TValue, TCommand> {
     /// <summary>
@@ -20,24 +20,25 @@ public abstract class WriteCommand<TValue, TCommand> : ACommand<TValue, TCommand
     }
 
     /// <inheritdoc />
-    public override async Task Send(IDeviceStream stream, ushort sleep, CancellationToken cancellationToken = new()) {
-        await Write(stream, sleep, cancellationToken);
-        ValueChanged?.Invoke(Value);
+    public override async Task<TValue?> Send<TStream>(TStream stream,
+        TValue? value,
+        CancellationToken cancellationToken = new()) {
+        await Write(value, stream, cancellationToken);
+        return default;
     }
 
     /// <summary>
     /// Write command
     /// </summary>
+    /// <param name="value"></param>
     /// <param name="stream"></param>
-    /// <param name="sleep"></param>
     /// <param name="cancellationToken"></param>
-    protected async Task Write(IDeviceStream stream, ushort sleep, CancellationToken cancellationToken) {
+    protected async Task Write<TStream>(TValue? value, TStream stream, CancellationToken cancellationToken) where TStream : IDeviceStream<TCommand> {
         try {
             LogCommand(nameof(Write));
             Validate();
-            var command = Compile();
+            var command = Compile(value);
             await WriteData(stream, command, cancellationToken);
-            Thread.Sleep(sleep);
         } catch (Exception e) {
             LogError(e, nameof(Write));
             throw;
@@ -51,5 +52,5 @@ public abstract class WriteCommand<TValue, TCommand> : ACommand<TValue, TCommand
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract Task WriteData(IDeviceStream stream, TCommand command, CancellationToken cancellationToken);
+    protected abstract Task WriteData<TStream>(TStream stream, TCommand command, CancellationToken cancellationToken) where TStream : IDeviceStream<TCommand>;
 }

@@ -8,7 +8,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <inheritdoc />
-public abstract class ACommand<TValue, TCommand> : ICommand<TValue> {
+public abstract class ACommand<TValue, TCommand> : ICommand<TValue, TCommand> {
     /// <summary>
     /// 
     /// </summary>
@@ -22,19 +22,12 @@ public abstract class ACommand<TValue, TCommand> : ICommand<TValue> {
     /// </summary>
     protected ILogger? Logger { get; }
 
-    
-
-    /// <inheritdoc />
-    public TValue? Value { get; set; }
-
-    /// <inheritdoc />
-    public Action<TValue?>? ValueChanged { get; set; }
-
     /// <summary>
     /// Returns formatted command to be send to device
     /// </summary>
+    /// <param name="value"></param>
     /// <exception cref="CommandCompilationException"></exception>
-    protected abstract TCommand Compile();
+    protected abstract TCommand Compile(TValue? value);
 
     /// <summary>
     /// Validates command or/and its parameters before execution.
@@ -56,5 +49,5 @@ public abstract class ACommand<TValue, TCommand> : ICommand<TValue> {
     protected void LogError(Exception e, string methodName) => Logger?.LogError(e, "Error while sending {N} command {C}",methodName, GetType().Name);
 
     /// <inheritdoc />
-    public abstract Task Send(IDeviceStream stream, ushort sleep, CancellationToken cancellationToken = new());
+    public abstract Task<TValue?> Send<TStream>(TStream stream, TValue? value = default, CancellationToken cancellationToken = new()) where TStream : IDeviceStream<TCommand>;
 }

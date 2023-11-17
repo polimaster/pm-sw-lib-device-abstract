@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc cref="ISettingBuilder"/>
 public class SettingBuilder : ISettingBuilder {
-    private readonly ITransport _transport;
+    private readonly TTransport _transport;
     private object? _readCommand;
     private object? _writeCommand;
     private Type? _implementation;
@@ -17,32 +17,32 @@ public class SettingBuilder : ISettingBuilder {
     /// 
     /// </summary>
     /// <param name="transport">Device transport</param>
-    public SettingBuilder(ITransport transport) {
+    public SettingBuilder(TTransport transport) {
         _transport = transport;
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithWriteCommand<TValue>(ICommand<TValue> command) {
+    public ISettingBuilder WithWriteCommand<TValue, T>(ICommand<TValue, T> command) {
         _writeCommand = command;
         return this;
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithReadCommand<TValue>(ICommand<TValue> command) {
+    public ISettingBuilder WithReadCommand<TValue, T>(ICommand<TValue, T> command) {
         _readCommand = command;
         return this;
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithImplementation<T, TSetting>() where T : ADeviceSetting<TSetting> {
+    public ISettingBuilder WithImplementation<T, TSetting>() where T : IDeviceSetting<TSetting> {
         _implementation = typeof(T);
         return this;
     }
 
     /// <inheritdoc />
     public IDeviceSetting<TValue> Build<TValue>() {
-        if (_readCommand is not ICommand<TValue> readCommand) throw new NullReferenceException("Read command cant be null");
-        var writeCommand = _writeCommand as ICommand<TValue>;
+        if (_readCommand is not ICommand<TValue, T> readCommand) throw new NullReferenceException("Read command cant be null");
+        var writeCommand = _writeCommand as ICommand<TValue, T>;
 
         var impl = _implementation == null
             ? new DeviceSettingBase<TValue>(_transport, readCommand, writeCommand)

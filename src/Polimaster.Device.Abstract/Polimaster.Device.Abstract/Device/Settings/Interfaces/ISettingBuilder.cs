@@ -12,14 +12,14 @@ public interface ISettingBuilder {
     /// </summary>
     /// <typeparam name="TCommand">Command value type</typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithWriteCommand<TCommand>(ICommand<TCommand> command);
+    ISettingBuilder WithWriteCommand<TCommand, T>(ICommand<TCommand, T> command);
 
     /// <summary>
     /// Add read command
     /// </summary>
     /// <typeparam name="TCommand">Command value type</typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithReadCommand<TCommand>(ICommand<TCommand> command);
+    ISettingBuilder WithReadCommand<TCommand, T>(ICommand<TCommand, T> command);
 
     /// <summary>
     /// Define custom <see cref="IDeviceSetting{T}"/> implementation
@@ -27,7 +27,7 @@ public interface ISettingBuilder {
     /// <typeparam name="T">Implementation type</typeparam>
     /// <typeparam name="TSetting">Implementation <see cref="IDeviceSetting{T}.Value"/> type</typeparam>
     /// <returns></returns>
-    ISettingBuilder WithImplementation<T, TSetting>() where T : ADeviceSetting<TSetting>;
+    ISettingBuilder WithImplementation<T, TSetting>() where T : IDeviceSetting<TSetting>;
     
     /// <summary>
     /// Build setting

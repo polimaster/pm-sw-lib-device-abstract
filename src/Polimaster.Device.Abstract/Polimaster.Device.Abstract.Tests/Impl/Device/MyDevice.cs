@@ -26,7 +26,6 @@ public class MyDevice : ADevice, IMyDevice {
             WithReadCommand(testSettingsReadCommand).
             WithWriteCommand(testSettingsWriteCommand).
             Build<MyParam>();
-        
     }
     
 

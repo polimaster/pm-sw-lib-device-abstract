@@ -16,7 +16,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// Device abstract implementation
 /// </summary>
 /// <inheritdoc cref="IDevice"/>
-public abstract class ADevice : IDevice {
+public abstract class ADevice<T> : IDevice {
 
     /// <see cref="ISettingBuilder"/>
     protected readonly ISettingBuilder SettingBuilder;
@@ -24,8 +24,8 @@ public abstract class ADevice : IDevice {
     /// <summary>
     /// Transport layer
     /// </summary>
-    /// <see cref="ITransport"/>
-    private readonly ITransport _transport;
+    /// <see cref="ITransport{T}"/>
+    private readonly ITransport<T> _transport;
 
     /// <inheritdoc />
     public DeviceInfo? DeviceInfo { get; protected set; }
@@ -39,17 +39,17 @@ public abstract class ADevice : IDevice {
     /// <summary>
     /// Logger
     /// </summary>
-    protected ILogger<IDevice>? Logger { get; }
+    protected ILogger? Logger { get; }
     
     /// <summary>
     /// Device constructor
     /// </summary>
     /// <param name="transport">Device transport layer</param>
     /// <param name="loggerFactory">Logger factory</param>
-    protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(ITransport<T> transport, ILoggerFactory? loggerFactory = null) {
         _transport = transport;
         SettingBuilder = new SettingBuilder(transport);
-        Logger = loggerFactory?.CreateLogger<IDevice>();
+        Logger = loggerFactory?.CreateLogger(GetType());
     }
     
 
@@ -57,7 +57,7 @@ public abstract class ADevice : IDevice {
     public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken = new());
 
     /// <inheritdoc />
-    public virtual async Task ReadSettings(CancellationToken cancellationToken) {
+    public async Task ReadAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) {
@@ -67,7 +67,7 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public virtual async Task WriteSettings(CancellationToken cancellationToken) {
+    public async Task WriteAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) {
@@ -75,22 +75,13 @@ public abstract class ADevice : IDevice {
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
         }
     }
-
+    
     /// <inheritdoc />
-    public async Task Execute(Func<Task> action) {
+    public virtual async Task Execute(Func<CancellationToken, Task> action) {
         await _transport.OpenAsync();
-        await action.Invoke();
+        await action.Invoke(new CancellationToken());
         _transport.Close();
-        // await Execute(async stream => {
-        //     await stream.WriteLineAsync("0dsd", new CancellationToken());
-        // });
     }
-
-    // public async Task Execute(Func<IDeviceStream, Task> action) {
-    //     var stream = await Transport.Open();
-    //     await action.Invoke(stream);
-    //     await Transport.Close();
-    // }
 
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
         var method = info.PropertyType.GetMethod(methodName);
@@ -104,9 +95,8 @@ public abstract class ADevice : IDevice {
         var task = (Task)method.Invoke(setting, p);
         if (task != null) await task;
     }
-
-    /// <inheritdoc />
-    public IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
+    
+    private IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
         var propertyInfos = GetType().GetProperties();
         return propertyInfos.Where(info => info.PropertyType.IsGenericType)
             .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))

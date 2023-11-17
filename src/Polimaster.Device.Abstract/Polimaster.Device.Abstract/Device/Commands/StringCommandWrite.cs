@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -15,6 +14,6 @@ public abstract class StringCommandWrite<T> : WriteCommand<T, string> {
     }
 
     /// <inheritdoc />
-    protected override async Task WriteData(IDeviceStream stream, string command, CancellationToken cancellationToken) =>
-        await stream.WriteLineAsync(command, cancellationToken);
+    protected override async Task WriteData<TStream>(TStream stream, string command, CancellationToken cancellationToken) => 
+        await stream.WriteAsync(command, cancellationToken);
 }

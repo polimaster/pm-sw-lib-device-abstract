@@ -8,7 +8,7 @@ public class MyReadCommand : StringCommandRead<MyParam> {
     public MyReadCommand(ILoggerFactory? loggerFactory = null) : base(loggerFactory) {
     }
 
-    protected override string Compile() {
+    protected override string Compile(object value) {
         return $"{Value?.CommandPid} : {Value?.Value}";
     }
 

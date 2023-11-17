@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -12,6 +11,10 @@ public abstract class ByteCommandRead<T> : ReadCommand<T, byte[]> {
     }
 
     /// <inheritdoc />
-    protected override async Task<byte[]> ReadData(IDeviceStream stream, CancellationToken cancellationToken) => 
+    protected override async Task<byte[]> ReadData<TStream>(TStream stream, CancellationToken cancellationToken) => 
         await stream.ReadAsync(cancellationToken);
+
+    /// <inheritdoc />
+    protected override async Task WriteData<TStream>(TStream stream, byte[] command, CancellationToken cancellationToken) => 
+        await stream.WriteAsync(command, cancellationToken);
 }

@@ -45,7 +45,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
         try {
-            await Transport.Exec(ReadCommand, cancellationToken);
+            await Transport.Exec(ReadCommand, TODO, cancellationToken);
         } catch (Exception e) {
             SetValue(default);
             Exception = e;
@@ -58,7 +58,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         try {
             if (WriteCommand != null) {
                 WriteCommand.Value = Value;
-                await Transport.Exec(WriteCommand, cancellationToken);
+                await Transport.Exec(WriteCommand, TODO, cancellationToken);
             }
         } catch (Exception e) {
             Exception = e;

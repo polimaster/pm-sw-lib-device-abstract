@@ -24,7 +24,7 @@ public class DeviceTests : Mocks {
         };
 
         var token = new CancellationToken();
-        await device.ReadSettings(token);
+        await device.ReadAllSettings(token);
         
         settingMock.Verify(x => x.Read(token));
 
@@ -39,7 +39,7 @@ public class DeviceTests : Mocks {
         };
 
         var token = new CancellationToken();
-        await device.WriteSettings(token);
+        await device.WriteAllSettings(token);
         
         settingMock.Verify(x => x.CommitChanges(token));
 

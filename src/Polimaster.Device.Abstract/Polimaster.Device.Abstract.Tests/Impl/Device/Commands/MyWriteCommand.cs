@@ -8,7 +8,7 @@ public class MyWriteCommand : StringCommandWrite<MyParam> {
     public MyWriteCommand(ILoggerFactory? loggerFactory = null) : base(loggerFactory) {
     }
 
-    protected override string Compile() {
+    protected override string Compile(object value) {
         return $"{Value?.CommandPid} : {Value?.Value}";
     }
 }

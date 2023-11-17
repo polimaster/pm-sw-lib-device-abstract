@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
 /// Client which make connection to device
 /// </summary>
-/// <typeparam name="TConnectionParams">Type of device connection parameters</typeparam>
-public interface IClient<in TConnectionParams> : IDisposable {
+/// <typeparam name="T">Type for <see cref="IDeviceStream{T}"/></typeparam>
+public interface IClient<T> : IDisposable {
 
     /// <summary>
     /// Returns true if client connected
@@ -23,19 +22,17 @@ public interface IClient<in TConnectionParams> : IDisposable {
     /// <summary>
     /// Get device stream for read/write operations
     /// </summary>
-    /// <returns><see cref="IDeviceStream"/></returns>
-    Task<IDeviceStream> GetStream();
+    /// <returns><see cref="IDeviceStream{T}"/></returns>
+    Task<IDeviceStream<T>> GetStream();
 
     /// <summary>
     /// Open connection
     /// </summary>
-    /// <param name="connectionParams"></param>
-    void Open(TConnectionParams connectionParams);
+    void Open();
 
     /// <summary>
     /// Open connection
     /// </summary>
-    /// <param name="connectionParams"></param>
     /// <returns></returns>
-    Task OpenAsync(TConnectionParams connectionParams);
+    Task OpenAsync();
 }

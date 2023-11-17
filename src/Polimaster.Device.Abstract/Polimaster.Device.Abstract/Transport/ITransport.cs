@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
-public interface ITransport : IDisposable {
+public interface ITransport<T> : IDisposable {
     /// <summary>
     /// Connection identifier
     /// </summary>
@@ -29,12 +29,13 @@ public interface ITransport : IDisposable {
     /// Close connection
     /// </summary>
     void Close();
-    
+
     /// <summary>
     /// Execute command
     /// </summary>
     /// <param name="command">Command to execute</param>
+    /// <param name="value"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Exec(ICommand command, CancellationToken cancellationToken = new());
+    Task Exec<TValue>(ICommand<TValue, T> command, TValue? value = default, CancellationToken cancellationToken = new());
 }

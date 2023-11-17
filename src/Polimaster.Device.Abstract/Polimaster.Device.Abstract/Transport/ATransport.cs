@@ -6,20 +6,20 @@ using Polimaster.Device.Abstract.Device.Commands;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class ATransport<TClient, TConnectionParams> : ITransport
-    where TClient : class, IClient<TConnectionParams>, new() {
+public abstract class ATransport<TClient, T> : ITransport<T>
+    where TClient : class, IClient<T>, new() {
     
     /// <inheritdoc />
-    public string ConnectionId => $"{GetType().Name}:{ConnectionParams}";
+    public string ConnectionId => $"{GetType().Name}:{Client}";
 
     /// <summary>
     /// Underlying client
     /// </summary>
-    protected TClient Client;
+    protected readonly TClient Client;
     private SemaphoreSlim Semaphore { get; } = new(1,1);
     
     /// <summary>
-    /// If enabled, only one call of <see cref="Exec"/> will be executed at a time
+    /// If enabled, only one call of <see cref="Exec{TValue}"/> will be executed at a time
     /// </summary>
     protected virtual bool SyncStreamAccess => true;
     
@@ -27,11 +27,6 @@ public abstract class ATransport<TClient, TConnectionParams> : ITransport
     /// Amount of milliseconds to sleep after command execution
     /// </summary>
     protected virtual ushort Sleep => 1;
-
-    /// <summary>
-    /// Parameters for connection
-    /// </summary>
-    protected TConnectionParams ConnectionParams { get; }
     
     /// <summary>
     /// Logger
@@ -41,40 +36,39 @@ public abstract class ATransport<TClient, TConnectionParams> : ITransport
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="connectionParams">Parameters for connection</param>
+    /// <param name="client"></param>
     /// <param name="loggerFactory"></param>
-    protected ATransport(TConnectionParams connectionParams, ILoggerFactory? loggerFactory = null) {
-        ConnectionParams = connectionParams;
+    protected ATransport(TClient client, ILoggerFactory? loggerFactory = null) {
         Logger = loggerFactory?.CreateLogger(GetType());
-        Client = new TClient();
+        Client = client;
     }
-
     
 
     /// <inheritdoc />
     public virtual async Task OpenAsync() {
         if (Client.Connected) return;
         Logger?.LogDebug("Open transport connection (async)");
-        await Client.OpenAsync(ConnectionParams);
+        await Client.OpenAsync();
     }
 
     /// <inheritdoc />
     public virtual void Open() {
         if(Client.Connected) return;
         Logger?.LogDebug("Open transport connection");
-        Client.Open(ConnectionParams);
+        Client.Open();
     }
 
     /// <inheritdoc />
     public virtual void Close() => Client.Close();
 
     /// <inheritdoc />
-    public virtual async Task Exec(ICommand command, CancellationToken cancellationToken = new()) {
+    public virtual async Task Exec<TValue>(ICommand<TValue, T> command, TValue? value = default, CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Executing command {Name}", command.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
             var stream = await Client.GetStream();
-            await command.Send(stream, Sleep, cancellationToken);
+            await command.Send(stream, value, cancellationToken);
+            Thread.Sleep(Sleep);
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
         }

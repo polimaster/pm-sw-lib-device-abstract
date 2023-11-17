@@ -19,7 +19,7 @@ public abstract class ReadCommand<TValue, TCommand> : WriteCommand<TValue, TComm
     }
     
     /// <summary>
-    /// Parse data returned by <see cref="IDeviceStream"/> while read
+    /// Parse data returned by <see cref="IDeviceStream{TCommand}"/> while read
     /// </summary>
     /// <param name="result">Value for parsing</param>
     /// <exception cref="CommandResultParsingException"></exception>
@@ -35,20 +35,18 @@ public abstract class ReadCommand<TValue, TCommand> : WriteCommand<TValue, TComm
     }
 
     /// <inheritdoc />
-    public override async Task Send(IDeviceStream stream, ushort sleep, CancellationToken cancellationToken = new()) {
-        await Write(stream, sleep, cancellationToken);
-        await Read(stream, sleep, cancellationToken);
-        ValueChanged?.Invoke(Value);
+    public override async Task<TValue?> Send<TStream>(TStream stream, TValue? value, CancellationToken cancellationToken = new()) {
+        await Write(value, stream, cancellationToken);
+        return await Read(stream, cancellationToken);
     }
-
-    private async Task Read(IDeviceStream stream, ushort sleep, CancellationToken cancellationToken) {
+    
+    private async Task<TValue?> Read<TStream>(TStream stream, CancellationToken cancellationToken) where TStream : IDeviceStream<TCommand> {
         try {
             LogCommand(nameof(Read));
             var data = await ReadData(stream, cancellationToken);
             var res = Parse(data);
             CheckResult(res);
-            Value = res;
-            Thread.Sleep(sleep);
+            return res;
         } catch (Exception e) {
             LogError(e, nameof(Read));
             throw;
@@ -61,5 +59,5 @@ public abstract class ReadCommand<TValue, TCommand> : WriteCommand<TValue, TComm
     /// <param name="stream"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract Task<TCommand> ReadData(IDeviceStream stream, CancellationToken cancellationToken);
+    protected abstract Task<TCommand> ReadData<TStream>(TStream stream, CancellationToken cancellationToken) where TStream : IDeviceStream<TCommand>;
 }

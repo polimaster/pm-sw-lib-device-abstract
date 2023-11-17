@@ -42,7 +42,7 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task ReadSettings(CancellationToken cancellationToken = new());
+    Task ReadAllSettings(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Writes settings to device.
@@ -51,7 +51,7 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task WriteSettings(CancellationToken cancellationToken = new());
+    Task WriteAllSettings(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Read/write device data with managed transport connection. Connection will be opened and closed after execution.
@@ -64,17 +64,5 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// </example>
     /// <param name="action">Function to call</param>
     /// <returns></returns>
-    Task Execute(Func<Task> action);
-    
-    /// <summary>
-    /// Search for <see cref="IDeviceSetting{T}"/> properties in device object
-    /// </summary>
-    /// <returns>Array of <see cref="PropertyInfo"/></returns>
-    IEnumerable<PropertyInfo> GetDeviceSettingsProperties();
-    
-    /// <summary>
-    /// Semaphore for exclusive access to device while sending commands.
-    /// See <see cref="StringCommand{T}.Write"/> as example.
-    /// </summary>
-    // SemaphoreSlim Semaphore { get; }
+    Task Execute(Func<CancellationToken, Task> action);
 }
