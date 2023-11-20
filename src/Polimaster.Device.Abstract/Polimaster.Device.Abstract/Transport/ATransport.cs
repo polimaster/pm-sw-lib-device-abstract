@@ -6,8 +6,7 @@ using Polimaster.Device.Abstract.Device.Commands;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class ATransport<TClient, T> : ITransport<T>
-    where TClient : class, IClient<T>, new() {
+public abstract class ATransport<TClient, T> : ITransport where TClient : class, IClient<T>, new() {
     
     /// <inheritdoc />
     public string ConnectionId => $"{GetType().Name}:{Client}";
@@ -19,7 +18,7 @@ public abstract class ATransport<TClient, T> : ITransport<T>
     private SemaphoreSlim Semaphore { get; } = new(1,1);
     
     /// <summary>
-    /// If enabled, only one call of <see cref="Exec{TValue}"/> will be executed at a time
+    /// If enabled, only one call of <see cref="Exec"/> will be executed at a time
     /// </summary>
     protected virtual bool SyncStreamAccess => true;
     
@@ -62,13 +61,40 @@ public abstract class ATransport<TClient, T> : ITransport<T>
     public virtual void Close() => Client.Close();
 
     /// <inheritdoc />
-    public virtual async Task Exec<TValue>(ICommand<TValue, T> command, TValue? value = default, CancellationToken cancellationToken = new()) {
+    public virtual async Task Exec(ICommand command, CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Executing command {Name}", command.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
             var stream = await Client.GetStream();
-            await command.Send(stream, value, cancellationToken);
+            await command.Send(stream, cancellationToken);
             Thread.Sleep(Sleep);
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task Write<TData>(IDataWriter<TData> writer, TData? data, CancellationToken cancellationToken = new()) {
+        Logger?.LogDebug("Executing {Name}", writer.GetType().Name);
+        if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+        try {
+            var stream = await Client.GetStream();
+            await writer.Write(stream, data, cancellationToken);
+            Thread.Sleep(Sleep);
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new()) {
+        Logger?.LogDebug("Executing {Name}", reader.GetType().Name);
+        if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+        try {
+            var stream = await Client.GetStream();
+            var res = await reader.Read(stream, cancellationToken);
+            Thread.Sleep(Sleep);
+            return res;
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
         }

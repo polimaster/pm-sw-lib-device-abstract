@@ -13,7 +13,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <inheritdoc cref="IDeviceSetting{T}"/>
 public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
-    public DeviceSettingBase(ITransport transport, ICommand<T> readCommand, ICommand<T>? writeCommand = null) : base(transport, readCommand, writeCommand) {
+    public DeviceSettingBase(ITransport transport, IDataReader<T> readCommand, IDataWriter<T>? writeCommand = null) : base(transport, readCommand, writeCommand) {
     }
 
     private T? _value;
@@ -45,7 +45,8 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
         try {
-            await Transport.Exec(ReadCommand, TODO, cancellationToken);
+            var v = await Transport.Read(ReadCommand, cancellationToken);
+            SetValue(v);
         } catch (Exception e) {
             SetValue(default);
             Exception = e;
@@ -56,10 +57,8 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsDirty || !IsValid) return;
         try {
-            if (WriteCommand != null) {
-                WriteCommand.Value = Value;
-                await Transport.Exec(WriteCommand, TODO, cancellationToken);
-            }
+            if (WriteCommand != null) await Transport.Write(WriteCommand, Value, cancellationToken);
+            SetValue(Value);
         } catch (Exception e) {
             Exception = e;
         }
@@ -71,8 +70,5 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     /// <exception cref="SettingValidationException">Throws if validation failed.</exception>
     protected virtual void Validate(T? value) {
-        if (value == null) {
-            
-        }
     }
 }

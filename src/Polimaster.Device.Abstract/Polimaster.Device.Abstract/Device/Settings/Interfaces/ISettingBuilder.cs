@@ -10,16 +10,16 @@ public interface ISettingBuilder {
     /// <summary>
     /// Add write command
     /// </summary>
-    /// <typeparam name="TCommand">Command value type</typeparam>
+    /// <typeparam name="T">Command value type</typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithWriteCommand<TCommand, T>(ICommand<TCommand, T> command);
+    ISettingBuilder WithWriteCommand<T>(IDataWriter<T> command);
 
     /// <summary>
     /// Add read command
     /// </summary>
-    /// <typeparam name="TCommand">Command value type</typeparam>
+    /// <typeparam name="T">Command value type</typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithReadCommand<TCommand, T>(ICommand<TCommand, T> command);
+    ISettingBuilder WithReadCommand<T>(IDataReader<T> command);
 
     /// <summary>
     /// Define custom <see cref="IDeviceSetting{T}"/> implementation
@@ -40,9 +40,9 @@ public interface ISettingBuilder {
     /// <summary>
     /// Build setting with proxy to underlying <see cref="IDeviceSetting{T}"/>
     /// </summary>
-    /// <typeparam name="T">Proxy implementation type</typeparam>
-    /// <typeparam name="TSetting">Proxy <see cref="IDeviceSetting{T}.Value"/> type</typeparam>
-    /// <typeparam name="TProxied"><see cref="ICommand{T}.Value"/> type of command</typeparam>
+    /// <typeparam name="T">Proxy implementation</typeparam>
+    /// <typeparam name="TSetting"><see cref="IDeviceSetting{T}.Value"/> type</typeparam>
+    /// <typeparam name="TProxied">Proxied <see cref="IDeviceSetting{T}"/></typeparam>
     /// <returns></returns>
     T BuildWithProxy<T, TSetting, TProxied>()
         where T : ADeviceSettingProxy<TSetting, TProxied>;

@@ -13,32 +13,31 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <see cref="IDeviceSetting{T}"/> abstract implementation
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
-/// <typeparam name="TStream"></typeparam>
-public abstract class ADeviceSetting<T, TStream> : IDeviceSetting<T>{
+public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="transport"></param>
     /// <param name="readCommand">Command for read data</param>
     /// <param name="writeCommand">Command for write data. If null it creates readonly setting.</param>
-    protected ADeviceSetting(ITransport<TStream> transport, ICommand<T, TStream> readCommand, ICommand<T, TStream>? writeCommand = null) {
+    protected ADeviceSetting(ITransport transport, IDataReader<T> readCommand, IDataWriter<T>? writeCommand = null) {
         Transport = transport;
         ReadCommand = readCommand;
         WriteCommand = writeCommand;
     }
 
     /// <see cref="ITransport"/>
-    protected ITransport<TStream> Transport { get; }
+    protected ITransport Transport { get; }
 
     /// <summary>
     /// Command for read data
     /// </summary>
-    protected ICommand<T, TStream> ReadCommand { get; }
+    protected IDataReader<T> ReadCommand { get; }
 
     /// <summary>
     /// Command for write data
     /// </summary>
-    protected ICommand<T, TStream>? WriteCommand { get; }
+    protected IDataWriter<T>? WriteCommand { get; }
 
     /// <inheritdoc />
     public bool ReadOnly => WriteCommand == null;

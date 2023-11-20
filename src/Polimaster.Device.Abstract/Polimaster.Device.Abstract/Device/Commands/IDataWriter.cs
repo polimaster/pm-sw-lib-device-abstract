@@ -5,15 +5,17 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <summary>
-/// Device command
+/// Device data writer
 /// </summary>
-public interface ICommand {
+/// <typeparam name="T">Type of data to write</typeparam>
+public interface IDataWriter<in T> {
     /// <summary>
-    /// Sends command to device stream
+    /// Write data
     /// </summary>
     /// <param name="stream">Transport <see cref="IDeviceStream{T}"/></param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TStream">Stream type</typeparam>
+    /// <param name="data">Data to write</param>
     /// <returns></returns>
-    Task Send<TStream>(TStream stream, CancellationToken cancellationToken);
+    Task Write<TStream>(TStream stream, T? data, CancellationToken cancellationToken);
 }

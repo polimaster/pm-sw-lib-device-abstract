@@ -5,15 +5,16 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <summary>
-/// Device command
+/// Device data reader
 /// </summary>
-public interface ICommand {
+/// <typeparam name="T">Type of data to read</typeparam>
+public interface IDataReader<T> {
     /// <summary>
-    /// Sends command to device stream
+    /// Read data
     /// </summary>
     /// <param name="stream">Transport <see cref="IDeviceStream{T}"/></param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TStream">Stream type</typeparam>
-    /// <returns></returns>
-    Task Send<TStream>(TStream stream, CancellationToken cancellationToken);
+    /// <returns>Data from stream</returns>
+    Task<T> Read<TStream>(TStream stream, CancellationToken cancellationToken);
 }

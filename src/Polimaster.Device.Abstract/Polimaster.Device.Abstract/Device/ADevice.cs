@@ -24,8 +24,8 @@ public abstract class ADevice<T> : IDevice {
     /// <summary>
     /// Transport layer
     /// </summary>
-    /// <see cref="ITransport{T}"/>
-    private readonly ITransport<T> _transport;
+    /// <see cref="ITransport"/>
+    private readonly ITransport _transport;
 
     /// <inheritdoc />
     public DeviceInfo? DeviceInfo { get; protected set; }
@@ -46,7 +46,7 @@ public abstract class ADevice<T> : IDevice {
     /// </summary>
     /// <param name="transport">Device transport layer</param>
     /// <param name="loggerFactory">Logger factory</param>
-    protected ADevice(ITransport<T> transport, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
         _transport = transport;
         SettingBuilder = new SettingBuilder(transport);
         Logger = loggerFactory?.CreateLogger(GetType());

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Polimaster.Device.Abstract.Transport.Http;
 
 /// <inheritdoc />
-public class TcpStream : IDeviceStream {
+public class TcpStream : IDeviceStream<string> {
     private readonly NetworkStream _networkStream;
     private readonly ILogger<TcpStream>? _logger;
     /// <summary>

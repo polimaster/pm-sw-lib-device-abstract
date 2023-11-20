@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
-public interface ITransport<T> : IDisposable {
+public interface ITransport : IDisposable {
     /// <summary>
     /// Connection identifier
     /// </summary>
@@ -34,8 +34,26 @@ public interface ITransport<T> : IDisposable {
     /// Execute command
     /// </summary>
     /// <param name="command">Command to execute</param>
-    /// <param name="value"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Exec<TValue>(ICommand<TValue, T> command, TValue? value = default, CancellationToken cancellationToken = new());
+    Task Exec(ICommand command, CancellationToken cancellationToken = new());
+
+    /// <summary>
+    /// Write data with <see cref="IDataWriter{T}"/>
+    /// </summary>
+    /// <param name="writer"><see cref="IDataWriter{T}"/></param>
+    /// <param name="data">Data to write</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <typeparam name="TData">Type of data</typeparam>
+    /// <returns></returns>
+    Task Write<TData>(IDataWriter<TData> writer, TData? data, CancellationToken cancellationToken = new());
+    
+    /// <summary>
+    /// Read data with <see cref="IDataReader{T}"/>
+    /// </summary>
+    /// <param name="reader"><see cref="IDataReader{T}"/></param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <typeparam name="TData">Type of data</typeparam>
+    /// <returns></returns>
+    Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new ());
 }

@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc cref="ISettingBuilder"/>
 public class SettingBuilder : ISettingBuilder {
-    private readonly TTransport _transport;
+    private readonly ITransport _transport;
     private object? _readCommand;
     private object? _writeCommand;
     private Type? _implementation;
@@ -17,18 +17,18 @@ public class SettingBuilder : ISettingBuilder {
     /// 
     /// </summary>
     /// <param name="transport">Device transport</param>
-    public SettingBuilder(TTransport transport) {
+    public SettingBuilder(ITransport transport) {
         _transport = transport;
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithWriteCommand<TValue, T>(ICommand<TValue, T> command) {
+    public ISettingBuilder WithWriteCommand<T>(IDataWriter<T> command) {
         _writeCommand = command;
         return this;
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithReadCommand<TValue, T>(ICommand<TValue, T> command) {
+    public ISettingBuilder WithReadCommand<T>(IDataReader<T> command) {
         _readCommand = command;
         return this;
     }
@@ -41,8 +41,8 @@ public class SettingBuilder : ISettingBuilder {
 
     /// <inheritdoc />
     public IDeviceSetting<TValue> Build<TValue>() {
-        if (_readCommand is not ICommand<TValue, T> readCommand) throw new NullReferenceException("Read command cant be null");
-        var writeCommand = _writeCommand as ICommand<TValue, T>;
+        if (_readCommand is not IDataReader<TValue> readCommand) throw new NullReferenceException("Read command cant be null");
+        var writeCommand = _writeCommand as IDataWriter<TValue>;
 
         var impl = _implementation == null
             ? new DeviceSettingBase<TValue>(_transport, readCommand, writeCommand)
