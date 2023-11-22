@@ -29,7 +29,7 @@ public class MyParamReaderTest : Mocks {
         try { await cmd.Read(stream.Object, _token); } catch (Exception e) { exception = e; }
 
         Assert.NotNull(exception);
-        Assert.True(exception.GetType() == typeof(ArgumentException));
+        Assert.IsType<ArgumentException>(exception);
     }
     
 }

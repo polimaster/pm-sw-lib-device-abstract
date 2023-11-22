@@ -23,8 +23,8 @@ public class MyDevice : ADevice, IMyDevice {
         var testSettingsReadCommand = new MyParamReader(loggerFactory);
         var testSettingsWriteCommand = new MyParamWriter(loggerFactory);
         MyParamSetting = SettingBuilder.
-            WithReadCommand(testSettingsReadCommand).
-            WithWriteCommand(testSettingsWriteCommand).
+            WithReader(testSettingsReadCommand).
+            WithWriter(testSettingsWriteCommand).
             Build<MyParam>();
     }
     

@@ -14,7 +14,7 @@
 //         var settingMock = SettingMock;
 //         settingMock.Setup(x => x.Value).Returns(value);
 //
-//         var proxy = new MyDeviceSettingProxy {
+//         var proxy = new MyParamSettingProxy {
 //             ProxiedSetting = settingMock.Object
 //         };
 //         
@@ -31,7 +31,7 @@
 //     public async void ShouldCallReadOfProxied() {
 //         var settingMock = SettingMock;
 //
-//         var proxy = new MyDeviceSettingProxy {
+//         var proxy = new MyParamSettingProxy {
 //             ProxiedSetting = settingMock.Object
 //         };
 //
@@ -44,7 +44,7 @@
 //     public async void ShouldCallCommitOfProxied() {
 //         var settingMock = SettingMock;
 //
-//         var proxy = new MyDeviceSettingProxy {
+//         var proxy = new MyParamSettingProxy {
 //             ProxiedSetting = settingMock.Object,
 //             Value = "NEW_VALUE"
 //         };

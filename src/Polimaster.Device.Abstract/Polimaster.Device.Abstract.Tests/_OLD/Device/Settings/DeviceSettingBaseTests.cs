@@ -13,7 +13,7 @@
 //     [Fact]
 //     public async void ShouldSetDirtyAndDoNotCallWriteCommandSendUntilValueChanged() {
 //         var commandMock = CommandMock;
-//         var setting = new MyDeviceSetting {
+//         var setting = new MyParamSetting {
 //             WriteCommand = commandMock.Object
 //         };
 //
@@ -34,7 +34,7 @@
 //         var ex = new Exception();
 //         commandMock.Setup(x => x.Send(It.IsAny<CancellationToken>())).ThrowsAsync(ex);
 //         
-//         var setting = new MyDeviceSetting {
+//         var setting = new MyParamSetting {
 //             ReadCommand = commandMock.Object
 //         };
 //         
@@ -51,7 +51,7 @@
 //         var ex = new Exception();
 //         commandMock.Setup(x => x.Send(It.IsAny<CancellationToken>())).ThrowsAsync(ex);
 //         
-//         var setting = new MyDeviceSetting {
+//         var setting = new MyParamSetting {
 //             WriteCommand = commandMock.Object,
 //             Value = new MyParam { Value = "COMMAND_VALUE" }
 //         };
@@ -70,7 +70,7 @@
 //         var readCommandMock = CommandMock;
 //         readCommandMock.Setup(x => x.Value).Returns(commandValue);
 //
-//         var setting = new MyDeviceSetting {
+//         var setting = new MyParamSetting {
 //             ReadCommand = readCommandMock.Object
 //         };
 //
@@ -92,7 +92,7 @@
 //             Device = new MyDevice(transportMock.Object)
 //         };
 //
-//         var setting = new MyDeviceSetting {
+//         var setting = new MyParamSetting {
 //             ReadCommand = readCommand
 //         };
 //         
@@ -108,7 +108,7 @@
 //         var value = new MyParam { Value = "COMMAND_VALUE" };
 //         var writeCommandMock = CommandMock;
 //
-//         var setting = new MyDeviceSetting {
+//         var setting = new MyParamSetting {
 //             WriteCommand = writeCommandMock.Object,
 //             Value = value
 //         };
@@ -123,7 +123,7 @@
 //         var value = new MyParam { Value = "COMMAND_VALUE" };
 //         var writeCommandMock = CommandMock;
 //
-//         var setting = new MyDeviceSettingValidatable {
+//         var setting = new MyParamSettingValidatable {
 //             WriteCommand = writeCommandMock.Object,
 //             Value = value
 //         };

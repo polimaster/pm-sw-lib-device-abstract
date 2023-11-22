@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings.Interfaces;
 

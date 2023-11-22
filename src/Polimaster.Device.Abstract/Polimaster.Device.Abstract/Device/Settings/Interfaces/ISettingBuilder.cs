@@ -12,14 +12,14 @@ public interface ISettingBuilder {
     /// </summary>
     /// <typeparam name="T">Command value type</typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithWriteCommand<T>(IDataWriter<T> command);
+    ISettingBuilder WithWriter<T>(IDataWriter<T> command);
 
     /// <summary>
     /// Add read command
     /// </summary>
     /// <typeparam name="T">Command value type</typeparam>
     /// <returns><see cref="ISettingBuilder"/></returns>
-    ISettingBuilder WithReadCommand<T>(IDataReader<T> command);
+    ISettingBuilder WithReader<T>(IDataReader<T> command);
 
     /// <summary>
     /// Define custom <see cref="IDeviceSetting{T}"/> implementation

@@ -8,7 +8,7 @@ using System;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 
-public class MyDeviceStream : StringDeviceStream {
+public class MyDeviceStream : IDeviceStream<string> {
     private readonly MemoryStream _stream;
     private readonly ILogger<MyDeviceStream>? _logger;
     private const int MAX_DATA_LENGTH = 10000;
@@ -18,14 +18,14 @@ public class MyDeviceStream : StringDeviceStream {
         _logger = loggerFactory?.CreateLogger<MyDeviceStream>();
     }
 
-    public override async Task WriteAsync(string buffer, CancellationToken cancellationToken) {
+    public async Task WriteAsync(string buffer, CancellationToken cancellationToken) {
         _logger?.LogDebug("Call {F} with: {V}", nameof(WriteAsync), buffer);
         var v = Encoding.UTF8.GetBytes(buffer);
         await _stream.WriteAsync(v.AsMemory(0, buffer.Length), cancellationToken);
         await _stream.FlushAsync(cancellationToken);
     }
 
-    public override async Task<string> ReadAsync(CancellationToken cancellationToken) {
+    public async Task<string> ReadAsync(CancellationToken cancellationToken) {
         _logger?.LogDebug("Call: {F}", nameof(ReadAsync));
         var arr = await ReadBytesAsync(cancellationToken);
         return Encoding.UTF8.GetString(arr);

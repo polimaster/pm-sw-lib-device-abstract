@@ -23,18 +23,3 @@ public interface IDeviceStream<T> {
     /// <returns></returns>
     public Task<T> ReadAsync(CancellationToken cancellationToken);
 }
-
-/// <inheritdoc />
-public abstract class ADeviceStream<T> : IDeviceStream<T> {
-    /// <inheritdoc />
-    public abstract Task WriteAsync(T buffer, CancellationToken cancellationToken);
-
-    /// <inheritdoc />
-    public abstract Task<T> ReadAsync(CancellationToken cancellationToken);
-}
-
-/// <inheritdoc />
-public abstract class StringDeviceStream : ADeviceStream<string>{}
-
-/// <inheritdoc />
-public abstract class ByteDeviceStream : ADeviceStream<byte[]>{}

@@ -32,6 +32,6 @@ public class MyParamWriterTest : Mocks {
         try { await cmd.Write(stream.Object, _param, _token); } catch (Exception e) { exception = e; }
 
         Assert.NotNull(exception);
-        Assert.True(exception.GetType() == typeof(ArgumentException));
+        Assert.IsType<ArgumentException>(exception);
     }
 }

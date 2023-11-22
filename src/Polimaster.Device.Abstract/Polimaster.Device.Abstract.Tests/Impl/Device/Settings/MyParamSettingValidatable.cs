@@ -5,7 +5,7 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 
-public class MyDeviceSettingValidatable : MyDeviceSetting {
+public class MyParamSettingValidatable : DeviceSettingBase<MyParam> {
     
     /// <summary>
     /// Validates value.
@@ -21,6 +21,6 @@ public class MyDeviceSettingValidatable : MyDeviceSetting {
         ValidationErrors = null;
     }
 
-    public MyDeviceSettingValidatable(ITransport transport, IDataReader<MyParam> readCommand, IDataWriter<MyParam>? writeCommand = null) : base(transport, readCommand, writeCommand) {
+    public MyParamSettingValidatable(ITransport transport, IDataReader<MyParam> readCommand, IDataWriter<MyParam>? writeCommand = null) : base(transport, readCommand, writeCommand) {
     }
 }

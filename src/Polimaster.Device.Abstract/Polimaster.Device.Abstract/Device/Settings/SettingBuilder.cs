@@ -8,8 +8,8 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <inheritdoc cref="ISettingBuilder"/>
 public class SettingBuilder : ISettingBuilder {
     private readonly ITransport _transport;
-    private object? _readCommand;
-    private object? _writeCommand;
+    private object? _reader;
+    private object? _writer;
     private Type? _implementation;
 
 
@@ -22,14 +22,14 @@ public class SettingBuilder : ISettingBuilder {
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithWriteCommand<T>(IDataWriter<T> command) {
-        _writeCommand = command;
+    public ISettingBuilder WithWriter<T>(IDataWriter<T> command) {
+        _writer = command;
         return this;
     }
 
     /// <inheritdoc />
-    public ISettingBuilder WithReadCommand<T>(IDataReader<T> command) {
-        _readCommand = command;
+    public ISettingBuilder WithReader<T>(IDataReader<T> command) {
+        _reader = command;
         return this;
     }
 
@@ -41,12 +41,17 @@ public class SettingBuilder : ISettingBuilder {
 
     /// <inheritdoc />
     public IDeviceSetting<TValue> Build<TValue>() {
-        if (_readCommand is not IDataReader<TValue> readCommand) throw new NullReferenceException("Read command cant be null");
-        var writeCommand = _writeCommand as IDataWriter<TValue>;
-
+        if(_reader == null) throw new NullReferenceException($"Cant build without reader, assign it with {nameof(WithReader)}()");
+        if (_reader is not IDataReader<TValue> reader) throw new ArgumentException($"{_reader.GetType()} cant be assigned as reader for {typeof(TValue)}");
+        IDataWriter<TValue>? writer = null;
+        if (_writer != null) {
+            if(_writer is not IDataWriter<TValue> c) throw new ArgumentException($"{_reader.GetType()} cant be assigned as writer for {typeof(TValue)}");
+            writer = c;
+        }
+        
         var impl = _implementation == null
-            ? new DeviceSettingBase<TValue>(_transport, readCommand, writeCommand)
-            : (IDeviceSetting<TValue>)Activator.CreateInstance(_implementation, _transport, readCommand, writeCommand);
+            ? new DeviceSettingBase<TValue>(_transport, reader, writer)
+            : (IDeviceSetting<TValue>)Activator.CreateInstance(_implementation, _transport, reader, writer);
 
         CleanUp();
         return impl;
@@ -61,8 +66,8 @@ public class SettingBuilder : ISettingBuilder {
     }
 
     private void CleanUp() {
-        _readCommand = null;
-        _writeCommand = null;
+        _reader = null;
+        _writer = null;
         _implementation = null;
     }
 }
