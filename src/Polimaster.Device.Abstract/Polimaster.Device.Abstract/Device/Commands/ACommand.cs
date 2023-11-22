@@ -15,10 +15,16 @@ public abstract class ACommand<T> : CommandBase, ICommand {
     protected abstract T Compile();
 
     /// <inheritdoc />
-    public virtual async Task Send<TStream>(TStream stream, CancellationToken cancellationToken) {
-        if (stream is not IDeviceStream<T> str) throw new Exception($"{nameof(T)} is not suitable for writing to {nameof(TStream)}");
-        LogCommand(nameof(Send));
-        await str.WriteAsync(Compile(), cancellationToken);
+    public virtual async Task Exec<TStream>(TStream stream, CancellationToken cancellationToken) {
+        if (stream is not IDeviceStream<T> str)
+            throw new ArgumentException($"{typeof(T)} is not suitable for writing to {typeof(TStream)}");
+        LogCommand(nameof(Exec));
+        try {
+            await str.WriteAsync(Compile(), cancellationToken);
+        } catch (Exception e) {
+            LogError(e, nameof(Exec));
+            throw;
+        }
     }
 
     /// <inheritdoc />

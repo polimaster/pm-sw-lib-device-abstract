@@ -5,8 +5,12 @@ using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Transport;
 
-/// <inheritdoc />
-public abstract class ATransport<TClient, T> : ITransport where TClient : class, IClient<T>, new() {
+
+/// <summary>
+/// Abstract transport layer
+/// </summary>
+/// <typeparam name="T">Type of <see cref="IClient{T}"/> data</typeparam>
+public abstract class ATransport<T> : ITransport {
     
     /// <inheritdoc />
     public string ConnectionId => $"{GetType().Name}:{Client}";
@@ -14,8 +18,13 @@ public abstract class ATransport<TClient, T> : ITransport where TClient : class,
     /// <summary>
     /// Underlying client
     /// </summary>
-    protected readonly TClient Client;
-    private SemaphoreSlim Semaphore { get; } = new(1,1);
+    protected readonly IClient<T> Client;
+
+    /// <summary>
+    /// Set limit of threads to 1, witch can access to read/write operations at a time. 
+    /// See <see cref="SyncStreamAccess"/>
+    /// </summary>
+    protected SemaphoreSlim Semaphore { get; } = new(1,1);
     
     /// <summary>
     /// If enabled, only one call of <see cref="Exec"/> will be executed at a time
@@ -37,7 +46,7 @@ public abstract class ATransport<TClient, T> : ITransport where TClient : class,
     /// </summary>
     /// <param name="client"></param>
     /// <param name="loggerFactory"></param>
-    protected ATransport(TClient client, ILoggerFactory? loggerFactory = null) {
+    protected ATransport(IClient<T> client, ILoggerFactory? loggerFactory) {
         Logger = loggerFactory?.CreateLogger(GetType());
         Client = client;
     }
@@ -65,8 +74,8 @@ public abstract class ATransport<TClient, T> : ITransport where TClient : class,
         Logger?.LogDebug("Executing command {Name}", command.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = await Client.GetStream();
-            await command.Send(stream, cancellationToken);
+            var stream = Client.GetStream();
+            await command.Exec(stream, cancellationToken);
             Thread.Sleep(Sleep);
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
@@ -78,7 +87,7 @@ public abstract class ATransport<TClient, T> : ITransport where TClient : class,
         Logger?.LogDebug("Executing {Name}", writer.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = await Client.GetStream();
+            var stream = Client.GetStream();
             await writer.Write(stream, data, cancellationToken);
             Thread.Sleep(Sleep);
         } finally {
@@ -91,7 +100,7 @@ public abstract class ATransport<TClient, T> : ITransport where TClient : class,
         Logger?.LogDebug("Executing {Name}", reader.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = await Client.GetStream();
+            var stream = Client.GetStream();
             var res = await reader.Read(stream, cancellationToken);
             Thread.Sleep(Sleep);
             return res;

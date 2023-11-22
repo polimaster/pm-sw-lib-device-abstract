@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Tests\" />
+      <Folder Include="_OLD\" />
     </ItemGroup>
 
 </Project>

@@ -17,7 +17,7 @@ public abstract class ATransportDiscovery : ITransportDiscovery {
     /// 
     /// </summary>
     /// <param name="loggerFactory"></param>
-    protected ATransportDiscovery(ILoggerFactory? loggerFactory = null) {
+    protected ATransportDiscovery(ILoggerFactory? loggerFactory) {
         LoggerFactory = loggerFactory;
     }
 

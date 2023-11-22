@@ -1,9 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
 public abstract class AClient<T, TConnectionParams> : IClient<T> {
+    protected ILoggerFactory? LoggerFactory { get; }
+
     /// <summary>
     /// Connection parameters
     /// </summary>
@@ -13,7 +16,9 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> {
     /// 
     /// </summary>
     /// <param name="connectionParams">Connection parameters</param>
-    protected AClient(TConnectionParams connectionParams) {
+    /// <param name="loggerFactory"></param>
+    protected AClient(TConnectionParams connectionParams, ILoggerFactory? loggerFactory) {
+        LoggerFactory = loggerFactory;
         ConnectionParams = connectionParams;
     }
 
@@ -27,7 +32,7 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> {
     public abstract void Close();
 
     /// <inheritdoc />
-    public abstract Task<IDeviceStream<T>> GetStream();
+    public abstract IDeviceStream<T> GetStream();
 
     /// <inheritdoc />
     public abstract void Open();

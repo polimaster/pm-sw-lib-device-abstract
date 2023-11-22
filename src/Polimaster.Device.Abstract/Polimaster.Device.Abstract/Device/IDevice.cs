@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
-namespace Polimaster.Device.Abstract.Device.Interfaces;
+namespace Polimaster.Device.Abstract.Device;
 
 
 /// <summary>

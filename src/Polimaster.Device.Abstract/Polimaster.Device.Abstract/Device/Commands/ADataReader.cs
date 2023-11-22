@@ -15,13 +15,13 @@ public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
     /// <inheritdoc />
     protected ADataReader(ILoggerFactory? loggerFactory) : base(loggerFactory) {
     }
-    
+
     /// <summary>
     /// Compile command
     /// </summary>
     /// <returns></returns>
     protected abstract TSteamData Compile();
-    
+
     /// <summary>
     /// Parse data received from device
     /// </summary>
@@ -31,12 +31,17 @@ public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
 
     /// <inheritdoc />
     public virtual async Task<T> Read<TStream>(TStream stream, CancellationToken cancellationToken) {
-        if (stream is not IDeviceStream<TSteamData> str) throw new Exception($"{nameof(TSteamData)} is not suitable for reading/writing from {nameof(TStream)}");
+        if (stream is not IDeviceStream<TSteamData> str)
+            throw new ArgumentException($"{typeof(TSteamData)} is not suitable for reading/writing from {typeof(TStream)}");
         LogCommand(nameof(Read));
-        await str.WriteAsync(Compile(), cancellationToken);
-        var res = await str.ReadAsync(cancellationToken);
-        return Parse(res);
-    }
 
-    
+        try {
+            await str.WriteAsync(Compile(), cancellationToken);
+            var res = await str.ReadAsync(cancellationToken);
+            return Parse(res);
+        } catch (Exception e) {
+            LogError(e, nameof(Read));
+            throw;
+        }
+    }
 }

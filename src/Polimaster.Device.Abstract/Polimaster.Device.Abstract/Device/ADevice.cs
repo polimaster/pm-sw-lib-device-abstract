@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Interfaces;
 using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport;
@@ -16,7 +15,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// Device abstract implementation
 /// </summary>
 /// <inheritdoc cref="IDevice"/>
-public abstract class ADevice<T> : IDevice {
+public abstract class ADevice : IDevice {
 
     /// <see cref="ISettingBuilder"/>
     protected readonly ISettingBuilder SettingBuilder;

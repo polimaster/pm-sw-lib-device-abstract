@@ -23,7 +23,7 @@ public interface IClient<T> : IDisposable {
     /// Get device stream for read/write operations
     /// </summary>
     /// <returns><see cref="IDeviceStream{T}"/></returns>
-    Task<IDeviceStream<T>> GetStream();
+    IDeviceStream<T> GetStream();
 
     /// <summary>
     /// Open connection

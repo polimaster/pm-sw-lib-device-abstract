@@ -6,7 +6,6 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
-
 /// <summary>
 /// Device data writer
 /// </summary>
@@ -26,8 +25,14 @@ public abstract class ADataWriter<T, TSteamData> : CommandBase, IDataWriter<T> {
 
     /// <inheritdoc />
     public virtual async Task Write<TStream>(TStream stream, T? data, CancellationToken cancellationToken) {
-        if (stream is not IDeviceStream<TSteamData> str) throw new Exception($"{nameof(TSteamData)} is not suitable for writing to {nameof(TStream)}");
+        if (stream is not IDeviceStream<TSteamData> str)
+            throw new ArgumentException($"{typeof(TSteamData)} is not suitable for writing to {typeof(TStream)}");
         LogCommand(nameof(Write));
-        await str.WriteAsync(Compile(data), cancellationToken);
+        try {
+            await str.WriteAsync(Compile(data), cancellationToken);
+        } catch (Exception e) {
+            LogError(e, nameof(Write));
+            throw;
+        }
     }
 }

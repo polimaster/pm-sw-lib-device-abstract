@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Interfaces;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 

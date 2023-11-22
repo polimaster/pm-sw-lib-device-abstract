@@ -67,6 +67,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
         await ProxiedSetting.CommitChanges(cancellationToken);
 
     /// <inheritdoc />
-    public virtual async Task Read(CancellationToken cancellationToken) => 
-        await ProxiedSetting.Read(cancellationToken);
+    public virtual async Task Read(CancellationToken cancellationToken) {
+        if (ProxiedSetting.Value == null) await ProxiedSetting.Read(cancellationToken);
+    }
 }

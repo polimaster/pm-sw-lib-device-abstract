@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Interfaces;
+using Polimaster.Device.Abstract.Device;
 
 namespace Polimaster.Device.Abstract;
 
@@ -26,7 +26,7 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
     /// 
     /// </summary>
     /// <param name="loggerFactory"></param>
-    protected ADeviceManager(ILoggerFactory? loggerFactory = null) {
+    protected ADeviceManager(ILoggerFactory? loggerFactory) {
         Logger = loggerFactory?.CreateLogger<ADeviceManager<T>>();
 
         Removed += dev => { Logger?.LogInformation("Device removed {D}", dev.Id); };

@@ -11,7 +11,7 @@ public class MyDeviceSettingProxy : ADeviceSettingProxy<string, string> {
     protected override string? ToProxied(string? value) {
         return value;
     }
-
+    
     public MyDeviceSettingProxy(IDeviceSetting<string> proxiedSetting) : base(proxiedSetting) {
     }
 }

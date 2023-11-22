@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Polimaster.Device.Abstract.Device.Interfaces;
+using Polimaster.Device.Abstract.Device;
 
 namespace Polimaster.Device.Abstract;
 

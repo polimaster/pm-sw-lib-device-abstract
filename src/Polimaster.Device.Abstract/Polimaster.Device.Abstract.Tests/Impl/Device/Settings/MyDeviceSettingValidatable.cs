@@ -21,6 +21,6 @@ public class MyDeviceSettingValidatable : MyDeviceSetting {
         ValidationErrors = null;
     }
 
-    public MyDeviceSettingValidatable(ITransport transport, ICommand<MyParam> readCommand, ICommand<MyParam>? writeCommand = null) : base(transport, readCommand, writeCommand) {
+    public MyDeviceSettingValidatable(ITransport transport, IDataReader<MyParam> readCommand, IDataWriter<MyParam>? writeCommand = null) : base(transport, readCommand, writeCommand) {
     }
 }

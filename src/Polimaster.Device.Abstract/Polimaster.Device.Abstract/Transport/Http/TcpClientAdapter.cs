@@ -1,44 +1,43 @@
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport.Http;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Transport.IClient{TConnectionParams}" />
-public class TcpClientAdapter : IClient<HttpConnectionParams> {
+public class TcpClientAdapter : AClient<string, HttpConnectionParams> {
     private readonly TcpClient _wrapped;
     
     /// <summary>
     /// 
     /// </summary>
-    public TcpClientAdapter() {
+    public TcpClientAdapter(HttpConnectionParams connectionParams, ILoggerFactory? loggerFactory) : base(connectionParams, loggerFactory) {
         _wrapped = new TcpClient();
     }
 
     /// <inheritdoc />
-    public bool Connected => _wrapped.Connected;
+    public override bool Connected => _wrapped.Connected;
 
     /// <inheritdoc />
-    public void Close() {
+    public override void Close() {
         _wrapped.Close();
     }
 
     /// <inheritdoc />
-    public Task<IDeviceStream> GetStream() {
-        return Task.FromResult<IDeviceStream>(new TcpStream(_wrapped.GetStream()));
+    public override IDeviceStream<string> GetStream() => new TcpStream(_wrapped.GetStream(), LoggerFactory);
+
+    /// <inheritdoc />
+    public override void Open() {
+        _wrapped.Connect(ConnectionParams.Ip, ConnectionParams.Port);
     }
 
     /// <inheritdoc />
-    public void Open(HttpConnectionParams connectionParams) {
-        _wrapped.Connect(connectionParams.Ip, connectionParams.Port);
+    public override async Task OpenAsync() {
+        await _wrapped.ConnectAsync(ConnectionParams.Ip, ConnectionParams.Port);
     }
 
     /// <inheritdoc />
-    public async Task OpenAsync(HttpConnectionParams connectionParams) {
-        await _wrapped.ConnectAsync(connectionParams.Ip, connectionParams.Port);
-    }
-
-    /// <inheritdoc />
-    public void Dispose() {
+    public override void Dispose() {
         _wrapped.Dispose();
     }
 }

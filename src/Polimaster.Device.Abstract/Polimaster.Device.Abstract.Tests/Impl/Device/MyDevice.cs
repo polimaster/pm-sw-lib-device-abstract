@@ -17,11 +17,11 @@ public class MyDevice : ADevice, IMyDevice {
     public IDeviceSetting<MyParam> MyParamSetting { get; }
     public IDeviceSetting<string>? StringSetting { get; set; }
 
-    public MyDevice(ITransport transport, ILoggerFactory? loggerFactory = null) : base(transport, loggerFactory) {
+    public MyDevice(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
         
         // building device commands and settings
-        var testSettingsReadCommand = new MyReadCommand(loggerFactory);
-        var testSettingsWriteCommand = new MyWriteCommand(loggerFactory);
+        var testSettingsReadCommand = new MyParamReader(loggerFactory);
+        var testSettingsWriteCommand = new MyParamWriter(loggerFactory);
         MyParamSetting = SettingBuilder.
             WithReadCommand(testSettingsReadCommand).
             WithWriteCommand(testSettingsWriteCommand).

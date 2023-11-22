@@ -15,5 +15,5 @@ public interface ICommand {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TStream">Stream type</typeparam>
     /// <returns></returns>
-    Task Send<TStream>(TStream stream, CancellationToken cancellationToken);
+    Task Exec<TStream>(TStream stream, CancellationToken cancellationToken);
 }
