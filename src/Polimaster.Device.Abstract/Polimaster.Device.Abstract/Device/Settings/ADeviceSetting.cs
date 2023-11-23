@@ -18,12 +18,12 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// Constructor
     /// </summary>
     /// <param name="transport"></param>
-    /// <param name="readCommand">Command for read data</param>
-    /// <param name="writeCommand">Command for write data. If null it creates readonly setting.</param>
-    protected ADeviceSetting(ITransport transport, IDataReader<T> readCommand, IDataWriter<T>? writeCommand = null) {
+    /// <param name="reader">Command for read data</param>
+    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
+    protected ADeviceSetting(ITransport transport, IDataReader<T> reader, IDataWriter<T>? writer = null) {
         Transport = transport;
-        ReadCommand = readCommand;
-        WriteCommand = writeCommand;
+        Reader = reader;
+        Writer = writer;
     }
 
     /// <see cref="ITransport"/>
@@ -32,15 +32,15 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// <summary>
     /// Command for read data
     /// </summary>
-    protected IDataReader<T> ReadCommand { get; }
+    protected IDataReader<T> Reader { get; }
 
     /// <summary>
     /// Command for write data
     /// </summary>
-    protected IDataWriter<T>? WriteCommand { get; }
+    protected IDataWriter<T>? Writer { get; }
 
     /// <inheritdoc />
-    public bool ReadOnly => WriteCommand == null;
+    public bool ReadOnly => Writer == null;
 
     /// <inheritdoc />
     public abstract T? Value { get; set; }
@@ -55,7 +55,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public bool IsError => Exception != null;
 
     /// <inheritdoc />
-    public IEnumerable<SettingValidationException>? ValidationErrors { get; protected set; }
+    public IEnumerable<SettingValidationResult>? ValidationErrors { get; protected set; }
 
     /// <inheritdoc />
     public Exception? Exception { get; protected set; }
@@ -65,6 +65,13 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
 
     /// <inheritdoc />
     public abstract Task CommitChanges(CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.
+    /// </summary>
+    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
+    protected virtual void Validate(T? value) {
+    }
 
     /// <inheritdoc />
     public override string? ToString() {

@@ -13,7 +13,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <inheritdoc cref="IDeviceSetting{T}"/>
 public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
-    public DeviceSettingBase(ITransport transport, IDataReader<T> readCommand, IDataWriter<T>? writeCommand = null) : base(transport, readCommand, writeCommand) {
+    public DeviceSettingBase(ITransport transport, IDataReader<T> reader, IDataWriter<T>? writer = null) : base(transport, reader, writer) {
     }
 
     private T? _value;
@@ -22,13 +22,9 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     public override T? Value {
         get => _value;
         set {
-            try {
-                Validate(value);
-                SetValue(value);
-                IsDirty = true;
-            } catch (Exception e) {
-                Exception = e;
-            }
+            Validate(value);
+            SetValue(value);
+            IsDirty = true;
         }
     }
 
@@ -45,7 +41,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
         try {
-            var v = await Transport.Read(ReadCommand, cancellationToken);
+            var v = await Transport.Read(Reader, cancellationToken);
             SetValue(v);
         } catch (Exception e) {
             SetValue(default);
@@ -55,20 +51,17 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
-        if (!IsDirty || !IsValid) return;
+        if (!IsValid) {
+            Exception = new Exception($"{nameof(Value)} is not valid");
+            return;
+        }
+        
+        if (Writer == null || !IsDirty) return;
         try {
-            if (WriteCommand != null) await Transport.Write(WriteCommand, Value, cancellationToken);
+            await Transport.Write(Writer, Value, cancellationToken);
             SetValue(Value);
         } catch (Exception e) {
             Exception = e;
         }
-    }
-
-    /// <summary>
-    /// Validates value while assignment.
-    /// </summary>
-    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
-    /// <exception cref="SettingValidationException">Throws if validation failed.</exception>
-    protected virtual void Validate(T? value) {
     }
 }

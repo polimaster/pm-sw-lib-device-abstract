@@ -3,7 +3,7 @@ using System;
 namespace Polimaster.Device.Abstract.Device.Commands.Exceptions;
 
 /// <summary>
-/// Rises while result of <see cref="ReadCommand{TValue,TCommand}.Parse"/> fails
+/// Rises while result of <see cref="Reader{TValue,TCommand}.Parse"/> fails
 /// </summary>
 public class CommandResultParsingException : Exception {
     /// <inheritdoc />

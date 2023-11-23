@@ -14,7 +14,7 @@
 //     public async void ShouldSetDirtyAndDoNotCallWriteCommandSendUntilValueChanged() {
 //         var commandMock = CommandMock;
 //         var setting = new MyParamSetting {
-//             WriteCommand = commandMock.Object
+//             Writer = commandMock.Object
 //         };
 //
 //         await setting.CommitChanges(CancellationToken.None);
@@ -35,7 +35,7 @@
 //         commandMock.Setup(x => x.Send(It.IsAny<CancellationToken>())).ThrowsAsync(ex);
 //         
 //         var setting = new MyParamSetting {
-//             ReadCommand = commandMock.Object
+//             Reader = commandMock.Object
 //         };
 //         
 //         await setting.Read(CancellationToken.None);
@@ -52,7 +52,7 @@
 //         commandMock.Setup(x => x.Send(It.IsAny<CancellationToken>())).ThrowsAsync(ex);
 //         
 //         var setting = new MyParamSetting {
-//             WriteCommand = commandMock.Object,
+//             Writer = commandMock.Object,
 //             Value = new MyParam { Value = "COMMAND_VALUE" }
 //         };
 //         
@@ -71,7 +71,7 @@
 //         readCommandMock.Setup(x => x.Value).Returns(commandValue);
 //
 //         var setting = new MyParamSetting {
-//             ReadCommand = readCommandMock.Object
+//             Reader = readCommandMock.Object
 //         };
 //
 //         await setting.Read(CancellationToken.None);
@@ -88,12 +88,12 @@
 //         var transportMock = TransportMock;
 //         transportMock.Setup(x => x.OpenAsync()).ReturnsAsync(writerMock.Object);
 //
-//         var readCommand = new MyParamReader {
+//         var reader = new MyParamReader {
 //             Device = new MyDevice(transportMock.Object)
 //         };
 //
 //         var setting = new MyParamSetting {
-//             ReadCommand = readCommand
+//             Reader = reader
 //         };
 //         
 //         await setting.Read(CancellationToken.None);
@@ -109,7 +109,7 @@
 //         var writeCommandMock = CommandMock;
 //
 //         var setting = new MyParamSetting {
-//             WriteCommand = writeCommandMock.Object,
+//             Writer = writeCommandMock.Object,
 //             Value = value
 //         };
 //
@@ -124,7 +124,7 @@
 //         var writeCommandMock = CommandMock;
 //
 //         var setting = new MyParamSettingValidatable {
-//             WriteCommand = writeCommandMock.Object,
+//             Writer = writeCommandMock.Object,
 //             Value = value
 //         };
 //         

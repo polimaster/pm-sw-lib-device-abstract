@@ -3,7 +3,7 @@
 namespace Polimaster.Device.Abstract.Device.Commands.Exceptions; 
 
 /// <summary>
-/// Rises while result of <see cref="WriteCommand{TValue,TCommand}.Compile"/> fails
+/// Rises while result of <see cref="Writer{TValue,TCommand}.Compile"/> fails
 /// </summary>
 public class CommandCompilationException : Exception{
     /// <inheritdoc />
