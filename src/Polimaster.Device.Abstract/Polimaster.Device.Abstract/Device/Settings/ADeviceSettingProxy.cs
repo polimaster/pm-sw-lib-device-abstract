@@ -43,7 +43,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     public bool IsError => ProxiedSetting.IsError;
 
     /// <inheritdoc />
-    public IEnumerable<SettingValidationResult>? ValidationErrors => ProxiedSetting.ValidationErrors;
+    public IEnumerable<ValidationResult>? ValidationErrors => ProxiedSetting.ValidationErrors;
 
     /// <inheritdoc />
     public Exception? Exception => ProxiedSetting.Exception;

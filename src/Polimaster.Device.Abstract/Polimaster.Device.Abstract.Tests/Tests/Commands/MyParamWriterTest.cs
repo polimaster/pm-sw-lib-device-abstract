@@ -9,17 +9,16 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Commands;
 
 public class MyParamWriterTest : Mocks {
     private readonly MyParam _param = new() { CommandPid = 1, Value = "VALUE" };
-    private readonly CancellationToken _token = new();
 
     [Fact]
     public async void ShouldWrite() {
         var cmd = new MyParamWriter(LOGGER_FACTORY);
         var stream = new Mock<IDeviceStream<string>>();
 
-        await cmd.Write(stream.Object, _param, _token);
+        await cmd.Write(stream.Object, _param, Token);
 
         var compiled = $"{Cmd.PREFIX}{_param?.CommandPid}:{_param?.Value}";
-        stream.Verify(e => e.WriteAsync(compiled, _token));
+        stream.Verify(e => e.WriteAsync(compiled, Token));
     }
 
     [Fact]
@@ -29,7 +28,7 @@ public class MyParamWriterTest : Mocks {
         var stream = new Mock<IDeviceStream<int>>();
 
         Exception? exception = null;
-        try { await cmd.Write(stream.Object, _param, _token); } catch (Exception e) { exception = e; }
+        try { await cmd.Write(stream.Object, _param, Token); } catch (Exception e) { exception = e; }
 
         Assert.NotNull(exception);
         Assert.IsType<ArgumentException>(exception);

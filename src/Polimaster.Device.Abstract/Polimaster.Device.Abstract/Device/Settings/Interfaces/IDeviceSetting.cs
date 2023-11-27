@@ -39,7 +39,7 @@ public interface IDeviceSetting<T> {
     /// <summary>
     /// <see cref="Value"/> validation errors
     /// </summary>
-    IEnumerable<SettingValidationResult>? ValidationErrors { get; }
+    IEnumerable<ValidationResult>? ValidationErrors { get; }
 
     /// <summary>
     /// Error while <see cref="Read"/> or <see cref="CommitChanges"/> operations

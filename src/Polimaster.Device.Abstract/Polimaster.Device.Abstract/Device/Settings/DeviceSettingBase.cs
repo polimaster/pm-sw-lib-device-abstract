@@ -52,14 +52,15 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsValid) {
-            Exception = new Exception($"{nameof(Value)} is not valid");
+            Exception = new Exception($"Value of {GetType()} is not valid");
             return;
         }
         
         if (Writer == null || !IsDirty) return;
         try {
             await Transport.Write(Writer, Value, cancellationToken);
-            SetValue(Value);
+            IsDirty = false;
+            Exception = null;
         } catch (Exception e) {
             Exception = e;
         }

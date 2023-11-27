@@ -55,7 +55,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public bool IsError => Exception != null;
 
     /// <inheritdoc />
-    public IEnumerable<SettingValidationResult>? ValidationErrors { get; protected set; }
+    public IEnumerable<ValidationResult>? ValidationErrors { get; protected set; }
 
     /// <inheritdoc />
     public Exception? Exception { get; protected set; }

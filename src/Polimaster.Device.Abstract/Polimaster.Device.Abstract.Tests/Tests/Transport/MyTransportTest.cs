@@ -8,7 +8,6 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests.Tests.Transport;
 
 public class MyTransportTest : Mocks {
-    private readonly CancellationToken _token = new();
 
     [Fact]
     public void ShouldHaveId() {
@@ -67,9 +66,9 @@ public class MyTransportTest : Mocks {
         var param = new MyParam();
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
-        await tr.Write(writer.Object, param, _token);
+        await tr.Write(writer.Object, param, Token);
         
-        writer.Verify(e => e.Write(stream.Object, param, _token));
+        writer.Verify(e => e.Write(stream.Object, param, Token));
     }
 
     [Fact]
@@ -81,9 +80,9 @@ public class MyTransportTest : Mocks {
         var writer = new Mock<IDataReader<MyParam>>();
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
-        await tr.Read(writer.Object, _token);
+        await tr.Read(writer.Object, Token);
         
-        writer.Verify(e => e.Read(stream.Object, _token));
+        writer.Verify(e => e.Read(stream.Object, Token));
     }
 
     [Fact]
@@ -95,8 +94,8 @@ public class MyTransportTest : Mocks {
         var writer = new Mock<ICommand>();
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
-        await tr.Exec(writer.Object, _token);
+        await tr.Exec(writer.Object, Token);
         
-        writer.Verify(e => e.Exec(stream.Object, _token));
+        writer.Verify(e => e.Exec(stream.Object, Token));
     }
 }

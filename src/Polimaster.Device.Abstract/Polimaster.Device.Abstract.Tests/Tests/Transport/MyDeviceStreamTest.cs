@@ -7,7 +7,6 @@ using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 namespace Polimaster.Device.Abstract.Tests.Tests.Transport;
 
 public class MyDeviceStreamTest : Mocks {
-    private readonly CancellationToken _token = new();
     
     [Fact]
     public async void ShouldWrite() {
@@ -15,9 +14,9 @@ public class MyDeviceStreamTest : Mocks {
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
         const string str = "TEST_0";
         
-        await stream.WriteAsync(str, _token);
+        await stream.WriteAsync(str, Token);
         
-        mock.Verify(e => e.WriteAsync(It.IsAny<ReadOnlyMemory<byte>>(), _token));
+        mock.Verify(e => e.WriteAsync(It.IsAny<ReadOnlyMemory<byte>>(), Token));
     }
 
     [Fact]
@@ -25,9 +24,9 @@ public class MyDeviceStreamTest : Mocks {
         var mock = new Mock<MemoryStream>();
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
         
-        await stream.ReadAsync(_token);
+        await stream.ReadAsync(Token);
         
-        mock.Verify(e => e.ReadAsync(It.IsAny<Memory<byte>>(), _token));
+        mock.Verify(e => e.ReadAsync(It.IsAny<Memory<byte>>(), Token));
     }
     
 }
