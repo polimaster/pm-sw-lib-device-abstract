@@ -13,6 +13,8 @@ public class MyDeviceSetting : DeviceSettingBase<MyParam> {
     }
     
     protected override void Validate(MyParam? value) {
+        base.Validate(value);
+        
         if (value == null) {
             ValidationErrors = new[] { new ValidationResult("Value is null") };
             return;
@@ -22,11 +24,9 @@ public class MyDeviceSetting : DeviceSettingBase<MyParam> {
         var results = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
         var isValid = Validator.TryValidateObject(value, vc, results, true);
 
-        if (isValid) {
-            ValidationErrors = null;
-            return;
+        if (!isValid) {
+            ValidationErrors = results.Select(e => new ValidationResult(e.ErrorMessage ?? "Unknown error"));
         }
-
-        ValidationErrors = results.Select(e => new ValidationResult(e.ErrorMessage ?? "Unknown error"));
+        
     }
 }

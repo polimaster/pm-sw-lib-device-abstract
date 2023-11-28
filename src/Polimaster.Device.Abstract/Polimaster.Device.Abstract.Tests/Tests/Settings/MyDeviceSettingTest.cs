@@ -84,7 +84,7 @@ public class MyDeviceSettingTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
 
-        var p = new MyParam { Value = "veeeeeeeeeeeeeeeeeeeeery long string" };
+        var p = new MyParam { Value = "ve__________________________ery long string" };
         var setting = new MyDeviceSetting(transport.Object, reader.Object, writer.Object) {
             Value = p
         };

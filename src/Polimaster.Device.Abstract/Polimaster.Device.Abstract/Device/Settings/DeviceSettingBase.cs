@@ -52,7 +52,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsValid) {
-            Exception = new Exception($"Value of {GetType()} is not valid");
+            Exception = new Exception($"Value of {GetType().Name} is not valid");
             return;
         }
         

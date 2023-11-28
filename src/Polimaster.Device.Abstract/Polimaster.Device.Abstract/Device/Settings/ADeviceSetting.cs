@@ -71,6 +71,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     protected virtual void Validate(T? value) {
+        ValidationErrors = null;
     }
 
     /// <inheritdoc />
