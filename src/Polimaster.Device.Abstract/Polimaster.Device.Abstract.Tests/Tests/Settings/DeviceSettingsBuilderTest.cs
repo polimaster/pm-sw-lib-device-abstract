@@ -7,7 +7,7 @@ using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 namespace Polimaster.Device.Abstract.Tests.Tests.Settings; 
 
 public class DeviceSettingsBuilderTest : Mocks {
-    private readonly SettingBuilder _builder = new(TransportMock.Object);
+    private readonly SettingBuilder _builder = new();
     private readonly Mock<IDataReader<MyParam>> _readerMock = new();
     private readonly Mock<IDataWriter<MyParam>> _writerMock = new();
 

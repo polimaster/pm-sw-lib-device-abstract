@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -35,7 +36,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     private T? _internalValue;
     
     /// <inheritdoc />
-    public virtual T? Value {
+    public virtual T Value {
         get => _internalValue ?? GetProxied();
         set {
             Validate(value);
@@ -91,14 +92,14 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     }
 
     /// <inheritdoc />
-    public virtual async Task CommitChanges(CancellationToken cancellationToken) {
+    public virtual async Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
         if (ValidationErrors != null && ValidationErrors.Any()) return;
-        await ProxiedSetting.CommitChanges(cancellationToken);
+        await ProxiedSetting.CommitChanges(transport, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task Read(CancellationToken cancellationToken) {
+    public virtual async Task Read(ITransport transport, CancellationToken cancellationToken) {
         // check if proxied setting already had read
-        if (ProxiedSetting.Value == null) await ProxiedSetting.Read(cancellationToken);
+        if (ProxiedSetting.Value == null) await ProxiedSetting.Read(transport, cancellationToken);
     }
 }

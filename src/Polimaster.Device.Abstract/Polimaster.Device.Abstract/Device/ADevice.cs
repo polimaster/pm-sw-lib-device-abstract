@@ -47,7 +47,7 @@ public abstract class ADevice : IDevice {
     /// <param name="loggerFactory">Logger factory</param>
     protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
         _transport = transport;
-        SettingBuilder = new SettingBuilder(transport);
+        SettingBuilder = new SettingBuilder();
         Logger = loggerFactory?.CreateLogger(GetType());
     }
     
@@ -74,11 +74,11 @@ public abstract class ADevice : IDevice {
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
         }
     }
-    
+
     /// <inheritdoc />
-    public virtual async Task Execute(Func<CancellationToken, Task> action) {
+    public virtual async Task Execute(Func<ITransport, Task> action) {
         await _transport.OpenAsync();
-        await action.Invoke(new CancellationToken());
+        await action.Invoke(_transport);
         _transport.Close();
     }
 

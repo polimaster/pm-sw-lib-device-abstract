@@ -1,13 +1,11 @@
 ﻿using System;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc cref="ISettingBuilder"/>
 public class SettingBuilder : ISettingBuilder {
-    private readonly ITransport _transport;
     private object? _reader;
     private object? _writer;
     private Type? _implementation;
@@ -16,9 +14,7 @@ public class SettingBuilder : ISettingBuilder {
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="transport">Device transport</param>
-    public SettingBuilder(ITransport transport) {
-        _transport = transport;
+    public SettingBuilder() {
     }
 
     /// <inheritdoc />
@@ -50,8 +46,8 @@ public class SettingBuilder : ISettingBuilder {
         }
         
         var impl = _implementation == null
-            ? new DeviceSettingBase<TValue>(_transport, reader, writer)
-            : (IDeviceSetting<TValue>)Activator.CreateInstance(_implementation, _transport, reader, writer);
+            ? new DeviceSettingBase<TValue>(reader, writer)
+            : (IDeviceSetting<TValue>)Activator.CreateInstance(_implementation, reader, writer);
 
         CleanUp();
         return impl;

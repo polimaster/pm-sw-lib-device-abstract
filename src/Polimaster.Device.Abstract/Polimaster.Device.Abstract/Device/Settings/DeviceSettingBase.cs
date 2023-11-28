@@ -13,13 +13,13 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <inheritdoc cref="IDeviceSetting{T}"/>
 public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
-    public DeviceSettingBase(ITransport transport, IDataReader<T> reader, IDataWriter<T>? writer = null) : base(transport, reader, writer) {
+    public DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null) : base(reader, writer) {
     }
 
-    private T? _value;
+    private T _value;
 
     /// <inheritdoc />
-    public override T? Value {
+    public override T Value {
         get => _value;
         set {
             Validate(value);
@@ -32,16 +32,16 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// Set value from internal Read/Write commands
     /// </summary>
     /// <param name="value"></param>
-    private void SetValue(T? value) {
+    private void SetValue(T value) {
         IsDirty = false;
         Exception = null;
         _value = value;
     }
 
     /// <inheritdoc />
-    public override async Task Read(CancellationToken cancellationToken) {
+    public override async Task Read(ITransport transport, CancellationToken cancellationToken) {
         try {
-            var v = await Transport.Read(Reader, cancellationToken);
+            var v = await transport.Read(Reader, cancellationToken);
             SetValue(v);
         } catch (Exception e) {
             SetValue(default);
@@ -50,7 +50,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     }
 
     /// <inheritdoc />
-    public override async Task CommitChanges(CancellationToken cancellationToken) {
+    public override async Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
         if (!IsValid) {
             Exception = new Exception($"Value of {GetType().Name} is not valid");
             return;
@@ -58,7 +58,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         
         if (Writer == null || !IsDirty) return;
         try {
-            await Transport.Write(Writer, Value, cancellationToken);
+            await transport.Write(Writer, Value, cancellationToken);
             IsDirty = false;
             Exception = null;
         } catch (Exception e) {

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device;
 
@@ -56,11 +57,11 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// This prevents situation when opened connection times out while idle and following calls throws exceptions.
     /// </summary>
     /// <example>
-    /// await device.Execute(async () =&gt; {
-    ///     await device.ReadDeviceInfo(stoppingToken);
+    /// await device.Execute(async (transport) =&gt; {
+    ///     await transport.Read(reader);
     /// });
     /// </example>
     /// <param name="action">Function to call</param>
     /// <returns></returns>
-    Task Execute(Func<CancellationToken, Task> action);
+    Task Execute(Func<ITransport, Task> action);
 }

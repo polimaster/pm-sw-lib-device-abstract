@@ -10,10 +10,9 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 public class MyParamSettingProxyTest : Mocks {
     [Fact]
     public void ShouldSetProperty() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam>>();
         
-        var setting = new MyDeviceSetting(transport.Object, reader.Object);
+        var setting = new MyDeviceSetting(reader.Object);
 
         var proxy = new MyParamSettingProxy(setting) {
             Value = "test"
@@ -25,10 +24,9 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public void ShouldValidateValue() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam>>();
 
-        var setting = new MyDeviceSetting(transport.Object, reader.Object);
+        var setting = new MyDeviceSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting) {
             Value = MyParamSettingProxy.FORBIDDEN_VALUES[0]
         };
@@ -51,10 +49,10 @@ public class MyParamSettingProxyTest : Mocks {
         var p = new MyParam { Value = "123456" };
         transport.Setup(e => e.Read(reader.Object, Token)).Returns(Task.FromResult(p));
         
-        var setting = new MyDeviceSetting(transport.Object, reader.Object);
+        var setting = new MyDeviceSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting);
 
-        await proxy.Read(Token);
+        await proxy.Read(transport.Object, Token);
         
         transport.Verify(e => e.Read(reader.Object, Token));
         Assert.Equal(p.Value, proxy.Value);
@@ -67,10 +65,10 @@ public class MyParamSettingProxyTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyDeviceSetting(transport.Object, reader.Object, writer.Object) { Value = p };
+        var setting = new MyDeviceSetting(reader.Object, writer.Object) { Value = p };
         var proxy = new MyParamSettingProxy(setting) { Value = "proxy_value" };
 
-        await proxy.CommitChanges(Token);
+        await proxy.CommitChanges(transport.Object, Token);
         
         transport.Verify(e => e.Write(writer.Object, It.Is<MyParam>(pv => pv.Value == "proxy_value"), Token));
     }
@@ -82,10 +80,10 @@ public class MyParamSettingProxyTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
         
-        var setting = new MyDeviceSetting(transport.Object, reader.Object, writer.Object);
+        var setting = new MyDeviceSetting(reader.Object, writer.Object);
         var proxy = new MyParamSettingProxy(setting) { Value = MyParamSettingProxy.FORBIDDEN_VALUES[0] };
 
-        await proxy.CommitChanges(Token);
+        await proxy.CommitChanges(transport.Object, Token);
         
         Assert.True(proxy.IsDirty);
         Assert.False(proxy.IsValid);
@@ -95,10 +93,9 @@ public class MyParamSettingProxyTest : Mocks {
 
     [Fact]
     public void ShouldCheckReadOnly() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam>>();
         
-        var setting = new MyDeviceSetting(transport.Object, reader.Object);
+        var setting = new MyDeviceSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting);
         
         Assert.True(proxy.ReadOnly);
@@ -111,7 +108,7 @@ public class MyParamSettingProxyTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
         
-        var setting = new MyDeviceSetting(transport.Object, reader.Object, writer.Object);
+        var setting = new MyDeviceSetting(reader.Object, writer.Object);
         var proxy = new MyParamSettingProxy(setting) {
             Value = "test"
         };
@@ -119,7 +116,7 @@ public class MyParamSettingProxyTest : Mocks {
         var ex = new Exception();
         transport.Setup(e => e.Write(writer.Object, It.IsAny<MyParam>(), Token)).ThrowsAsync(ex);
         
-        await proxy.CommitChanges(Token);
+        await proxy.CommitChanges(transport.Object, Token);
         
         Assert.Equal(ex, proxy.Exception);
         Assert.True(proxy.IsError);
@@ -133,10 +130,10 @@ public class MyParamSettingProxyTest : Mocks {
         var ex = new Exception();
         transport.Setup(e => e.Read(reader.Object, Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         
-        var setting = new MyDeviceSetting(transport.Object, reader.Object);
+        var setting = new MyDeviceSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting);
 
-        await proxy.Read(Token);
+        await proxy.Read(transport.Object, Token);
         Assert.Equal(ex, proxy.Exception);
         Assert.True(proxy.IsError);
     }
