@@ -17,7 +17,7 @@ public abstract class AHistoryManager<THistory> : IHistoryManager<THistory> {
     }
 
     /// <inheritdoc />
-    public Action<HistoryChunk<THistory>>? HasNext { get; set; }
+    public abstract event Action<HistoryChunk<THistory>>? HasNext;
 
     /// <inheritdoc />
     public abstract Task Read(ITransport transport, CancellationToken token = new());

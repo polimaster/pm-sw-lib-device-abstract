@@ -13,15 +13,15 @@ public interface IDeviceManager<T> : IDisposable where T : IDevice {
     /// <summary>
     /// Occurs when device attached to computer
     /// </summary>
-    Action<T>? Attached { get; set; }
-    
+    public event Action<T>? Attached;
+
     /// <summary>
     /// Occurs when device detached from computer
     /// </summary>
-    Action<T>? Removed { get; set; }
+    public event Action<T>? Removed;
 
     /// <summary>
     /// Current connected devices
     /// </summary>
-    List<T> Devices { get; set; }
+    List<T> Devices { get; }
 }

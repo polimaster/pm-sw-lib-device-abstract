@@ -43,7 +43,7 @@ public abstract class ATransport<T> : ITransport {
     protected ILogger? Logger { get; }
 
     /// <inheritdoc />
-    public Action? Closing { get; set; }
+    public event Action? Closing;
 
     /// <summary>
     /// 

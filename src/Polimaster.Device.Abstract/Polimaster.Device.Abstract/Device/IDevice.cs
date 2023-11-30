@@ -16,11 +16,11 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// Unique identifier of device
     /// </summary>
     string Id { get; }
-    
+
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
     /// </summary>
-    Action? IsDisposing { get; set; }
+    public event Action? IsDisposing;
 
     /// <summary>
     /// Device information data

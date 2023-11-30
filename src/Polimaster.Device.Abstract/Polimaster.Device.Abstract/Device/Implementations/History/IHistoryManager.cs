@@ -14,7 +14,7 @@ public interface IHistoryManager<THistory> {
     /// <summary>
     /// Occurs when new data got from device
     /// </summary>
-    Action<HistoryChunk<THistory>>? HasNext { get; set; }
+    public event Action<HistoryChunk<THistory>>? HasNext;
 
     /// <summary>
     /// Reads history from device

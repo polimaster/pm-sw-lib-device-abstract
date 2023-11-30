@@ -33,7 +33,7 @@ public abstract class ADevice : IDevice {
     public virtual string Id => _transport.ConnectionId;
 
     /// <inheritdoc />
-    public Action? IsDisposing { get; set; }
+    public event Action? IsDisposing;
     
     /// <summary>
     /// Logger

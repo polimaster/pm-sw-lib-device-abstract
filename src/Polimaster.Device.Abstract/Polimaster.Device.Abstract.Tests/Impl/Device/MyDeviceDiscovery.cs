@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 using Polimaster.Device.Abstract.Transport;
 
-namespace Polimaster.Device.Abstract.Tests.Impl.Device; 
+namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
-public class MyDeviceDiscovery : ATransportDiscovery {
+public interface IMyDeviceDiscovery : ITransportDiscovery {
+}
+
+public class MyDeviceDiscovery : ATransportDiscovery, IMyDeviceDiscovery {
     protected override int Sleep => 1;
     
     private bool _inProgress;
@@ -32,6 +36,9 @@ public class MyDeviceDiscovery : ATransportDiscovery {
         
         _inProgress = false;
     }
+
+    public override event Action<IEnumerable<ITransport>>? Found;
+    public override event Action<IEnumerable<ITransport>>? Lost;
 
     public MyDeviceDiscovery(ILoggerFactory? loggerFactory) : base(loggerFactory) {
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,9 @@ public class HistoryManager : AHistoryManager<HistoryRecord> {
         _historyReader = new HistoryReader(loggerFactory);
         _historyWiper = new HistoryWiper(loggerFactory);
     }
-    
+
+    public override event Action<HistoryChunk<HistoryRecord>>? HasNext;
+
     public override async Task Read(ITransport transport, CancellationToken token = new()) {
         if (_readCancellationToken != null) {
             Logger?.LogDebug("Reading history is already in progress");
@@ -40,7 +43,7 @@ public class HistoryManager : AHistoryManager<HistoryRecord> {
         
         // device didn't return all data, so history can't be parsed
         if (_readCancellationToken.IsCancellationRequested && !hasReachedTheEndOfData) {
-            HasNext?.Invoke(new HistoryChunk<HistoryRecord> { Completed = true });
+            HasNext.Invoke(new HistoryChunk<HistoryRecord> { Completed = true });
             _readCancellationToken = null;
             return;
         }

@@ -7,7 +7,6 @@ using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
-using Polimaster.Device.Abstract.Tests.Tests.Commands;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests; 

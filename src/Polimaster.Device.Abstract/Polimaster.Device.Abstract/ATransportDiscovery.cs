@@ -61,10 +61,10 @@ public abstract class ATransportDiscovery : ITransportDiscovery {
     }
 
     /// <inheritdoc />
-    public Action<IEnumerable<ITransport>>? Found { get; set; }
+    public abstract event Action<IEnumerable<ITransport>>? Found;
 
     /// <inheritdoc />
-    public Action<IEnumerable<ITransport>>? Lost { get; set; }
+    public abstract event Action<IEnumerable<ITransport>>? Lost;
 
     /// <inheritdoc />
     public virtual void Dispose() {
