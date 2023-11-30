@@ -21,7 +21,7 @@ public interface IMyDevice : IHasBattery, IHasDose, IHasTemperatureSensor, IHasH
 public class MyDevice : ADevice, IMyDevice {
     public IDeviceSetting<ushort?> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
-    public BatteryStatus? BatteryStatus { get; protected set; }
+    public BatteryStatus? BatteryStatus { get; private set; }
 
     public IDeviceSetting<MyParam> MyParamSetting { get; }
     public IDeviceSetting<string> StringSetting { get; }

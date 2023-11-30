@@ -56,7 +56,7 @@ public abstract class ADevice : IDevice {
     public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken = new());
 
     /// <inheritdoc />
-    public async Task ReadAllSettings(CancellationToken cancellationToken) {
+    public async Task ReadAllSettings(CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) {
@@ -66,7 +66,7 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public async Task WriteAllSettings(CancellationToken cancellationToken) {
+    public async Task WriteAllSettings(CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetDeviceSettingsProperties();
         foreach (var info in ds) {
@@ -89,8 +89,9 @@ public abstract class ADevice : IDevice {
 
         // dynamic awaitable = m?.Invoke(setting, null) ?? throw new InvalidOperationException();
         // if (awaitable != null) await awaitable;
-        var p = new object[1];
-        p[0] = cancellationToken;
+        var p = new object[2];
+        p[0] = _transport;
+        p[1] = cancellationToken;
         var task = (Task)method.Invoke(setting, p);
         if (task != null) await task;
     }
