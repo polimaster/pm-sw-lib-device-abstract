@@ -7,22 +7,20 @@ using Polimaster.Device.Abstract.Device.Implementations;
 using Polimaster.Device.Abstract.Device.Implementations.History;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
+using Polimaster.Device.Abstract.Tests.Impl.Device.History;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
-public interface IMyDevice : IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<History> {
+public interface IMyDevice : IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
     IDeviceSetting<MyParam> MyParamSetting { get; }
     IDeviceSetting<string> StringSetting { get; }
 }
 
-public class History {
-}
-
 public class MyDevice : ADevice, IMyDevice {
     public IDeviceSetting<ushort?> HistoryInterval { get; }
-    public IHistoryManager<History> HistoryManager { get; }
+    public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; protected set; }
 
     public IDeviceSetting<MyParam> MyParamSetting { get; }
@@ -51,6 +49,13 @@ public class MyDevice : ADevice, IMyDevice {
         var plainReader = new PlainReader(loggerFactory);
         var plainWriter = new PlainWriter(loggerFactory);
         StringSetting = SettingBuilder.WithReader(plainReader).WithWriter(plainWriter).Build<string>();
+
+        var intervalReader = new HistoryIntervalReader(loggerFactory);
+        var intervalWriter = new HistoryIntervalWriter(loggerFactory);
+        HistoryInterval = SettingBuilder.WithReader(intervalReader).WithWriter(intervalWriter).Build<ushort?>();
+
+        HistoryManager = new HistoryManager(loggerFactory);
+
     }
 
 

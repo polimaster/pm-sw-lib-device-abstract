@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
@@ -13,29 +14,26 @@ public interface IHistoryManager<THistory> {
     /// <summary>
     /// Occurs when new data got from device
     /// </summary>
-    Action<HistoryChunk<THistory>>? HasNext  { get; set; }
-
-    /// <summary>
-    /// Device <see cref="IHistoryManager{THistory}"/> belongs to
-    /// </summary>
-    IDevice Device { get; }
+    Action<HistoryChunk<THistory>>? HasNext { get; set; }
 
     /// <summary>
     /// Reads history from device
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    void Read(CancellationToken cancellationToken = new());
+    /// <param name="transport"></param>
+    /// <param name="token"></param>
+    Task Read(ITransport transport, CancellationToken token = new());
 
     /// <summary>
     /// Cancels history reading
     /// </summary>
     /// <returns></returns>
     void Stop();
-    
+
     /// <summary>
     /// Wipe history from device
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="transport"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    Task Wipe(CancellationToken cancellationToken = new());
+    Task Wipe(ITransport transport, CancellationToken token = new());
 }
