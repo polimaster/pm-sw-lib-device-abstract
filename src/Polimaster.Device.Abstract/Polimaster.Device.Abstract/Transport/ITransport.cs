@@ -13,6 +13,11 @@ public interface ITransport : IDisposable {
     /// Connection identifier
     /// </summary>
     string ConnectionId { get; }
+    
+    /// <summary>
+    /// Indicates connection will be closed
+    /// </summary>
+    Action? Closing { get; set; }
 
     /// <summary>
     /// Open device connection

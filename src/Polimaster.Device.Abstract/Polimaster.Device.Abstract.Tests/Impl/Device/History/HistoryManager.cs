@@ -25,6 +25,8 @@ public class HistoryManager : AHistoryManager<HistoryRecord> {
         }
         _readCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(token);
         
+        transport.Closing += Stop;
+        
         var rows = new List<HistoryRecord>();
         var hasReachedTheEndOfData = false;
         while (!_readCancellationToken.IsCancellationRequested) {
@@ -49,7 +51,6 @@ public class HistoryManager : AHistoryManager<HistoryRecord> {
 
     public override void Stop() {
         _readCancellationToken?.Cancel();
-        _readCancellationToken = null;
     }
 
     public override async Task Wipe(ITransport transport, CancellationToken token = new()) => 

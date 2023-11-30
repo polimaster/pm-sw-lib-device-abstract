@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands;
@@ -41,6 +42,9 @@ public abstract class ATransport<T> : ITransport {
     /// </summary>
     protected ILogger? Logger { get; }
 
+    /// <inheritdoc />
+    public Action? Closing { get; set; }
+
     /// <summary>
     /// 
     /// </summary>
@@ -55,19 +59,37 @@ public abstract class ATransport<T> : ITransport {
     /// <inheritdoc />
     public virtual async Task OpenAsync() {
         if (Client.Connected) return;
-        Logger?.LogDebug("Open transport connection (async)");
-        await Client.OpenAsync();
+        if(SyncStreamAccess) await Semaphore.WaitAsync();
+        try {
+            Logger?.LogDebug("Open transport connection (async)");
+            await Client.OpenAsync();
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
+        }
     }
 
     /// <inheritdoc />
     public virtual void Open() {
         if(Client.Connected) return;
-        Logger?.LogDebug("Open transport connection");
-        Client.Open();
+        if(SyncStreamAccess) Semaphore.Wait();
+        try {
+            Logger?.LogDebug("Open transport connection");
+            Client.Open();
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
+        }
     }
 
     /// <inheritdoc />
-    public virtual void Close() => Client.Close();
+    public virtual void Close() {
+        if(SyncStreamAccess) Semaphore.Wait();
+        try {
+            Closing?.Invoke();
+            Client.Close();
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
+        }
+    }
 
     /// <inheritdoc />
     public virtual async Task Exec(ICommand command, CancellationToken cancellationToken = new()) {
