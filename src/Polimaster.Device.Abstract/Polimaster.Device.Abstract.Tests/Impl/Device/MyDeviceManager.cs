@@ -26,6 +26,9 @@ public class MyDeviceManager : ADeviceManager<IMyDeviceDiscovery, MyDevice> {
 
     protected override void OnFound(IEnumerable<ITransport> transports) {
         foreach (var transport in transports) {
+            var found = Devices.Any(x => x.HasSame(transport));
+            if(found) continue;
+
             var dev = new MyDevice(transport, LoggerFactory);
             Devices.Add(dev);
             Attached?.Invoke(dev);
