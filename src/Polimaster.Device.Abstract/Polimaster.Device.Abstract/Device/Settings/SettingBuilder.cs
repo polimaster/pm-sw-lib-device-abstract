@@ -44,10 +44,10 @@ public class SettingBuilder : ISettingBuilder {
     }
 
     /// <inheritdoc />
-    public T BuildWithProxy<T, TValue, TProxied>()
+    public T BuildWithProxy<T, TValue, TProxied>(IDeviceSetting<TProxied> proxied)
         where T : class, IDeviceSettingProxy<TValue, TProxied>, new() {
         var proxy = Activator.CreateInstance<T>();
-        proxy.ProxiedSetting = Build<TProxied>();
+        proxy.ProxiedSetting = proxied;
         return proxy;
     }
 
