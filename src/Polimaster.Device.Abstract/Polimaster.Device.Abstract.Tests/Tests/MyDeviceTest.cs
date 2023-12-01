@@ -72,12 +72,12 @@ public class MyDeviceTest : Mocks {
         var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
-        ushort? v = 10;
+        ushort v = 10;
         transport.Setup(e => e.Read(It.IsAny<HistoryIntervalReader>(), Token)).Returns(Task.FromResult(v));
         await dev.ReadAllSettings(Token);
         Assert.Equal(v, dev.HistoryInterval.Value);
 
-        ushort? v2 = 20;
+        ushort v2 = 20;
         transport.Setup(e => e.Read(It.IsAny<HistoryIntervalReader>(), Token)).Returns(Task.FromResult(v2));
         await dev.HistoryInterval.Read(transport.Object, Token);
         Assert.Equal(v2, dev.HistoryInterval.Value);
@@ -88,7 +88,7 @@ public class MyDeviceTest : Mocks {
         var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
-        ushort? v = 10;
+        ushort v = 10;
         dev.HistoryInterval.Value = v;
         await dev.WriteAllSettings(Token);
         

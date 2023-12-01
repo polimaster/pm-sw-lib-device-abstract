@@ -38,7 +38,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public bool ReadOnly => Writer == null;
 
     /// <inheritdoc />
-    public abstract T Value { get; set; }
+    public abstract T? Value { get; set; }
 
     /// <inheritdoc />
     public bool IsDirty { get; protected set; }

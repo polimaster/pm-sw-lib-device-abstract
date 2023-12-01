@@ -9,7 +9,7 @@ public interface IHasHistory : IHasClock {
     /// <summary>
     /// Interval between history entries
     /// </summary>
-    IDeviceSetting<ushort?> HistoryInterval { get; }
+    IDeviceSetting<ushort> HistoryInterval { get; }
 }
 
 

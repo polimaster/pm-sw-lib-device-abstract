@@ -25,7 +25,7 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
     public abstract event Action<T>? Removed;
 
     /// <inheritdoc />
-    public List<T> Devices { get; protected set; } = new();
+    public List<T> Devices { get; } = new();
 
     /// <summary>
     /// 

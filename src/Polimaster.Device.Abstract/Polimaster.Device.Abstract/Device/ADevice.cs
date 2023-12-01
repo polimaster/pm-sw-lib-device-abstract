@@ -17,9 +17,6 @@ namespace Polimaster.Device.Abstract.Device;
 /// <inheritdoc cref="IDevice"/>
 public abstract class ADevice : IDevice {
 
-    /// <see cref="ISettingBuilder"/>
-    protected readonly ISettingBuilder SettingBuilder;
-
     /// <summary>
     /// Transport layer
     /// </summary>
@@ -47,7 +44,6 @@ public abstract class ADevice : IDevice {
     /// <param name="loggerFactory">Logger factory</param>
     protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
         _transport = transport;
-        SettingBuilder = new SettingBuilder();
         Logger = loggerFactory?.CreateLogger(GetType());
     }
     

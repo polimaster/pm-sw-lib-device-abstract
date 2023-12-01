@@ -3,13 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Transport;
 using ValidationResult = Polimaster.Device.Abstract.Device.Settings.ValidationResult;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings; 
 
-public class MyDeviceSetting : DeviceSettingBase<MyParam> {
-    public MyDeviceSetting(IDataReader<MyParam> reader, IDataWriter<MyParam>? writer = null) : base(reader, writer) {
+public class MyParamSetting : DeviceSettingBase<MyParam> {
+    public MyParamSetting(IDataReader<MyParam> reader, IDataWriter<MyParam>? writer = null) : base(reader, writer) {
     }
     
     protected override void Validate(MyParam? value) {

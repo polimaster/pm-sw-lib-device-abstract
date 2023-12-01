@@ -20,7 +20,7 @@ public interface IDeviceSetting<T> {
     /// <summary>
     /// Setting value
     /// </summary>
-    T Value { get; set; }
+    T? Value { get; set; }
     
     /// <summary>
     /// Indicates if <see cref="Value"/> changed

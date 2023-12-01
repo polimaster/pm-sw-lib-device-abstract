@@ -10,7 +10,7 @@ public class TimeReader : StringReader<DateTime> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}TIME";
 
-    protected override DateTime Parse(string res) {
+    protected override DateTime Parse(string? res) {
         return DateTime.Now;
     }
 }

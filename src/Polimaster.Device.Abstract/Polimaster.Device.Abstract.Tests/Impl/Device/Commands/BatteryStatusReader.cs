@@ -10,7 +10,7 @@ public class BatteryStatusReader : StringReader<BatteryStatus?> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}BAT";
 
-    protected override BatteryStatus? Parse(string res) {
+    protected override BatteryStatus? Parse(string? res) {
         return new BatteryStatus {
             Volts = 0.8,
             Percents = 88

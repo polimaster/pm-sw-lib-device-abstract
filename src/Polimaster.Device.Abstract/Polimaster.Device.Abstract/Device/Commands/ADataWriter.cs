@@ -21,10 +21,10 @@ public abstract class ADataWriter<T, TSteamData> : CommandBase, IDataWriter<T> {
     /// </summary>
     /// <param name="data">Data to write</param>
     /// <returns></returns>
-    protected abstract TSteamData Compile(T? data);
+    protected abstract TSteamData Compile(T data);
 
     /// <inheritdoc />
-    public virtual async Task Write<TStream>(TStream stream, T? data, CancellationToken cancellationToken) {
+    public virtual async Task Write<TStream>(TStream stream, T data, CancellationToken cancellationToken) {
         if (stream is not IDeviceStream<TSteamData> str)
             throw new ArgumentException($"{typeof(TSteamData)} is not suitable for writing to {typeof(TStream)}");
         LogCommand(nameof(Write));

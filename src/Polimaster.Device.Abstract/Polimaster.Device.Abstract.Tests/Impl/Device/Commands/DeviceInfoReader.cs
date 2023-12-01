@@ -10,7 +10,7 @@ public class DeviceInfoReader : StringReader<DeviceInfo> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}INFO";
 
-    protected override DeviceInfo Parse(string res) {
+    protected override DeviceInfo Parse(string? res) {
         return new DeviceInfo { Id = res, Model = "MY_DEVICE", Modification = "TEST", Serial = res };
     }
 }

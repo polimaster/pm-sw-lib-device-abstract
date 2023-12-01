@@ -9,7 +9,7 @@ public class TemperatureReader : StringReader<double?> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}TEMPERATURE";
 
-    protected override double? Parse(string res) {
+    protected override double? Parse(string? res) {
         return 22;
     }
 }

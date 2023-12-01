@@ -17,5 +17,5 @@ public interface IDataWriter<in T> {
     /// <typeparam name="TStream">Stream type</typeparam>
     /// <param name="data">Data to write</param>
     /// <returns></returns>
-    Task Write<TStream>(TStream stream, T? data, CancellationToken cancellationToken);
+    Task Write<TStream>(TStream stream, T data, CancellationToken cancellationToken);
 }

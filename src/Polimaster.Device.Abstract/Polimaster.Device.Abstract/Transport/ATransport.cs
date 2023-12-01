@@ -118,7 +118,7 @@ public abstract class ATransport<T> : ITransport {
     }
 
     /// <inheritdoc />
-    public async Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new()) {
+    public async Task<TData?> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Executing {Name}", reader.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {

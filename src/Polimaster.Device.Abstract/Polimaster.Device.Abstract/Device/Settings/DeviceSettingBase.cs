@@ -13,13 +13,13 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <inheritdoc cref="IDeviceSetting{T}"/>
 public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <inheritdoc />
-    public DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null) : base(reader, writer) {
+    protected DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null) : base(reader, writer) {
     }
 
-    private T _value;
+    private T? _value;
 
     /// <inheritdoc />
-    public override T Value {
+    public override T? Value {
         get => _value;
         set {
             Validate(value);
@@ -32,7 +32,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// Set value from internal Read/Write commands
     /// </summary>
     /// <param name="value"></param>
-    private void SetValue(T value) {
+    private void SetValue(T? value) {
         IsDirty = false;
         Exception = null;
         _value = value;

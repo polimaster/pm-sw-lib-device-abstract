@@ -19,7 +19,7 @@ public interface IMyDevice : IHasBattery, IHasDose, IHasTemperatureSensor, IHasH
 }
 
 public class MyDevice : ADevice, IMyDevice {
-    public IDeviceSetting<ushort?> HistoryInterval { get; }
+    public IDeviceSetting<ushort> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; private set; }
 
@@ -44,15 +44,15 @@ public class MyDevice : ADevice, IMyDevice {
         // building device commands and settings
         var paramReader = new MyParamReader(loggerFactory);
         var paramWriter = new MyParamWriter(loggerFactory);
-        MyParamSetting = SettingBuilder.WithReader(paramReader).WithWriter(paramWriter).Build<MyParam>();
+        MyParamSetting = new MyParamSetting(paramReader, paramWriter);
 
         var plainReader = new PlainReader(loggerFactory);
         var plainWriter = new PlainWriter(loggerFactory);
-        StringSetting = SettingBuilder.WithReader(plainReader).WithWriter(plainWriter).Build<string>();
+        StringSetting = new StringSetting(plainReader, plainWriter);
 
         var intervalReader = new HistoryIntervalReader(loggerFactory);
         var intervalWriter = new HistoryIntervalWriter(loggerFactory);
-        HistoryInterval = SettingBuilder.WithReader(intervalReader).WithWriter(intervalWriter).Build<ushort?>();
+        HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter);
 
         HistoryManager = new HistoryManager(loggerFactory);
 

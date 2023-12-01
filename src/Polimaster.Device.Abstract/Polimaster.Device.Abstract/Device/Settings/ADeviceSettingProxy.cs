@@ -36,7 +36,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     private T? _internalValue;
     
     /// <inheritdoc />
-    public virtual T Value {
+    public virtual T? Value {
         get => _internalValue ?? GetProxied();
         set {
             Validate(value);

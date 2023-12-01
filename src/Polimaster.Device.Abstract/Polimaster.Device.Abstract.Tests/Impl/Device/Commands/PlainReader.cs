@@ -9,5 +9,5 @@ public class PlainReader : StringReader<string> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}";
 
-    protected override string Parse(string res) => res;
+    protected override string? Parse(string? res) => res;
 }

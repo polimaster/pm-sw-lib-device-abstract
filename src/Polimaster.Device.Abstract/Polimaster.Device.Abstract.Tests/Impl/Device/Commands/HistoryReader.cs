@@ -22,7 +22,7 @@ public class HistoryReader : StringReader<HistoryReaderChunk> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}HISTORY";
 
-    protected override HistoryReaderChunk Parse(string res) {
+    protected override HistoryReaderChunk Parse(string? res) {
         return new HistoryReaderChunk {
             HasReachedTheEnd = true,
             Records = new List<HistoryRecord>()

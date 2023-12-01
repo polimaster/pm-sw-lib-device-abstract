@@ -14,7 +14,7 @@ public class MyDeviceSettingTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
 
         var p = new MyParam();
-        var setting = new MyDeviceSetting(reader.Object) {
+        var setting = new MyParamSetting(reader.Object) {
             Value = p
         };
 
@@ -26,19 +26,19 @@ public class MyDeviceSettingTest : Mocks {
     public void ShouldValidateValue() {
         var reader = new Mock<IDataReader<MyParam>>();
 
-        var setting = new MyDeviceSetting(reader.Object) {
+        var setting = new MyParamSetting(reader.Object) {
             Value = null
         };
         Assert.True(setting.IsDirty);
         Assert.False(setting.IsValid);
 
-        setting = new MyDeviceSetting(reader.Object) {
+        setting = new MyParamSetting(reader.Object) {
             Value = new MyParam { Value = "Very long string that does not pass validation" }
         };
         Assert.True(setting.IsDirty);
         Assert.False(setting.IsValid);
 
-        setting = new MyDeviceSetting(reader.Object) {
+        setting = new MyParamSetting(reader.Object) {
             Value = new MyParam { Value = "Valid" }
         };
         Assert.True(setting.IsDirty);
@@ -52,7 +52,7 @@ public class MyDeviceSettingTest : Mocks {
         var p = new MyParam();
         transport.Setup(e => e.Read(reader.Object, Token)).Returns(Task.FromResult(p));
         
-        var setting = new MyDeviceSetting(reader.Object);
+        var setting = new MyParamSetting(reader.Object);
 
         await setting.Read(transport.Object, Token);
         
@@ -67,7 +67,7 @@ public class MyDeviceSettingTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyDeviceSetting(reader.Object, writer.Object) {
+        var setting = new MyParamSetting(reader.Object, writer.Object) {
             Value = p
         };
 
@@ -83,7 +83,7 @@ public class MyDeviceSettingTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "ve__________________________ery long string" };
-        var setting = new MyDeviceSetting(reader.Object, writer.Object) {
+        var setting = new MyParamSetting(reader.Object, writer.Object) {
             Value = p
         };
 
@@ -102,7 +102,7 @@ public class MyDeviceSettingTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyDeviceSetting(reader.Object) {
+        var setting = new MyParamSetting(reader.Object) {
             Value = p
         };
 
@@ -118,7 +118,7 @@ public class MyDeviceSettingTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
         
         var p = new MyParam { Value = "test" };
-        var setting = new MyDeviceSetting(reader.Object, writer.Object) {
+        var setting = new MyParamSetting(reader.Object, writer.Object) {
             Value = p
         };
 
@@ -139,7 +139,7 @@ public class MyDeviceSettingTest : Mocks {
         var ex = new Exception();
         transport.Setup(e => e.Read(reader.Object, Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         
-        var setting = new MyDeviceSetting(reader.Object);
+        var setting = new MyParamSetting(reader.Object);
 
         await setting.Read(transport.Object, Token);
         Assert.Equal(ex, setting.Exception);
