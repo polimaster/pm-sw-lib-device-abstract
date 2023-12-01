@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport;
 
@@ -102,6 +101,11 @@ public abstract class ADevice : IDevice {
     /// <inheritdoc />
     public bool Equals(IDevice other) {
         return Id.Equals(other.Id);
+    }
+    
+    /// <inheritdoc />
+    public bool HasSame(ITransport transport) {
+        return _transport.ConnectionId.Equals(transport.ConnectionId);
     }
     
     /// <inheritdoc />

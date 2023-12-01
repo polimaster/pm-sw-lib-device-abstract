@@ -64,4 +64,11 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// <param name="action">Function to call</param>
     /// <returns></returns>
     Task Execute(Func<ITransport, Task> action);
+
+    /// <summary>
+    /// Verify if current device has the same transport
+    /// </summary>
+    /// <param name="transport"></param>
+    /// <returns></returns>
+    bool HasSame(ITransport transport);
 }

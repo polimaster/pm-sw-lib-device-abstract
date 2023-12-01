@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 

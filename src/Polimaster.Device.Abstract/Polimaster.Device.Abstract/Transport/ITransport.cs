@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
-public interface ITransport : IDisposable {
+public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <summary>
     /// Connection identifier
     /// </summary>
@@ -51,7 +51,7 @@ public interface ITransport : IDisposable {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TData">Type of data</typeparam>
     /// <returns></returns>
-    Task Write<TData>(IDataWriter<TData> writer, TData? data, CancellationToken cancellationToken = new());
+    Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken = new());
     
     /// <summary>
     /// Read data with <see cref="IDataReader{T}"/>

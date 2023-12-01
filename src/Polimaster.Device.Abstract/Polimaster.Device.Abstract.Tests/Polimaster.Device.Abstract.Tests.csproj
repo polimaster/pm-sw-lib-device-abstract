@@ -27,8 +27,4 @@
       <ProjectReference Include="..\Polimaster.Device.Abstract\Polimaster.Device.Abstract.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="_OLD\" />
-    </ItemGroup>
-
 </Project>

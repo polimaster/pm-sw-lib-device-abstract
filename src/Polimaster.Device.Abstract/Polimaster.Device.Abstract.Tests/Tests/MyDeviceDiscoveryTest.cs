@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
 using Polimaster.Device.Abstract.Transport;

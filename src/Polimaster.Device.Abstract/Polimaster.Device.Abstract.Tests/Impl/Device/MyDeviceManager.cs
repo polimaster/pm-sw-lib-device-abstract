@@ -9,10 +9,12 @@ namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 public class MyDeviceManager : ADeviceManager<IMyDeviceDiscovery, MyDevice> {
 
     protected override void OnLost(IEnumerable<ITransport> transports) {
-        var lost = transports.Select(transport => new MyDevice(transport, LoggerFactory)).ToList();
-        var toRemove = Devices.Where(x => lost.All(y => y != x)).ToList();
+        // var lost = transports.Select(transport => new MyDevice(transport, LoggerFactory)).ToList();
+        // var toRemove = Devices.Where(x => lost.All(y => y != x)).ToList();
+        var toRemove = Devices.Where(x => transports.Any(x.HasSame)).ToList();
         
-        Devices.RemoveAll(x => toRemove.All(y => y == x));
+        // Devices.RemoveAll(x => toRemove.All(y => y == x));
+        Devices.RemoveAll(x => toRemove.All(y => y.Equals(x)));
         foreach (var dev in toRemove) Removed(dev);
         return;
 

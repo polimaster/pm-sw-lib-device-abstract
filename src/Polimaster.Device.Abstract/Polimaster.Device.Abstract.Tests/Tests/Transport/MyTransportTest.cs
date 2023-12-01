@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Moq;
+﻿using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;

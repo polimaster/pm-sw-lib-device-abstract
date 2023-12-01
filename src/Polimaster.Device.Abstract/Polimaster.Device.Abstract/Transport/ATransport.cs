@@ -105,7 +105,7 @@ public abstract class ATransport<T> : ITransport {
     }
 
     /// <inheritdoc />
-    public async Task Write<TData>(IDataWriter<TData> writer, TData? data, CancellationToken cancellationToken = new()) {
+    public async Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Executing {Name}", writer.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
@@ -136,5 +136,10 @@ public abstract class ATransport<T> : ITransport {
         Logger?.LogDebug("Disposing transport connection");
         Close();
         Client.Dispose();
+    }
+
+    /// <inheritdoc />
+    public bool Equals(ITransport other) {
+        return ConnectionId.Equals(other.ConnectionId);
     }
 }
