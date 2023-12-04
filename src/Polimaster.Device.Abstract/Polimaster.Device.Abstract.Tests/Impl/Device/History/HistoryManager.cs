@@ -43,7 +43,7 @@ public class HistoryManager : AHistoryManager<HistoryRecord> {
         
         // device didn't return all data, so history can't be parsed
         if (_readCancellationToken.IsCancellationRequested && !hasReachedTheEndOfData) {
-            HasNext.Invoke(new HistoryChunk<HistoryRecord> { Completed = true });
+            HasNext?.Invoke(new HistoryChunk<HistoryRecord> { Completed = true });
             _readCancellationToken = null;
             return;
         }

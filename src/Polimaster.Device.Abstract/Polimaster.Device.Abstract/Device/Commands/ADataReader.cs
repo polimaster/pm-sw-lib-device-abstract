@@ -27,10 +27,10 @@ public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
     /// </summary>
     /// <param name="res"></param>
     /// <returns></returns>
-    protected abstract T? Parse(TSteamData? res);
+    protected abstract T Parse(TSteamData? res);
 
     /// <inheritdoc />
-    public virtual async Task<T?> Read<TStream>(TStream stream, CancellationToken cancellationToken) {
+    public virtual async Task<T> Read<TStream>(TStream stream, CancellationToken cancellationToken) {
         if (stream is not IDeviceStream<TSteamData> str)
             throw new ArgumentException($"{typeof(TSteamData)} is not suitable for reading/writing from {typeof(TStream)}");
         LogCommand(nameof(Read));

@@ -16,7 +16,7 @@ public class MyParamWriterTest : Mocks {
 
         await cmd.Write(stream.Object, _param, Token);
 
-        var compiled = $"{Cmd.PREFIX}{_param?.CommandPid}:{_param?.Value}";
+        var compiled = $"{Cmd.PREFIX}{_param.CommandPid}:{_param.Value}";
         stream.Verify(e => e.WriteAsync(compiled, Token));
     }
 

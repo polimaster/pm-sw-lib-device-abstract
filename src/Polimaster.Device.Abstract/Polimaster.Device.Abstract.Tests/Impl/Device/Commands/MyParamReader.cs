@@ -12,7 +12,7 @@ public class MyParamReader : StringReader<MyParam> {
 
     protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}";
 
-    protected override MyParam? Parse(string? data) {
+    protected override MyParam Parse(string? data) {
         // assume data format = "CMD=123:456"
         var res = new MyParam();
 

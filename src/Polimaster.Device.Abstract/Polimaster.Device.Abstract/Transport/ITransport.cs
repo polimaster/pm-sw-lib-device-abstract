@@ -60,5 +60,5 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TData">Type of data</typeparam>
     /// <returns></returns>
-    Task<TData?> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new());
+    Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new());
 }

@@ -28,7 +28,7 @@ public class MyDeviceDiscoveryTest : Mocks {
         var disco = new MyDeviceDiscovery(LOGGER_FACTORY);
 
         var count = 0;
-        disco.Found += transports => { count++; };
+        disco.Found += _ => { count++; };
         disco.Start(Token);
         
         // wait 1 sec

@@ -57,7 +57,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         
         if (Writer == null || !IsDirty) return;
         try {
-            await transport.Write(Writer, Value, cancellationToken);
+            await transport.Write(Writer!, Value, cancellationToken);
             IsDirty = false;
             Exception = null;
         } catch (Exception e) {

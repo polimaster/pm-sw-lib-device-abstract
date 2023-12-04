@@ -16,5 +16,5 @@ public interface IDataReader<T> {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TStream">Stream type</typeparam>
     /// <returns>Data from stream</returns>
-    Task<T?> Read<TStream>(TStream stream, CancellationToken cancellationToken);
+    Task<T> Read<TStream>(TStream stream, CancellationToken cancellationToken);
 }

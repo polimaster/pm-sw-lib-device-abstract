@@ -12,7 +12,7 @@ public class MyParamReaderTest : Mocks {
         var cmd = new MyParamReader(LOGGER_FACTORY);
         var stream = new Mock<IDeviceStream<string>>();
 
-        var res = await cmd.Read(stream.Object, Token);
+        await cmd.Read(stream.Object, Token);
         
         stream.Verify(e => e.ReadAsync(Token));
     }
