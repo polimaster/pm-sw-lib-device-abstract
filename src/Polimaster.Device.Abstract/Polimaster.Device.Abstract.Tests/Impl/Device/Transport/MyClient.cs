@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
@@ -34,7 +35,7 @@ public class MyClient : AClient<string, MemoryStreamParams> {
         _memory = new MemoryStream(_memoryStreamParams.Capacity);
     }
 
-    public override Task OpenAsync() {
+    public override Task OpenAsync(CancellationToken token) {
         _memory = new MemoryStream();
         return Task.CompletedTask;
     }

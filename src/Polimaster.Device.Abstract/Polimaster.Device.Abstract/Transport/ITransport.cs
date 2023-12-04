@@ -22,8 +22,9 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <summary>
     /// Open device connection
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task OpenAsync();
+    Task OpenAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Open device connection
@@ -41,7 +42,7 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <param name="command">Command to execute</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Exec(ICommand command, CancellationToken cancellationToken = new());
+    Task Exec(ICommand command, CancellationToken cancellationToken);
 
     /// <summary>
     /// Write data with <see cref="IDataWriter{T}"/>
@@ -51,7 +52,7 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TData">Type of data</typeparam>
     /// <returns></returns>
-    Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken = new());
+    Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken);
     
     /// <summary>
     /// Read data with <see cref="IDataReader{T}"/>
@@ -60,5 +61,5 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TData">Type of data</typeparam>
     /// <returns></returns>
-    Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new());
+    Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken);
 }

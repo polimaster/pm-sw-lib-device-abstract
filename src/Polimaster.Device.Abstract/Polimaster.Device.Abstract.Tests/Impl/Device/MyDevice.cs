@@ -61,34 +61,34 @@ public class MyDevice : ADevice, IMyDevice {
 
     public override async Task<DeviceInfo?> ReadDeviceInfo(CancellationToken token = new()) {
         DeviceInfo = null;
-        await Execute(async transport => { DeviceInfo = await transport.Read(_infoReader, token); });
+        await Execute(async transport => { DeviceInfo = await transport.Read(_infoReader, token); }, token);
         return DeviceInfo;
     }
 
     public async Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token = new()) {
         BatteryStatus = null;
-        await Execute(async transport => { BatteryStatus = await transport.Read(_batteryStatusReader, token); });
+        await Execute(async transport => { BatteryStatus = await transport.Read(_batteryStatusReader, token); }, token);
         return BatteryStatus;
     }
 
     public async Task ResetDose(CancellationToken token = new()) {
-        await Execute(async transport => { await transport.Exec(_resetDose, token); });
+        await Execute(async transport => { await transport.Exec(_resetDose, token); }, token);
     }
 
     public async Task<double?> ReadTemperature(CancellationToken token = new()) {
         double? t = null;
-        await Execute(async transport => { t = await transport.Read(_temperatureReader, token); });
+        await Execute(async transport => { t = await transport.Read(_temperatureReader, token); }, token);
         return t;
     }
 
     public async Task SetTime(CancellationToken token = new(), DateTime? dateTime = default) {
         var t = dateTime ?? DateTime.Now;
-        await Execute(async transport => { await transport.Write(_timeWriter, t, token); });
+        await Execute(async transport => { await transport.Write(_timeWriter, t, token); }, token);
     }
 
     public async Task<DateTime?> GetTime(CancellationToken token = new()) {
         DateTime? t = null;
-        await Execute(async transport => { t = await transport.Read(_timeReader, token); });
+        await Execute(async transport => { t = await transport.Read(_timeReader, token); }, token);
         return t;
     }
 }

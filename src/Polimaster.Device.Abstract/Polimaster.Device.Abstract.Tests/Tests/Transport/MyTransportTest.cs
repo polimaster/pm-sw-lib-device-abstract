@@ -35,12 +35,12 @@ public class MyTransportTest : Mocks {
         var client = new Mock<IClient<string>>();
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
 
-        await tr.OpenAsync();
-        client.Verify(e => e.OpenAsync());
+        await tr.OpenAsync(Token);
+        client.Verify(e => e.OpenAsync(Token));
         
         client.Setup(e => e.Connected).Returns(true);
-        await tr.OpenAsync();
-        client.Verify(e => e.OpenAsync(), Times.Once);
+        await tr.OpenAsync(Token);
+        client.Verify(e => e.OpenAsync(Token), Times.Once);
     }
 
     [Fact]

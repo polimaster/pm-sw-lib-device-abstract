@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport;
 
-namespace Polimaster.Device.Abstract.Transport.Http;
+namespace Polimaster.Device.Transport.Http;
 
 /// <summary>
 /// Http transport implementation
 /// </summary>
-public class Http : ATransport<TcpClientAdapter>, IHttpTransport {
+public class Http : ATransport<TcpClientAdapter> {
     /// <inheritdoc />
     public Http(IClient<TcpClientAdapter> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
     }

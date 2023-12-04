@@ -62,8 +62,9 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// });
     /// </example>
     /// <param name="action">Function to call</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Execute(Func<ITransport, Task> action);
+    Task Execute(Func<ITransport, Task> action, CancellationToken cancellationToken);
 
     /// <summary>
     /// Verify if current device has the same transport

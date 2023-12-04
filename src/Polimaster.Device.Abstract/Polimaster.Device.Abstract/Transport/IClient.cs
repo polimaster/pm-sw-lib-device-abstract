@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -33,6 +34,7 @@ public interface IClient<T> : IDisposable {
     /// <summary>
     /// Open connection
     /// </summary>
+    /// <param name="token"></param>
     /// <returns></returns>
-    Task OpenAsync();
+    Task OpenAsync(CancellationToken token);
 }

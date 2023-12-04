@@ -45,9 +45,9 @@ public class MyDeviceTest : Mocks {
         var f = new Mock<Func<ITransport, Task>>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
-        await dev.Execute(f.Object);
+        await dev.Execute(f.Object, Token);
         
-        transport.Verify(e => e.OpenAsync());
+        transport.Verify(e => e.OpenAsync(Token));
         transport.Verify(e => e.Close());
         
         f.Verify(e => e.Invoke(transport.Object));

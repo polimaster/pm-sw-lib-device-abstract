@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport;
@@ -13,16 +14,16 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> {
     /// <summary>
     /// Connection parameters
     /// </summary>
-    protected readonly TConnectionParams ConnectionParams;
+    protected readonly TConnectionParams Params;
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="connectionParams">Connection parameters</param>
+    /// <param name="params">Connection parameters</param>
     /// <param name="loggerFactory"></param>
-    protected AClient(TConnectionParams connectionParams, ILoggerFactory? loggerFactory) {
+    protected AClient(TConnectionParams @params, ILoggerFactory? loggerFactory) {
         LoggerFactory = loggerFactory;
-        ConnectionParams = connectionParams;
+        Params = @params;
     }
 
     /// <inheritdoc />
@@ -40,11 +41,12 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> {
     /// <inheritdoc />
     public abstract void Open();
 
+    /// <param name="token"></param>
     /// <inheritdoc />
-    public abstract Task OpenAsync();
+    public abstract Task OpenAsync(CancellationToken token);
 
     /// <inheritdoc />
     public override string? ToString() {
-        return ConnectionParams?.ToString();
+        return Params?.ToString();
     }
 }

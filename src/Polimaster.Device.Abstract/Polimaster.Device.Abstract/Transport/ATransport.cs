@@ -54,15 +54,16 @@ public abstract class ATransport<T> : ITransport {
         Logger = loggerFactory?.CreateLogger(GetType());
         Client = client;
     }
-    
 
+
+    /// <param name="cancellationToken"></param>
     /// <inheritdoc />
-    public virtual async Task OpenAsync() {
+    public virtual async Task OpenAsync(CancellationToken cancellationToken) {
         if (Client.Connected) return;
-        if(SyncStreamAccess) await Semaphore.WaitAsync();
+        if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
             Logger?.LogDebug("Open transport connection (async)");
-            await Client.OpenAsync();
+            await Client.OpenAsync(cancellationToken);
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
         }
@@ -105,7 +106,7 @@ public abstract class ATransport<T> : ITransport {
     }
 
     /// <inheritdoc />
-    public async Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken = new()) {
+    public async Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken) {
         Logger?.LogDebug("Executing {Name}", writer.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
@@ -118,7 +119,7 @@ public abstract class ATransport<T> : ITransport {
     }
 
     /// <inheritdoc />
-    public async Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken = new()) {
+    public async Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken) {
         Logger?.LogDebug("Executing {Name}", reader.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {

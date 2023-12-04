@@ -1,17 +1,20 @@
+using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport;
 
-namespace Polimaster.Device.Abstract.Transport.Http;
+namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Transport.IClient{TConnectionParams}" />
-public class TcpClientAdapter : AClient<string, HttpConnectionParams> {
+public class TcpClientAdapter : AClient<string, IPEndPoint> {
     private readonly TcpClient _wrapped;
     
     /// <summary>
     /// 
     /// </summary>
-    public TcpClientAdapter(HttpConnectionParams connectionParams, ILoggerFactory? loggerFactory) : base(connectionParams, loggerFactory) {
+    public TcpClientAdapter(IPEndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
         _wrapped = new TcpClient();
     }
 
@@ -28,12 +31,13 @@ public class TcpClientAdapter : AClient<string, HttpConnectionParams> {
 
     /// <inheritdoc />
     public override void Open() {
-        _wrapped.Connect(ConnectionParams.Ip, ConnectionParams.Port);
+        _wrapped.Connect(Params);
     }
 
+    /// <param name="token"></param>
     /// <inheritdoc />
-    public override async Task OpenAsync() {
-        await _wrapped.ConnectAsync(ConnectionParams.Ip, ConnectionParams.Port);
+    public override async Task OpenAsync(CancellationToken token) {
+        await _wrapped.ConnectAsync(Params.Address, Params.Port);
     }
 
     /// <inheritdoc />

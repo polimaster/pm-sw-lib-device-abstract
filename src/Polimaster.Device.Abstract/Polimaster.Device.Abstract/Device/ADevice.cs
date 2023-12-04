@@ -71,8 +71,8 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public virtual async Task Execute(Func<ITransport, Task> action) {
-        await _transport.OpenAsync();
+    public virtual async Task Execute(Func<ITransport, Task> action, CancellationToken cancellationToken = new()) {
+        await _transport.OpenAsync(cancellationToken);
         await action.Invoke(_transport);
         _transport.Close();
     }
