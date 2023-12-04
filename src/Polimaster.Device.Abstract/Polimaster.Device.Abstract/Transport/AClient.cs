@@ -5,6 +5,9 @@ namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
 public abstract class AClient<T, TConnectionParams> : IClient<T> {
+    /// <summary>
+    /// Logger factory
+    /// </summary>
     protected ILoggerFactory? LoggerFactory { get; }
 
     /// <summary>

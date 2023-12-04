@@ -9,4 +9,8 @@ public class CommandCompilationException : Exception {
     /// <inheritdoc />
     public CommandCompilationException(string message) : base(message) {
     }
+
+    /// <inheritdoc />
+    public CommandCompilationException(string message, Exception innerException) : base(message, innerException) {
+    }
 }

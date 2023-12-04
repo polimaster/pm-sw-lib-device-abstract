@@ -8,9 +8,19 @@ namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
 /// <inheritdoc />
 public abstract class AHistoryManager<THistory> : IHistoryManager<THistory> {
+    /// <summary>
+    /// Logger factory
+    /// </summary>
     protected ILoggerFactory? LoggerFactory { get; }
+    /// <summary>
+    /// Logger
+    /// </summary>
     protected ILogger? Logger { get; }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="loggerFactory"></param>
     protected AHistoryManager(ILoggerFactory? loggerFactory) {
         LoggerFactory = loggerFactory;
         Logger = loggerFactory?.CreateLogger(GetType());
