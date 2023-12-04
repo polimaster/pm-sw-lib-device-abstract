@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,13 +7,13 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Transport.IClient{TConnectionParams}" />
-public class TcpClientAdapter : AClient<string, IPEndPoint> {
+public class TcpClientAdapter : AClient<string, EndPoint> {
     private readonly TcpClient _wrapped;
     
     /// <summary>
     /// 
     /// </summary>
-    public TcpClientAdapter(IPEndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
+    public TcpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
         _wrapped = new TcpClient();
     }
 

@@ -1,11 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class AClient<T, TConnectionParams> : IClient<T> {
+public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IFormattable {
     /// <summary>
     /// Logger factory
     /// </summary>
@@ -46,7 +47,8 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> {
     public abstract Task OpenAsync(CancellationToken token);
 
     /// <inheritdoc />
-    public override string? ToString() {
-        return Params?.ToString();
-    }
+    public override string ToString() => ToString(null, System.Globalization.CultureInfo.CurrentCulture);
+
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider formatProvider) => Params.ToString(format, formatProvider);
 }
