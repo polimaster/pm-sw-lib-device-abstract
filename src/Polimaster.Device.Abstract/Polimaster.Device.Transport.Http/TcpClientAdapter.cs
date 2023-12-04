@@ -6,13 +6,11 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Transport.Http;
 
-/// <inheritdoc cref="Polimaster.Device.Abstract.Transport.IClient{TConnectionParams}" />
+/// <inheritdoc />
 public class TcpClientAdapter : AClient<string, EndPoint> {
     private readonly TcpClient _wrapped;
-    
-    /// <summary>
-    /// 
-    /// </summary>
+
+    /// <inheritdoc />
     public TcpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
         _wrapped = new TcpClient();
     }

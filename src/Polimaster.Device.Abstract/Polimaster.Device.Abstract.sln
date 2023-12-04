@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Abstract.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Transport.Http", "Polimaster.Device.Transport.Http\Polimaster.Device.Transport.Http.csproj", "{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Transport.Win.Usb", "Polimaster.Device.Transport.Win.Usb\Polimaster.Device.Transport.Win.Usb.csproj", "{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

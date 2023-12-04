@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Polimaster.Device.Transport.Http;
 
-/// <inheritdoc />
+/// <inheritdoc cref="System.Net.IPEndPoint" />
 public class EndPoint : IPEndPoint, IFormattable {
     /// <inheritdoc />
     public EndPoint(long address, int port) : base(address, port) {
@@ -12,6 +12,7 @@ public class EndPoint : IPEndPoint, IFormattable {
     /// <inheritdoc />
     public EndPoint(IPAddress address, int port) : base(address, port) {
     }
+    
 
     /// <inheritdoc />
     public override string ToString() => ToString(null, System.Globalization.CultureInfo.CurrentCulture);
