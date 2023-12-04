@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device;
 using Polimaster.Device.Abstract.Device.Implementations;
 using Polimaster.Device.Abstract.Device.Implementations.History;
-using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.History;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 

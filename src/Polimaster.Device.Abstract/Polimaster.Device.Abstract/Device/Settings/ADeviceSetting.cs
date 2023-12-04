@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Commands;
-using Polimaster.Device.Abstract.Device.Settings.Interfaces;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;

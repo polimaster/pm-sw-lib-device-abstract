@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device;
 using Polimaster.Device.Abstract.Transport;
@@ -36,6 +37,13 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
         Logger = loggerFactory?.CreateLogger<ADeviceManager<T>>();
     }
 
+    /// <summary>
+    /// Create new device from found transport connection
+    /// </summary>
+    /// <param name="transport"></param>
+    /// <returns></returns>
+    protected abstract T FromTransport(ITransport transport);
+
     /// <inheritdoc />
     public virtual void Dispose() {
         Logger?.LogDebug("Disposing {D}", GetType().Name);
@@ -46,6 +54,12 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
 /// <inheritdoc />
 public abstract class ADeviceManager<TDiscovery, TDevice> : ADeviceManager<TDevice> where TDevice: IDevice where TDiscovery : ITransportDiscovery {
     private readonly TDiscovery _discovery;
+
+    /// <inheritdoc />
+    public override event Action<TDevice>? Attached;
+
+    /// <inheritdoc />
+    public override event Action<TDevice>? Removed;
 
     /// <summary>
     /// 
@@ -62,13 +76,33 @@ public abstract class ADeviceManager<TDiscovery, TDevice> : ADeviceManager<TDevi
     /// When override fill <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Attached"/> action.
     /// </summary>
     /// <param name="transports"></param>
-    protected abstract void OnLost(IEnumerable<ITransport> transports);
+    protected virtual void OnLost(IEnumerable<ITransport> transports) {
+        var toRemove = Devices.Where(x => transports.Any(x.HasSame)).ToList();
+        
+        Devices.RemoveAll(x => toRemove.All(y => y.Equals(x)));
+        foreach (var dev in toRemove) Removed(dev);
+        return;
+
+        void Removed(TDevice dev) {
+            this.Removed?.Invoke(dev);
+            dev.Dispose();
+        }
+    }
 
     /// <summary>
     /// When override remove from <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.
     /// </summary>
     /// <param name="transports"></param>
-    protected abstract void OnFound(IEnumerable<ITransport> transports);
+    protected virtual void OnFound(IEnumerable<ITransport> transports) {
+        foreach (var transport in transports) {
+            var found = Devices.Any(x => x.HasSame(transport));
+            if(found) continue;
+
+            var dev = FromTransport(transport);
+            Devices.Add(dev);
+            Attached?.Invoke(dev);
+        }
+    }
 
     /// <inheritdoc />
     public override void Dispose() {
