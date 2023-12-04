@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Commands.Exceptions;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
@@ -12,6 +13,7 @@ public abstract class ACommand<T> : CommandBase, ICommand {
     /// Compile command
     /// </summary>
     /// <returns>Compiled command to send to <see cref="IDeviceStream{T}"/></returns>
+    /// <exception cref="CommandCompilationException"></exception>
     protected abstract T Compile();
 
     /// <inheritdoc />

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Commands.Exceptions;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
@@ -21,6 +22,7 @@ public abstract class ADataWriter<T, TSteamData> : CommandBase, IDataWriter<T> {
     /// </summary>
     /// <param name="data">Data to write</param>
     /// <returns></returns>
+    /// <exception cref="CommandCompilationException"></exception>
     protected abstract TSteamData Compile(T data);
 
     /// <inheritdoc />

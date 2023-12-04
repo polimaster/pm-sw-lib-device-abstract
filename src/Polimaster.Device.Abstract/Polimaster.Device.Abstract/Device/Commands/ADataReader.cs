@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Commands.Exceptions;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
@@ -20,6 +21,7 @@ public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
     /// Compile command
     /// </summary>
     /// <returns></returns>
+    /// <exception cref="CommandCompilationException"></exception>
     protected abstract TSteamData Compile();
 
     /// <summary>
@@ -27,6 +29,7 @@ public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
     /// </summary>
     /// <param name="res"></param>
     /// <returns></returns>
+    /// <exception cref="CommandResultParsingException"></exception>
     protected abstract T Parse(TSteamData? res);
 
     /// <inheritdoc />
