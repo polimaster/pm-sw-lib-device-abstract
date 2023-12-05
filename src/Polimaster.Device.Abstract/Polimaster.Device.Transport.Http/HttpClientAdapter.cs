@@ -7,11 +7,11 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc />
-public class TcpClientAdapter : AClient<string, EndPoint> {
+public class HttpClientAdapter : AClient<string, EndPoint> {
     private readonly TcpClient _wrapped;
 
     /// <inheritdoc />
-    public TcpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
+    public HttpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
         _wrapped = new TcpClient();
     }
 
@@ -24,7 +24,7 @@ public class TcpClientAdapter : AClient<string, EndPoint> {
     }
 
     /// <inheritdoc />
-    public override IDeviceStream<string> GetStream() => new TcpStream(_wrapped.GetStream(), LoggerFactory);
+    public override IDeviceStream<string> GetStream() => new HttpStream(_wrapped.GetStream(), LoggerFactory);
 
     /// <inheritdoc />
     public override void Open() {

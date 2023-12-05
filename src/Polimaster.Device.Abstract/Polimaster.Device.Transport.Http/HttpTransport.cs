@@ -6,8 +6,8 @@ namespace Polimaster.Device.Transport.Http;
 /// <summary>
 /// Http transport implementation
 /// </summary>
-public class Http : ATransport<TcpClientAdapter> {
+public class HttpTransport : ATransport<string> {
     /// <inheritdoc />
-    public Http(IClient<TcpClientAdapter> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
+    public HttpTransport(IClient<string> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
     }
 }

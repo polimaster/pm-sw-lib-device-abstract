@@ -1,10 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
+using Polimaster.Device.Abstract;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc cref="System.Net.IPEndPoint" />
-public class EndPoint : IPEndPoint, IFormattable {
+public class EndPoint : IPEndPoint, IStringify {
     /// <inheritdoc />
     public EndPoint(long address, int port) : base(address, port) {
     }
@@ -12,11 +13,4 @@ public class EndPoint : IPEndPoint, IFormattable {
     /// <inheritdoc />
     public EndPoint(IPAddress address, int port) : base(address, port) {
     }
-    
-
-    /// <inheritdoc />
-    public override string ToString() => ToString(null, System.Globalization.CultureInfo.CurrentCulture);
-
-    /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider formatProvider) => base.ToString();
 }

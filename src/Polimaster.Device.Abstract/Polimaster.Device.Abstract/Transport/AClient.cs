@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IFormattable {
+public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IStringify {
     /// <summary>
     /// Logger factory
     /// </summary>
@@ -45,10 +45,7 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnecti
     /// <param name="token"></param>
     /// <inheritdoc />
     public abstract Task OpenAsync(CancellationToken token);
-
+    
     /// <inheritdoc />
-    public override string ToString() => ToString(null, System.Globalization.CultureInfo.CurrentCulture);
-
-    /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider formatProvider) => Params.ToString(format, formatProvider);
+    public string ToString(string? format, IFormatProvider formatProvider) => Params.ToString();
 }

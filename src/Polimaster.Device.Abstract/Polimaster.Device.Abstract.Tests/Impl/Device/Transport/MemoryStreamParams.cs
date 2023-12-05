@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Transport; 
 
-public class MemoryStreamParams : IFormattable {
+public class MemoryStreamParams : IStringify {
     public int Capacity { get; set; }
 
-    public override string ToString() => ToString(null, System.Globalization.CultureInfo.CurrentCulture);
-
-    public string ToString(string? format, IFormatProvider? formatProvider) => $"Capacity:{Capacity}";
+    public override string ToString() => $"Capacity:{Capacity}";
 }

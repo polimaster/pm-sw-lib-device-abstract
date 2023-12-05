@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Transport;
 /// Client which make connection to device
 /// </summary>
 /// <typeparam name="T">Type for <see cref="IDeviceStream{T}"/></typeparam>
-public interface IClient<T> : IDisposable, IFormattable {
+public interface IClient<T> : IDisposable, IStringify {
 
     /// <summary>
     /// Returns true if client connected

@@ -6,8 +6,8 @@ namespace Polimaster.Device.Transport.Win.Usb;
 /// <summary>
 /// 
 /// </summary>
-public class UsbTransport : ATransport<SerialPortAdapter> {
+public class UsbTransport : ATransport<string> {
     /// <inheritdoc />
-    public UsbTransport(IClient<SerialPortAdapter> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
+    public UsbTransport(IClient<string> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
     }
 }

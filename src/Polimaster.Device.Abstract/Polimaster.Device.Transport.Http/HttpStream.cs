@@ -8,9 +8,9 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc />
-public class TcpStream : IDeviceStream<string> {
+public class HttpStream : IDeviceStream<string> {
     private readonly NetworkStream _stream;
-    private readonly ILogger<TcpStream>? _logger;
+    private readonly ILogger<HttpStream>? _logger;
     /// <summary>
     /// Max data length while reading transport stream
     /// </summary>
@@ -21,9 +21,9 @@ public class TcpStream : IDeviceStream<string> {
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="loggerFactory"></param>
-    public TcpStream(NetworkStream stream, ILoggerFactory? loggerFactory) {
+    public HttpStream(NetworkStream stream, ILoggerFactory? loggerFactory) {
         _stream = stream;
-        _logger = loggerFactory?.CreateLogger<TcpStream>();
+        _logger = loggerFactory?.CreateLogger<HttpStream>();
     }
 
     /// <inheritdoc />
