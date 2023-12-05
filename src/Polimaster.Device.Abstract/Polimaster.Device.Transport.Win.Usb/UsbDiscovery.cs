@@ -11,6 +11,7 @@ namespace Polimaster.Device.Transport.Win.Usb;
 /// <inheritdoc />
 public abstract class UsbDiscovery : ATransportDiscovery {
     private readonly ManagementEventWatcher _managementEventWatcher;
+    
     /// <summary>
     /// Device vendor identifier
     /// </summary>

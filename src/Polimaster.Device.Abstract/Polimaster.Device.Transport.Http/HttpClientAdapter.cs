@@ -8,37 +8,50 @@ namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc />
 public class HttpClientAdapter : AClient<string, EndPoint> {
-    private readonly TcpClient _wrapped;
+    private TcpClient? _wrapped;
 
     /// <inheritdoc />
     public HttpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
+        Reset();
+    }
+
+    /// <inheritdoc />
+    public override bool Connected => _wrapped is { Connected: true };
+
+    /// <inheritdoc />
+    public override void Close() {
+        _wrapped?.Close();
+        _wrapped?.Dispose();
+        _wrapped = null;
+    }
+
+    /// <inheritdoc />
+    public sealed override void Reset() {
+        Close();
         _wrapped = new TcpClient();
     }
 
     /// <inheritdoc />
-    public override bool Connected => _wrapped.Connected;
-
-    /// <inheritdoc />
-    public override void Close() {
-        _wrapped.Close();
+    public override IDeviceStream<string> GetStream() {
+        if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
+        return new HttpStream(_wrapped.GetStream(), LoggerFactory);
     }
 
     /// <inheritdoc />
-    public override IDeviceStream<string> GetStream() => new HttpStream(_wrapped.GetStream(), LoggerFactory);
-
-    /// <inheritdoc />
     public override void Open() {
-        _wrapped.Connect(Params);
+        if (_wrapped is { Connected: true }) return;
+        Reset();
+        _wrapped?.Connect(Params);
     }
 
     /// <param name="token"></param>
     /// <inheritdoc />
     public override async Task OpenAsync(CancellationToken token) {
-        await _wrapped.ConnectAsync(Params.Address, Params.Port);
+        if (_wrapped is { Connected: true }) return;
+        Reset();
+        await _wrapped?.ConnectAsync(Params.Address, Params.Port)!;
     }
 
     /// <inheritdoc />
-    public override void Dispose() {
-        _wrapped.Dispose();
-    }
+    public override void Dispose() => Close();
 }

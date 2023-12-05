@@ -14,6 +14,6 @@ public struct IrDaDevice : IStringify {
 
     /// <inheritdoc />
     public override string ToString() {
-        return $"{Name}";
+        return Name;
     }
 }

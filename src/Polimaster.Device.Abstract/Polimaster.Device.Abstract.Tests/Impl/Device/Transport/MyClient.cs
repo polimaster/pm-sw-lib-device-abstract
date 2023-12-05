@@ -13,6 +13,12 @@ public class MyClient : AClient<string, MemoryStreamParams> {
 
     public MyClient(MemoryStreamParams memoryStreamParams, ILoggerFactory? loggerFactory) : base(memoryStreamParams, loggerFactory) {
         _memoryStreamParams = memoryStreamParams;
+        _memory = new MemoryStream(_memoryStreamParams.Capacity);
+    }
+    
+    
+    public override void Reset() {
+        _memory = new MemoryStream(_memoryStreamParams.Capacity);
     }
 
     public override void Dispose() {
@@ -27,16 +33,14 @@ public class MyClient : AClient<string, MemoryStreamParams> {
     }
 
     public override IDeviceStream<string> GetStream() {
-        if (_memory != null) return new MyDeviceStream(_memory, LoggerFactory);
+        if (_memory is { CanRead: true }) return new MyDeviceStream(_memory, LoggerFactory);
         throw new NullReferenceException("MemoryStream is null");
     }
 
-    public override void Open() {
-        _memory = new MemoryStream(_memoryStreamParams.Capacity);
-    }
+    public override void Open() => Reset();
 
     public override Task OpenAsync(CancellationToken token) {
-        _memory = new MemoryStream();
         return Task.CompletedTask;
     }
+
 }

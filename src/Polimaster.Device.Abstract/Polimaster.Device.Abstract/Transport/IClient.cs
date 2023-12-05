@@ -37,4 +37,9 @@ public interface IClient<T> : IDisposable, IStringify {
     /// <param name="token"></param>
     /// <returns></returns>
     Task OpenAsync(CancellationToken token);
+
+    /// <summary>
+    /// Reset internal connection
+    /// </summary>
+    void Reset();
 }

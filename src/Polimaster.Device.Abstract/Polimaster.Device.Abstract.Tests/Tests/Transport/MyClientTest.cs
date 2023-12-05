@@ -26,6 +26,7 @@ public class MyClientTest : Mocks {
     [Fact]
     public void ShouldTrowExceptionOnGetStream() {
         var client = new MyClient(_param, LOGGER_FACTORY);
+        client.Close();
 
         Exception? exception = null;
         

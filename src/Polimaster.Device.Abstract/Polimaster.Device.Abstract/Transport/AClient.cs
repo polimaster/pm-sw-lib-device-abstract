@@ -45,7 +45,10 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnecti
     /// <param name="token"></param>
     /// <inheritdoc />
     public abstract Task OpenAsync(CancellationToken token);
-    
+
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider formatProvider) => Params.ToString();
+    public abstract void Reset();
+
+    /// <inheritdoc cref="IStringify.ToString" />
+    public override string ToString() => Params.ToString();
 }
