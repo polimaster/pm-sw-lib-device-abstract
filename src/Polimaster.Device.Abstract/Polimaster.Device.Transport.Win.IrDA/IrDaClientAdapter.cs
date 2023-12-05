@@ -18,7 +18,6 @@ public class IrDaClientAdapter : AClient<byte[], IrDaDevice> {
     
     /// <inheritdoc />
     public IrDaClientAdapter(IrDaDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
-        Reset();
     }
 
     /// <inheritdoc />
@@ -29,7 +28,7 @@ public class IrDaClientAdapter : AClient<byte[], IrDaDevice> {
     }
 
     /// <inheritdoc />
-    public sealed override void Reset() {
+    public override void Reset() {
         Close();
         _wrapped = new IrDAClient();
     }

@@ -12,7 +12,6 @@ public class HttpClientAdapter : AClient<string, EndPoint> {
 
     /// <inheritdoc />
     public HttpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
-        Reset();
     }
 
     /// <inheritdoc />
@@ -26,7 +25,7 @@ public class HttpClientAdapter : AClient<string, EndPoint> {
     }
 
     /// <inheritdoc />
-    public sealed override void Reset() {
+    public override void Reset() {
         Close();
         _wrapped = new TcpClient();
     }

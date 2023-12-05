@@ -17,7 +17,6 @@ public class SerialPortAdapter : AClient<string, UsbDevice> {
 
     /// <inheritdoc />
     public SerialPortAdapter(UsbDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
-        Reset();
     }
 
     /// <inheritdoc />
@@ -31,7 +30,7 @@ public class SerialPortAdapter : AClient<string, UsbDevice> {
     }
 
     /// <inheritdoc />
-    public sealed override void Reset() {
+    public override void Reset() {
         Close();
         _port = new SerialPort(Params.Name, BAUD_RATE, Parity.None, DATA_BITS, StopBits.One);
         _port.ReadBufferSize = BUFFER_SIZE;
