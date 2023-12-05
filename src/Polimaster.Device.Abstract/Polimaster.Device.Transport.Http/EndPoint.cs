@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using Polimaster.Device.Abstract;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Transport.Http;
 

@@ -1,5 +1,4 @@
 using Polimaster.Device.Abstract;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Transport.Win.Usb;
 
@@ -27,6 +26,6 @@ public struct UsbDevice : IStringify {
         PlugAndPlayId = plugAndPlayId;
     }
 
-    /// <inheritdoc cref="IFormatableIFormatablering" />
+    /// <inheritdoc cref="IStringify.ToString" />
     public override string ToString() => $"{Name}:{PlugAndPlayId}";
 }

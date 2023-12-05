@@ -1,6 +1,4 @@
-﻿using Polimaster.Device.Abstract.Transport;
-
-namespace Polimaster.Device.Abstract.Tests.Impl.Device.Transport; 
+﻿namespace Polimaster.Device.Abstract.Tests.Impl.Device.Transport; 
 
 public class MemoryStreamParams : IStringify {
     public int Capacity { get; set; }
