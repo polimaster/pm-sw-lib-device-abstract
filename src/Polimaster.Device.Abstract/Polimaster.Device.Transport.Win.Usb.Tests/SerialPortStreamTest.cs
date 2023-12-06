@@ -1,5 +1,4 @@
 using System;
-using System.IO.Ports;
 using Moq;
 
 namespace Polimaster.Device.Transport.Win.Usb.Tests;
@@ -8,7 +7,7 @@ public class SerialPortStreamTest : Mocks {
     
     [Fact]
     public async void ShouldRead() {
-        var port = new Mock<SerialPort>();
+        var port = new Mock<IDevicePort>();
         var response = Guid.NewGuid().ToString();
         port.Setup(e => e.ReadTo(It.IsAny<string>())).Returns(response);
         var stream = new SerialPortStream(port.Object, LOGGER_FACTORY);

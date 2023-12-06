@@ -1,4 +1,3 @@
-using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport.Stream;
 
@@ -7,9 +6,9 @@ namespace Polimaster.Device.Transport.Win.IrDA;
 /// <summary>
 /// IrDA stream implementation
 /// </summary>
-public class IrDAStream : NetworkByteStream {
+public class IrDAStream : SocketByteStream {
     /// <inheritdoc />
-    public IrDAStream(NetworkStream stream, ILoggerFactory? loggerFactory = null) : base(stream, loggerFactory) {
+    public IrDAStream(ISocketStream stream, ILoggerFactory? loggerFactory = null) : base(stream, loggerFactory) {
     }
 
     // public override async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {

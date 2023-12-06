@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,9 +8,9 @@ namespace Polimaster.Device.Abstract.Transport.Stream;
 /// <summary>
 /// Device byte stream implementation
 /// </summary>
-public class NetworkByteStream : IDeviceStream<byte[]> {
-    private readonly ILogger<NetworkByteStream>? _logger;
-    private readonly NetworkStream _stream;
+public class SocketByteStream : IDeviceStream<byte[]> {
+    private readonly ILogger? _logger;
+    private readonly ISocketStream _stream;
     
     /// <summary>
     /// Buffer length while reading stream
@@ -23,9 +22,9 @@ public class NetworkByteStream : IDeviceStream<byte[]> {
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="loggerFactory"></param>
-    public NetworkByteStream(NetworkStream stream, ILoggerFactory? loggerFactory = null) {
+    public SocketByteStream(ISocketStream stream, ILoggerFactory? loggerFactory = null) {
         _stream = stream;
-        _logger = loggerFactory?.CreateLogger<NetworkByteStream>();
+        _logger = loggerFactory?.CreateLogger(GetType());
     }
 
     /// <inheritdoc />

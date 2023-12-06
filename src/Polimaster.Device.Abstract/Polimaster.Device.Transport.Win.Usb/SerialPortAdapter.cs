@@ -10,7 +10,7 @@ namespace Polimaster.Device.Transport.Win.Usb;
 
 /// <inheritdoc />
 public class SerialPortAdapter : AClient<string, UsbDevice> {
-    private SerialPort? _wrapped;
+    private DevicePort? _wrapped;
     
     /// <summary>
     /// See <see cref="SerialPort.BaudRate"/>
@@ -57,7 +57,7 @@ public class SerialPortAdapter : AClient<string, UsbDevice> {
     /// <inheritdoc />
     public override void Reset() {
         Close();
-        _wrapped = new SerialPort(Params.Name, BaudRate, Parity.None, DataBits, StopBits.One);
+        _wrapped = new DevicePort(Params.Name, BaudRate, Parity.None, DataBits, StopBits.One);
         _wrapped.ReadBufferSize = BufferSize;
         _wrapped.ReadTimeout = Timeout;
         _wrapped.WriteTimeout = Timeout;

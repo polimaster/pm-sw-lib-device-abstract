@@ -34,7 +34,7 @@ public class HttpAdapter : AClient<string, EndPoint> {
     /// <inheritdoc />
     public override IDeviceStream<string> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new HttpStream(_wrapped.GetStream(), LoggerFactory);
+        return new HttpStream(new SocketStream(_wrapped.Client, true), LoggerFactory);
     }
 
     /// <inheritdoc />
