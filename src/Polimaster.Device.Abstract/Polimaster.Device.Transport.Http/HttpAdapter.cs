@@ -7,11 +7,11 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc />
-public class HttpClientAdapter : AClient<string, EndPoint> {
+public class HttpAdapter : AClient<string, EndPoint> {
     private TcpClient? _wrapped;
 
     /// <inheritdoc />
-    public HttpClientAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
+    public HttpAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
     }
 
     /// <inheritdoc />
@@ -33,7 +33,7 @@ public class HttpClientAdapter : AClient<string, EndPoint> {
     /// <inheritdoc />
     public override IDeviceStream<string> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new HttpStream(_wrapped.GetStream(), LoggerFactory);
+        return new HttpStream(_wrapped, LoggerFactory);
     }
 
     /// <inheritdoc />

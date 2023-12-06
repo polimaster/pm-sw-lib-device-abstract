@@ -8,7 +8,6 @@ namespace Polimaster.Device.Transport.Win.Usb;
 
 /// <inheritdoc />
 public class SerialPortStream : IDeviceStream<string> {
-    private const string NEWLINE = "\r\n";
     private readonly SerialPort _serialPort;
     private readonly ILogger<SerialPortStream>? _logger;
 
@@ -19,7 +18,6 @@ public class SerialPortStream : IDeviceStream<string> {
     /// <param name="loggerFactory"></param>
     public SerialPortStream(SerialPort serialPort, ILoggerFactory? loggerFactory = null) {
         _serialPort = serialPort;
-        _serialPort.NewLine = NEWLINE;
         _logger = loggerFactory?.CreateLogger<SerialPortStream>();
     }
 
@@ -33,7 +31,7 @@ public class SerialPortStream : IDeviceStream<string> {
     /// <inheritdoc />
     public virtual Task<string> ReadAsync(CancellationToken cancellationToken) {
         _logger?.LogDebug("Call: {F}", nameof(ReadAsync));
-        var res = _serialPort.ReadTo(NEWLINE);
+        var res = _serialPort.ReadTo(_serialPort.NewLine);
         return Task.FromResult(res);
     }
 }

@@ -9,7 +9,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Transport.Win.IrDA;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Transport.AClient{T,TConnectionParams}" />
-public class IrDaClientAdapter : AClient<byte[], IrDaDevice> {
+public class IrDAAdapter : AClient<byte[], IrDaDevice> {
     
     private IrDAClient? _wrapped;
     
@@ -17,7 +17,7 @@ public class IrDaClientAdapter : AClient<byte[], IrDaDevice> {
     public override bool Connected =>  _wrapped is { Connected: true };
     
     /// <inheritdoc />
-    public IrDaClientAdapter(IrDaDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
+    public IrDAAdapter(IrDaDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
     }
 
     /// <inheritdoc />
@@ -36,7 +36,7 @@ public class IrDaClientAdapter : AClient<byte[], IrDaDevice> {
     /// <inheritdoc />
     public override IDeviceStream<byte[]> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new IrDAStream(_wrapped.GetStream(), LoggerFactory);
+        return new IrDAStream(_wrapped, LoggerFactory);
     }
 
     /// <inheritdoc />

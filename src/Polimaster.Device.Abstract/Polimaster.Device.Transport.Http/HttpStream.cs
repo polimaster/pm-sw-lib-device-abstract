@@ -11,18 +11,19 @@ namespace Polimaster.Device.Transport.Http;
 public class HttpStream : IDeviceStream<string> {
     private readonly NetworkStream _stream;
     private readonly ILogger<HttpStream>? _logger;
+    
     /// <summary>
-    /// Max data length while reading transport stream
+    /// Buffer length while reading stream
     /// </summary>
-    private const int BUFF_LENGTH = 256;
+    protected virtual int BuffLength => 256;
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="stream"></param>
+    /// <param name="client"></param>
     /// <param name="loggerFactory"></param>
-    public HttpStream(NetworkStream stream, ILoggerFactory? loggerFactory) {
-        _stream = stream;
+    public HttpStream(TcpClient client, ILoggerFactory? loggerFactory) {
+        _stream = client.GetStream();
         _logger = loggerFactory?.CreateLogger<HttpStream>();
     }
 
@@ -39,7 +40,7 @@ public class HttpStream : IDeviceStream<string> {
         _logger?.LogDebug("Call: {F}", nameof(ReadAsync));
         var response = new StringBuilder();
         
-        var buffer = new byte[BUFF_LENGTH];
+        var buffer = new byte[BuffLength];
         do {
             var bytes = await _stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
             if (bytes == 0) continue;
