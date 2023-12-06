@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Polimaster.Device.Abstract.Transport.Stream; 
+namespace Polimaster.Device.Abstract.Transport.Stream.Socket; 
 
 /// <summary>
 /// Device string stream implementation

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Transport.Stream;
+namespace Polimaster.Device.Abstract.Transport.Stream.Socket;
 
 /// <summary>
 /// <see cref="NetworkStream"/> interface adapter

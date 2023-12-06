@@ -6,19 +6,20 @@ using InTheHand.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
 using Polimaster.Device.Abstract.Transport.Stream;
+using Polimaster.Device.Abstract.Transport.Stream.Socket;
 
 namespace Polimaster.Device.Transport.Win.IrDA;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Transport.AClient{T,TConnectionParams}" />
-public class IrDAAdapter : AClient<byte[], IrDaDevice> {
+public class IrDAClient : AClient<byte[], IrDaDevice> {
     
-    private IrDAClient? _wrapped;
+    private InTheHand.Net.Sockets.IrDAClient? _wrapped;
     
     /// <inheritdoc />
     public override bool Connected =>  _wrapped is { Connected: true };
     
     /// <inheritdoc />
-    public IrDAAdapter(IrDaDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
+    public IrDAClient(IrDaDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
     }
 
     /// <inheritdoc />
@@ -31,7 +32,7 @@ public class IrDAAdapter : AClient<byte[], IrDaDevice> {
     /// <inheritdoc />
     public override void Reset() {
         Close();
-        _wrapped = new IrDAClient();
+        _wrapped = new InTheHand.Net.Sockets.IrDAClient();
     }
 
     /// <inheritdoc />
@@ -65,7 +66,7 @@ public class IrDAAdapter : AClient<byte[], IrDaDevice> {
     /// <param name="deviceIdentifier">IrDa service name</param>
     /// <returns></returns>
     public static IEnumerable<IrDaDevice> DiscoverDevices(string deviceIdentifier) {
-        var c = new IrDAClient();
+        var c = new InTheHand.Net.Sockets.IrDAClient();
         var d = c.DiscoverDevices(1);
         return (from info in d
             where info.DeviceName.Contains(deviceIdentifier)

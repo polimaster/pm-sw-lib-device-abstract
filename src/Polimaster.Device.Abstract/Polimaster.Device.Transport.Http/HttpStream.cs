@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Transport.Stream;
+using Polimaster.Device.Abstract.Transport.Stream.Socket;
 
 namespace Polimaster.Device.Transport.Http;
 

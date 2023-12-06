@@ -4,15 +4,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
 using Polimaster.Device.Abstract.Transport.Stream;
+using Polimaster.Device.Abstract.Transport.Stream.Socket;
 
 namespace Polimaster.Device.Transport.Http;
 
 /// <inheritdoc />
-public class HttpAdapter : AClient<string, EndPoint> {
+public class HttpClient : AClient<string, EndPoint> {
     private TcpClient? _wrapped;
 
     /// <inheritdoc />
-    public HttpAdapter(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
+    public HttpClient(EndPoint iPEndPoint, ILoggerFactory? loggerFactory) : base(iPEndPoint, loggerFactory) {
     }
 
     /// <inheritdoc />
