@@ -67,8 +67,8 @@ public class IrDAClient : AClient<byte[], IrDaDevice> {
     public static IEnumerable<IrDaDevice> DiscoverDevices(string deviceIdentifier) {
         var c = new InTheHand.Net.Sockets.IrDAClient();
         var d = c.DiscoverDevices(1);
-        return (from info in d
+        return from info in d
             where info.DeviceName.Contains(deviceIdentifier)
-            select new IrDaDevice { Name = info.DeviceName }).ToList();
+            select new IrDaDevice { Name = info.DeviceName };
     }
 }

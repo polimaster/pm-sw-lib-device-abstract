@@ -79,13 +79,13 @@ public abstract class UsbDiscovery : ATransportDiscovery {
     
     private void OnFound(UsbDevice usbDevice) {
         Logger?.LogDebug("Found device {D}", usbDevice);
-        var res = new UsbTransport(new SerialPortAdapter(usbDevice, LoggerFactory), LoggerFactory);
+        var res = new UsbTransport(new SerialPortClient(usbDevice, LoggerFactory), LoggerFactory);
         Found?.Invoke(new List<ITransport> { res });
     }
 
     private void OnLost(UsbDevice usbDevice) {
         Logger?.LogDebug("Lost device {D}", usbDevice);
-        var res = new UsbTransport(new SerialPortAdapter(usbDevice, LoggerFactory), LoggerFactory);
+        var res = new UsbTransport(new SerialPortClient(usbDevice, LoggerFactory), LoggerFactory);
         Lost?.Invoke(new List<ITransport> { res });
     }
 

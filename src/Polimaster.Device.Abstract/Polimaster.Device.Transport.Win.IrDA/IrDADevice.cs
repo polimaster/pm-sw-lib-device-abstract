@@ -12,7 +12,7 @@ public struct IrDaDevice : IStringify {
     /// </summary>
     public string Name;
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IStringify.ToString" />
     public override string ToString() {
         return Name;
     }
