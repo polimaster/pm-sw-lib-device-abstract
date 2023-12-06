@@ -30,8 +30,8 @@ public abstract class IrDADiscovery : ATransportDiscovery {
         try {
             _inDiscoveringState = true;
             
-            var di = IrDAAdapter.DiscoverDevices(DeviceIdentifier);
-            var res = di.Select(device => new IrDATransport(new IrDAAdapter(device, LoggerFactory), LoggerFactory));
+            var di = IrDAClient.DiscoverDevices(DeviceIdentifier);
+            var res = di.Select(device => new IrDATransport(new IrDAClient(device, LoggerFactory), LoggerFactory));
             
             Found?.Invoke(res.ToList());
         } finally { _inDiscoveringState = false; }
