@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Transport.Http;
 
@@ -33,7 +34,7 @@ public class HttpAdapter : AClient<string, EndPoint> {
     /// <inheritdoc />
     public override IDeviceStream<string> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new HttpStream(_wrapped, LoggerFactory);
+        return new HttpStream(_wrapped.GetStream(), LoggerFactory);
     }
 
     /// <inheritdoc />

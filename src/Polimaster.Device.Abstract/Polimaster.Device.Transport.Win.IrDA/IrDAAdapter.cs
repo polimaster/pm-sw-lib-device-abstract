@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using InTheHand.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Transport.Win.IrDA;
 
@@ -36,7 +37,7 @@ public class IrDAAdapter : AClient<byte[], IrDaDevice> {
     /// <inheritdoc />
     public override IDeviceStream<byte[]> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new IrDAStream(_wrapped, LoggerFactory);
+        return new IrDAStream(_wrapped.GetStream(), LoggerFactory);
     }
 
     /// <inheritdoc />

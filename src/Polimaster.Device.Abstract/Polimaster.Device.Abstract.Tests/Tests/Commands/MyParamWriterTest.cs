@@ -2,7 +2,7 @@
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Commands;
 

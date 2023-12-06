@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Polimaster.Device.Abstract.Transport;
+namespace Polimaster.Device.Abstract.Transport.Stream;
 
 
 /// <summary>
