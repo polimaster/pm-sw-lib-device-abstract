@@ -14,18 +14,18 @@ namespace Polimaster.Device.Abstract.Transport;
 public abstract class ATransport<T> : ITransport {
     
     /// <inheritdoc />
-    public string ConnectionId => $"{GetType().Name}:{Client}";
+    public string ConnectionId => $"{GetType().Name}:{_client}";
 
     /// <summary>
     /// Underlying client
     /// </summary>
-    protected readonly IClient<T> Client;
+    private readonly IClient<T> _client;
 
     /// <summary>
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// See <see cref="SyncStreamAccess"/>
     /// </summary>
-    protected SemaphoreSlim Semaphore { get; } = new(1,1);
+    private SemaphoreSlim Semaphore { get; } = new(1,1);
     
     /// <summary>
     /// If enabled, only one call of <see cref="Exec"/> will be executed at a time
@@ -36,6 +36,11 @@ public abstract class ATransport<T> : ITransport {
     /// Amount of milliseconds to sleep after command execution
     /// </summary>
     protected virtual ushort Sleep => 1;
+
+    /// <summary>
+    /// Keep connection open until it's disposed
+    /// </summary>
+    protected virtual bool KeepOpen => false;
     
     /// <summary>
     /// Logger
@@ -52,18 +57,18 @@ public abstract class ATransport<T> : ITransport {
     /// <param name="loggerFactory"></param>
     protected ATransport(IClient<T> client, ILoggerFactory? loggerFactory) {
         Logger = loggerFactory?.CreateLogger(GetType());
-        Client = client;
+        _client = client;
     }
 
 
     /// <param name="cancellationToken"></param>
     /// <inheritdoc />
     public virtual async Task OpenAsync(CancellationToken cancellationToken) {
-        if (Client.Connected) return;
+        if (_client.Connected) return;
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
             Logger?.LogDebug("Open transport connection (async)");
-            await Client.OpenAsync(cancellationToken);
+            await _client.OpenAsync(cancellationToken);
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
         }
@@ -71,11 +76,11 @@ public abstract class ATransport<T> : ITransport {
 
     /// <inheritdoc />
     public virtual void Open() {
-        if(Client.Connected) return;
+        if(_client.Connected) return;
         if(SyncStreamAccess) Semaphore.Wait();
         try {
             Logger?.LogDebug("Open transport connection");
-            Client.Open();
+            _client.Open();
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
         }
@@ -83,10 +88,11 @@ public abstract class ATransport<T> : ITransport {
 
     /// <inheritdoc />
     public virtual void Close() {
+        if(KeepOpen) return;
         if(SyncStreamAccess) Semaphore.Wait();
         try {
             Closing?.Invoke();
-            Client.Close();
+            _client.Close();
         } finally {
             if(SyncStreamAccess) Semaphore.Release();
         }
@@ -97,7 +103,7 @@ public abstract class ATransport<T> : ITransport {
         Logger?.LogDebug("Executing command {Name}", command.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = Client.GetStream();
+            var stream = _client.GetStream();
             await command.Exec(stream, cancellationToken);
             Thread.Sleep(Sleep);
         } finally {
@@ -110,7 +116,7 @@ public abstract class ATransport<T> : ITransport {
         Logger?.LogDebug("Executing {Name}", writer.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = Client.GetStream();
+            var stream = _client.GetStream();
             await writer.Write(stream, data, cancellationToken);
             Thread.Sleep(Sleep);
         } finally {
@@ -123,7 +129,7 @@ public abstract class ATransport<T> : ITransport {
         Logger?.LogDebug("Executing {Name}", reader.GetType().Name);
         if(SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
-            var stream = Client.GetStream();
+            var stream = _client.GetStream();
             var res = await reader.Read(stream, cancellationToken);
             Thread.Sleep(Sleep);
             return res;
@@ -135,8 +141,14 @@ public abstract class ATransport<T> : ITransport {
     /// <inheritdoc />
     public virtual void Dispose() {
         Logger?.LogDebug("Disposing transport connection");
-        Close();
-        Client.Dispose();
+        if(SyncStreamAccess) Semaphore.Wait();
+        try {
+            Closing?.Invoke();
+            _client.Close();
+        } finally {
+            if(SyncStreamAccess) Semaphore.Release();
+            _client.Dispose();
+        }
     }
 
     /// <inheritdoc />

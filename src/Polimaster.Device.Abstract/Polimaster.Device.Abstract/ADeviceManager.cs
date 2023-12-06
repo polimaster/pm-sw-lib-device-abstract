@@ -17,7 +17,7 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
     /// <summary>
     /// Logger
     /// </summary>
-    protected readonly ILogger<ADeviceManager<T>>? Logger;
+    protected readonly ILogger? Logger;
 
     /// <inheritdoc />
     public abstract event Action<T>? Attached;
@@ -34,7 +34,7 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDevice {
     /// <param name="loggerFactory"></param>
     protected ADeviceManager(ILoggerFactory? loggerFactory) {
         LoggerFactory = loggerFactory;
-        Logger = loggerFactory?.CreateLogger<ADeviceManager<T>>();
+        Logger = loggerFactory?.CreateLogger(GetType());
     }
 
     /// <summary>
