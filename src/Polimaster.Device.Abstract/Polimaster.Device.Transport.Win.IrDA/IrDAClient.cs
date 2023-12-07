@@ -37,7 +37,7 @@ public class IrDAClient : AClient<byte[], IrDaDevice> {
     /// <inheritdoc />
     public override IDeviceStream<byte[]> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new IrDAStream(new SocketStream(_wrapped.Client, true), LoggerFactory);
+        return new IrDAStream(new SocketWrapper(_wrapped.Client, true), LoggerFactory);
     }
 
     /// <inheritdoc />

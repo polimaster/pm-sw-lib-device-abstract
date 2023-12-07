@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 public interface IMyDeviceDiscovery : ITransportDiscovery {
 }
 
-public class MyDeviceDiscovery : ATransportDiscovery, IMyDeviceDiscovery {
+public class MyDeviceDiscovery(ILoggerFactory? loggerFactory) : ATransportDiscovery(loggerFactory), IMyDeviceDiscovery {
     protected override int Sleep => 1;
     
     private bool _inProgress;
@@ -24,13 +24,13 @@ public class MyDeviceDiscovery : ATransportDiscovery, IMyDeviceDiscovery {
 
         // simulate found
         IEnumerable<ITransport> found = new List<ITransport> {
-            new MyTransport(new MyClient(new MemoryStreamParams(), LoggerFactory), LoggerFactory)
+            new MyTransport(new MyClient(new ClientParams(1243, 80), LoggerFactory), LoggerFactory)
         };
         Found?.Invoke(found);
         
         // simulate lost
         IEnumerable<ITransport> lost = new List<ITransport> {
-            new MyTransport(new MyClient(new MemoryStreamParams(), LoggerFactory), LoggerFactory)
+            new MyTransport(new MyClient(new ClientParams(4567, 80), LoggerFactory), LoggerFactory)
         };
         Lost?.Invoke(lost);
         
@@ -39,7 +39,4 @@ public class MyDeviceDiscovery : ATransportDiscovery, IMyDeviceDiscovery {
 
     public override event Action<IEnumerable<ITransport>>? Found;
     public override event Action<IEnumerable<ITransport>>? Lost;
-
-    public MyDeviceDiscovery(ILoggerFactory? loggerFactory) : base(loggerFactory) {
-    }
 }

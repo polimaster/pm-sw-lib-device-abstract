@@ -35,7 +35,7 @@ public class HttpClient : AClient<string, EndPoint> {
     /// <inheritdoc />
     public override IDeviceStream<string> GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new HttpStream(new SocketStream(_wrapped.Client, true), LoggerFactory);
+        return new HttpStream(new SocketWrapper(_wrapped.Client, true), LoggerFactory);
     }
 
     /// <inheritdoc />
@@ -47,10 +47,10 @@ public class HttpClient : AClient<string, EndPoint> {
 
     /// <param name="token"></param>
     /// <inheritdoc />
-    public override async Task OpenAsync(CancellationToken token) {
-        if (_wrapped is { Connected: true }) return;
+    public override Task OpenAsync(CancellationToken token) {
+        if (_wrapped is { Connected: true }) return Task.CompletedTask;
         Reset();
-        await _wrapped?.ConnectAsync(Params.Address, Params.Port)!;
+        return _wrapped?.ConnectAsync(Params.Address, Params.Port)!;
     }
 
     /// <inheritdoc />

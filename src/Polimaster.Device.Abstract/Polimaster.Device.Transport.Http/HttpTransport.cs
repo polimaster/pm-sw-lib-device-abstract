@@ -8,6 +8,9 @@ namespace Polimaster.Device.Transport.Http;
 /// </summary>
 public class HttpTransport : ATransport<string> {
     /// <inheritdoc />
+    protected override bool KeepOpen => true;
+
+    /// <inheritdoc />
     public HttpTransport(IClient<string> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
     }
 }

@@ -22,10 +22,10 @@ public class SerialPortStream : IDeviceStream<string> {
     }
 
     /// <inheritdoc />
-    public virtual async Task WriteAsync(string buffer, CancellationToken cancellationToken) {
+    public virtual Task WriteAsync(string buffer, CancellationToken cancellationToken) {
         _logger?.LogDebug("Call {F} with: {V}", nameof(WriteAsync), buffer);
         _port.WriteLine(buffer);
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
