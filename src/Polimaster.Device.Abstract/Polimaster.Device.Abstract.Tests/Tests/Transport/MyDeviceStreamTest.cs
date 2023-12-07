@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Moq;
+﻿using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 using Polimaster.Device.Abstract.Transport.Stream.Socket;
 

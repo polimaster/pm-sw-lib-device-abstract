@@ -17,5 +17,15 @@ public class SerialPortStreamTest : Mocks {
         port.Verify(e => e.ReadTo(It.IsAny<string>()));
         Assert.Equal(response, result);
     }
-    
+
+    [Fact]
+    public async void ShouldWrite() {
+        var port = new Mock<IDevicePort>();
+        var stream = new SerialPortStream(port.Object, LOGGER_FACTORY);
+        
+        var buff = Guid.NewGuid().ToString();
+        await stream.WriteAsync(buff, Token);
+        
+        port.Verify(e => e.WriteLine(buff));
+    }
 }

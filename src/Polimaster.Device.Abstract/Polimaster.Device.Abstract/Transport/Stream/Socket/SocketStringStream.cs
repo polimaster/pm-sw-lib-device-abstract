@@ -34,9 +34,9 @@ public class SocketStringStream : IDeviceStream<string> {
     }
 
     /// <inheritdoc />
-    public virtual async Task WriteAsync(string buffer, CancellationToken cancellationToken) {
+    public virtual Task WriteAsync(string buffer, CancellationToken cancellationToken) {
         var v = Encoding.GetBytes(buffer);
-        await _stream.WriteAsync(v, cancellationToken);
+        return _stream.WriteAsync(v, cancellationToken);
     }
 
     /// <inheritdoc />
