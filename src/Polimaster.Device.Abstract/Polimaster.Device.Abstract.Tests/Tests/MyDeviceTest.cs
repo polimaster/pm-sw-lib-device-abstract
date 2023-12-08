@@ -52,6 +52,25 @@ public class MyDeviceTest : Mocks {
         
         f.Verify(e => e.Invoke(transport.Object));
     }
+
+    [Fact]
+    public async void ShouldCatchExceptionOnExecute() {
+        var transport = new Mock<ITransport>();
+        var exception = new Exception();
+        var f = new Mock<Func<ITransport, Task>>();
+        f.Setup(e => e.Invoke(transport.Object)).ThrowsAsync(exception);
+        var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
+
+        Exception? ex = null;
+        
+        try {
+            await dev.Execute(f.Object, Token);
+        } catch (Exception e) {
+            ex = e;
+        }
+        
+        Assert.Equal(exception, ex);
+    }
     
 
     [Fact]

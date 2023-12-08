@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
@@ -8,7 +9,6 @@ using Polimaster.Device.Abstract.Transport.Stream;
 namespace Polimaster.Device.Abstract.Tests.Tests.Transport;
 
 public class MyTransportTest : Mocks {
-
     [Fact]
     public void ShouldHaveId() {
         var client = new Mock<IClient<string>>();
@@ -68,6 +68,7 @@ public class MyTransportTest : Mocks {
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         await tr.Write(writer.Object, param, Token);
         
+        client.Verify(e => e.GetStream());
         writer.Verify(e => e.Write(stream.Object, param, Token));
     }
 
@@ -77,12 +78,16 @@ public class MyTransportTest : Mocks {
         var stream = new Mock<IDeviceStream<string>>();
         client.Setup(e => e.GetStream()).Returns(stream.Object);
         
-        var writer = new Mock<IDataReader<MyParam>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var myParam = new MyParam();
+        reader.Setup(e => e.Read(stream.Object, Token)).ReturnsAsync(myParam);
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
-        await tr.Read(writer.Object, Token);
+        var res = await tr.Read(reader.Object, Token);
         
-        writer.Verify(e => e.Read(stream.Object, Token));
+        Assert.Equal(myParam, res);
+        client.Verify(e => e.GetStream());
+        reader.Verify(e => e.Read(stream.Object, Token));
     }
 
     [Fact]
@@ -96,6 +101,43 @@ public class MyTransportTest : Mocks {
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         await tr.Exec(writer.Object, Token);
         
+        client.Verify(e => e.GetStream());
         writer.Verify(e => e.Exec(stream.Object, Token));
+    }
+
+    [Fact]
+    public async void ShouldResetClientOnFail() {
+        var client = new Mock<IClient<string>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).Throws(new Exception("FAIL"));
+        
+        var tr = new MyTransport(client.Object, LOGGER_FACTORY);
+        
+        try {
+            await tr.Read(reader.Object, Token);
+        } catch { // ignored
+        }
+
+        client.Verify(e => e.GetStream(), Times.Exactly(2));
+        client.Verify(e => e.Reset());
+    }
+
+    [Fact]
+    public async void ShouldThrowExceptionOnRead() {
+        var client = new Mock<IClient<string>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).Throws(new Exception("FAIL"));
+        
+        var tr = new MyTransport(client.Object, LOGGER_FACTORY);
+
+        Exception? exception = null;
+        
+        try {
+            await tr.Read(reader.Object, Token);
+        } catch (Exception e) {
+            exception = e;
+        }
+
+        Assert.NotNull(exception);
     }
 }

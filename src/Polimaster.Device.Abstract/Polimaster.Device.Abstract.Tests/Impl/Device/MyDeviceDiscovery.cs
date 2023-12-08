@@ -6,8 +6,7 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
-public interface IMyDeviceDiscovery : ITransportDiscovery {
-}
+public interface IMyDeviceDiscovery : ITransportDiscovery;
 
 public class MyDeviceDiscovery(ILoggerFactory? loggerFactory) : ATransportDiscovery(loggerFactory), IMyDeviceDiscovery {
     protected override int Sleep => 1;

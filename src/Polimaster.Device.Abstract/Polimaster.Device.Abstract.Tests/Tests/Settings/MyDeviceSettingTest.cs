@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
@@ -137,15 +138,15 @@ public class MyDeviceSettingTest : Mocks {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
+        
         transport.Setup(e => e.Read(reader.Object, Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         
         var setting = new MyParamSetting(reader.Object);
 
         await setting.Read(transport.Object, Token);
         Assert.Equal(ex, setting.Exception);
+        Assert.Null(setting.Value);
         Assert.True(setting.IsError);
     }
-    
-    
     
 }
