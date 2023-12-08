@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;

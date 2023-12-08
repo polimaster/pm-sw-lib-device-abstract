@@ -110,7 +110,7 @@ public class MyTransportTest : Mocks {
         var client = new Mock<IClient<string>>();
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception("FAIL");
-        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).Throws(ex);
+        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         
