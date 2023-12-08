@@ -109,35 +109,22 @@ public class MyTransportTest : Mocks {
     public async void ShouldResetClientOnFail() {
         var client = new Mock<IClient<string>>();
         var reader = new Mock<IDataReader<MyParam>>();
-        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).Throws(new Exception("FAIL"));
+        var ex = new Exception("FAIL");
+        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).Throws(ex);
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         
-        try {
-            await tr.Read(reader.Object, Token);
-        } catch { // ignored
-        }
-
-        client.Verify(e => e.GetStream(), Times.Exactly(2));
-        client.Verify(e => e.Reset());
-    }
-
-    [Fact]
-    public async void ShouldThrowExceptionOnRead() {
-        var client = new Mock<IClient<string>>();
-        var reader = new Mock<IDataReader<MyParam>>();
-        reader.Setup(e => e.Read(It.IsAny<object>(), Token)).Throws(new Exception("FAIL"));
-        
-        var tr = new MyTransport(client.Object, LOGGER_FACTORY);
-
         Exception? exception = null;
-        
         try {
             await tr.Read(reader.Object, Token);
         } catch (Exception e) {
             exception = e;
         }
-
+        
         Assert.NotNull(exception);
+        Assert.Equal(ex, exception);
+        client.Verify(e => e.Reset());
+        client.Verify(e => e.OpenAsync(Token));
+        client.Verify(e => e.GetStream(), Times.Exactly(2));
     }
 }
