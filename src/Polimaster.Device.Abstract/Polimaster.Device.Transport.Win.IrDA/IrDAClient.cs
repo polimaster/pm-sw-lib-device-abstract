@@ -23,9 +23,12 @@ public class IrDAClient : AClient<byte[], IrDaDevice> {
 
     /// <inheritdoc />
     public override void Close() {
-        _wrapped?.Close();
-        _wrapped?.Dispose();
-        _wrapped = null;
+        try {
+            _wrapped?.Close();
+            _wrapped?.Dispose();
+        } finally {
+            _wrapped = null;
+        }
     }
 
     /// <inheritdoc />
