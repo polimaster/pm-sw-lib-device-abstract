@@ -46,10 +46,14 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     }
 
     /// <inheritdoc />
-    public override async Task Read(ITransport transport, CancellationToken cancellationToken) {
+    public override Task Read(ITransport transport, CancellationToken cancellationToken) {
+        return IsSynchronized ? Task.CompletedTask : Reset(transport, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public override async Task Reset(ITransport transport, CancellationToken cancellationToken) {
         await Semaphore.WaitAsync(cancellationToken);
         try {
-            if(IsSynchronized && !IsDirty) return;
             var v = await transport.Read(Reader, cancellationToken);
             SetValue(v);
             IsSynchronized = true;

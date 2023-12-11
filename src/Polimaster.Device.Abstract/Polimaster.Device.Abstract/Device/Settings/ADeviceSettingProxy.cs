@@ -95,6 +95,11 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     }
 
     /// <inheritdoc />
+    public virtual Task Reset(ITransport transport, CancellationToken cancellationToken) {
+        return ProxiedSetting.Reset(transport, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
         if (ValidationErrors != null && ValidationErrors.Any()) return Task.CompletedTask;
         return ProxiedSetting.CommitChanges(transport, cancellationToken);

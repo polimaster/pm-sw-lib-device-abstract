@@ -61,6 +61,9 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public abstract Task Read(ITransport transport, CancellationToken cancellationToken);
 
     /// <inheritdoc />
+    public abstract Task Reset(ITransport transport, CancellationToken cancellationToken);
+
+    /// <inheritdoc />
     public abstract Task CommitChanges(ITransport transport, CancellationToken cancellationToken);
     
     /// <summary>

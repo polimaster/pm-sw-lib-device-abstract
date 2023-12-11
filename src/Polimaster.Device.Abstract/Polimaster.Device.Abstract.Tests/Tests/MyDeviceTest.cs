@@ -99,11 +99,15 @@ public class MyDeviceTest : Mocks {
         await dev.HistoryInterval.Read(transport.Object, Token);
         transport.Verify(e => e.Read(It.IsAny<HistoryIntervalReader>(), Token), Times.Exactly(1));
         
-        const ushort v2 = 20;
-        dev.HistoryInterval.Value = v2;
-        await dev.ReadAllSettings(Token);
-        transport.Verify(e => e.Read(It.IsAny<HistoryIntervalReader>(), Token), Times.Exactly(2));
-        Assert.Equal(v, dev.HistoryInterval.Value);
+        // should not call Read if setting IsSynchronized
+        await dev.HistoryInterval.Read(transport.Object, Token);
+        transport.Verify(e => e.Read(It.IsAny<HistoryIntervalReader>(), Token), Times.Exactly(1));
+        
+        // const ushort v2 = 20;
+        // dev.HistoryInterval.Value = v2;
+        // await dev.ReadAllSettings(Token);
+        // transport.Verify(e => e.Read(It.IsAny<HistoryIntervalReader>(), Token), Times.Exactly(2));
+        // Assert.Equal(v, dev.HistoryInterval.Value);
     }
 
     [Fact]

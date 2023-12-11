@@ -59,6 +59,12 @@ public interface IDeviceSetting<T> {
     Task Read(ITransport transport, CancellationToken cancellationToken = new());
 
     /// <summary>
+    /// Force to read setting from device
+    /// </summary>
+    /// <returns></returns>
+    Task Reset(ITransport transport, CancellationToken cancellationToken = new());
+
+    /// <summary>
     /// Writes <see cref="Value"/> to device if it <see cref="IsDirty"/>
     /// </summary>
     /// <param name="transport"></param>
