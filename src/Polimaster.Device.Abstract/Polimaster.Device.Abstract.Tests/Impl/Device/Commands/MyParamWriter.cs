@@ -6,11 +6,8 @@ using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 
-public class MyParamWriter : StringWriter<MyParam> {
-    public MyParamWriter(ILoggerFactory? loggerFactory = null) : base(loggerFactory) {
-    }
-
-    protected override string Compile(MyParam data) {
+public class MyParamWriter(ILoggerFactory? loggerFactory = null) : StringWriter<MyParam?>(loggerFactory) {
+    protected override string Compile(MyParam? data) {
         if (data == null) {
             throw new CommandCompilationException("Data is null", new NullReferenceException());
         }

@@ -3,7 +3,5 @@ using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings; 
 
-public class HistoryIntervalSetting : DeviceSettingBase<ushort> {
-    public HistoryIntervalSetting(IDataReader<ushort> reader, IDataWriter<ushort>? writer = null) : base(reader, writer) {
-    }
-}
+public class HistoryIntervalSetting(IDataReader<ushort?> reader, IDataWriter<ushort?>? writer = null)
+    : DeviceSettingBase<ushort?>(reader, writer);

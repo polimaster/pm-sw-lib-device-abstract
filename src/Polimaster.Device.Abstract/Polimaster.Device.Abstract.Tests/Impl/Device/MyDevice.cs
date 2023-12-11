@@ -14,17 +14,17 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
 public interface IMyDevice : IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
-    IDeviceSetting<MyParam> MyParamSetting { get; }
-    IDeviceSetting<string> StringSetting { get; }
+    IDeviceSetting<MyParam?> MyParamSetting { get; }
+    IDeviceSetting<string?> StringSetting { get; }
 }
 
 public class MyDevice : ADevice, IMyDevice {
-    public IDeviceSetting<ushort> HistoryInterval { get; }
+    public IDeviceSetting<ushort?> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; private set; }
 
-    public IDeviceSetting<MyParam> MyParamSetting { get; }
-    public IDeviceSetting<string> StringSetting { get; }
+    public IDeviceSetting<MyParam?> MyParamSetting { get; }
+    public IDeviceSetting<string?> StringSetting { get; }
 
     private readonly DeviceInfoReader _infoReader;
     private readonly BatteryStatusReader _batteryStatusReader;

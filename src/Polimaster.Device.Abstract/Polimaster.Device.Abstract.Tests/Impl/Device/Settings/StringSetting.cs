@@ -3,7 +3,5 @@ using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings; 
 
-public class StringSetting : DeviceSettingBase<string> {
-    public StringSetting(IDataReader<string> reader, IDataWriter<string>? writer = null) : base(reader, writer) {
-    }
-}
+public class StringSetting(IDataReader<string?> reader, IDataWriter<string?>? writer = null)
+    : DeviceSettingBase<string?>(reader, writer);

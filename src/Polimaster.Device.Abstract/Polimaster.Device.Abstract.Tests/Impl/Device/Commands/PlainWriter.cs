@@ -3,9 +3,6 @@ using Polimaster.Device.Abstract.Device.Commands.Impl;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Commands; 
 
-public class PlainWriter : StringWriter<string> {
-    public PlainWriter(ILoggerFactory? loggerFactory) : base(loggerFactory) {
-    }
-
+public class PlainWriter(ILoggerFactory? loggerFactory) : StringWriter<string?>(loggerFactory) {
     protected override string Compile(string? data) => $"{Cmd.PREFIX}{data}";
 }
