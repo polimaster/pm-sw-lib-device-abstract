@@ -23,9 +23,14 @@ public interface IDeviceSetting<T> {
     T? Value { get; set; }
     
     /// <summary>
-    /// Indicates if <see cref="Value"/> changed
+    /// Indicates if setting changed via setting <see cref="Value"/> and ready to <see cref="CommitChanges"/>
     /// </summary>
     bool IsDirty { get; }
+    
+    /// <summary>
+    /// Indicates if setting read from device.
+    /// </summary>
+    bool IsSynchronized { get; }
     
     /// <summary>
     /// Indicates if <see cref="Value"/> valid

@@ -32,6 +32,9 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
         }
     }
 
+    /// <inheritdoc />
+    public override bool IsSynchronized { get; protected set; }
+
     /// <summary>
     /// Set value from internal Read/Write commands
     /// </summary>
@@ -46,10 +49,12 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     public override async Task Read(ITransport transport, CancellationToken cancellationToken) {
         await Semaphore.WaitAsync(cancellationToken);
         try {
-            if(Value != null && !IsDirty) return;
+            if(IsSynchronized && !IsDirty) return;
             var v = await transport.Read(Reader, cancellationToken);
             SetValue(v);
+            IsSynchronized = true;
         } catch (Exception e) {
+            IsSynchronized = false;
             SetValue(default);
             Exception = e;
         } finally {
@@ -70,6 +75,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
             await transport.Write(Writer!, Value, cancellationToken);
             IsDirty = false;
             Exception = null;
+            IsSynchronized = true;
         } catch (Exception e) {
             Exception = e;
         } finally {

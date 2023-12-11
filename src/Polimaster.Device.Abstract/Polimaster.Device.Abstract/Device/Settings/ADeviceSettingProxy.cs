@@ -38,6 +38,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     public virtual T? Value {
         get => _internalValue ?? GetProxied();
         set {
+            if (!IsSynchronized) throw new Exception($"{nameof(ProxiedSetting)} should be read from device before assigning value");
             Validate(value);
             // does not allow to change proxied value until is valid
             if (ValidationErrors == null || !ValidationErrors.Any()) {
@@ -51,6 +52,9 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
 
     /// <inheritdoc />
     public bool IsDirty => _internalValue != null || ProxiedSetting.IsDirty;
+
+    /// <inheritdoc />
+    public bool IsSynchronized => ProxiedSetting.IsSynchronized;
 
     /// <inheritdoc />
     public bool IsValid => (ValidationErrors == null || !ValidationErrors.Any()) && ProxiedSetting.IsValid;
@@ -91,14 +95,13 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     }
 
     /// <inheritdoc />
-    public virtual async Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
-        if (ValidationErrors != null && ValidationErrors.Any()) return;
-        await ProxiedSetting.CommitChanges(transport, cancellationToken);
+    public virtual Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
+        if (ValidationErrors != null && ValidationErrors.Any()) return Task.CompletedTask;
+        return ProxiedSetting.CommitChanges(transport, cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task Read(ITransport transport, CancellationToken cancellationToken) {
-        // check if proxied setting already had read
-        if (ProxiedSetting.Value == null) await ProxiedSetting.Read(transport, cancellationToken);
+    public virtual Task Read(ITransport transport, CancellationToken cancellationToken) {
+        return ProxiedSetting.Read(transport, cancellationToken);
     }
 }

@@ -3,7 +3,8 @@ using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 
-public class MyParamSettingProxy : ADeviceSettingProxy<string, MyParam> {
+public class MyParamSettingProxy(IDeviceSetting<MyParam?> proxiedSetting)
+    : ADeviceSettingProxy<string, MyParam?>(proxiedSetting) {
     public static readonly string[] FORBIDDEN_VALUES = { "string1", "string2" };
 
     protected override string? GetProxied() {
@@ -29,8 +30,5 @@ public class MyParamSettingProxy : ADeviceSettingProxy<string, MyParam> {
         if (FORBIDDEN_VALUES.Contains(value)) {
             ValidationErrors = new[] { new ValidationResult($"{value} cant be set as value") };
         }
-    }
-
-    public MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting) : base(proxiedSetting) {
     }
 }

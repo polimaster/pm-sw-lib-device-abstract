@@ -43,6 +43,9 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public bool IsDirty { get; protected set; }
 
     /// <inheritdoc />
+    public abstract bool IsSynchronized { get; protected set; }
+
+    /// <inheritdoc />
     public bool IsValid => ValidationErrors == null || !ValidationErrors.Any();
 
     /// <inheritdoc />
