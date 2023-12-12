@@ -37,6 +37,7 @@ public abstract class UsbDiscovery : ATransportDiscovery {
     /// <inheritdoc />
     public override void Start(CancellationToken token) {
         base.Start(token);
+        _managementEventWatcher.Start();
         
         Logger?.LogDebug("Search for already connected devices");
         using var searcher = new ManagementObjectSearcher(@"SELECT * FROM Win32_SerialPort");
