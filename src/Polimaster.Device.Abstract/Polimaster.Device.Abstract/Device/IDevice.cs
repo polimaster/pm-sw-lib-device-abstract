@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Settings;
@@ -51,6 +53,12 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task WriteAllSettings(CancellationToken cancellationToken = new());
+
+    /// <summary>
+    /// Returns device settings
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<PropertyInfo> GetSettings();
 
     /// <summary>
     /// Read/write device data with managed transport connection. Connection will be opened and closed after execution.

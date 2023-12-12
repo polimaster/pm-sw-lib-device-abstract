@@ -53,7 +53,7 @@ public abstract class ADevice : IDevice {
     /// <inheritdoc />
     public async Task ReadAllSettings(CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
-        var ds = GetDeviceSettingsProperties();
+        var ds = GetSettings();
         foreach (var info in ds) {
             if (cancellationToken.IsCancellationRequested) return;
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read), cancellationToken);
@@ -63,7 +63,7 @@ public abstract class ADevice : IDevice {
     /// <inheritdoc />
     public async Task WriteAllSettings(CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
-        var ds = GetDeviceSettingsProperties();
+        var ds = GetSettings();
         foreach (var info in ds) {
             if (cancellationToken.IsCancellationRequested) return;
             await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
@@ -90,8 +90,9 @@ public abstract class ADevice : IDevice {
         var task = (Task)method.Invoke(setting, p);
         if (task != null) await task;
     }
-    
-    private IEnumerable<PropertyInfo> GetDeviceSettingsProperties() {
+
+    /// <inheritdoc />
+    public IEnumerable<PropertyInfo> GetSettings() {
         var propertyInfos = GetType().GetProperties();
         return propertyInfos.Where(info => info.PropertyType.IsGenericType)
             .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
