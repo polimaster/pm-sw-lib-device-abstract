@@ -10,7 +10,7 @@ public class UsbTransport : ATransport<string> {
     
     /// <inheritdoc />
     protected override bool KeepOpen => true;
-    
+
     /// <inheritdoc />
     public UsbTransport(IClient<string> client, ILoggerFactory? loggerFactory) : base(client, loggerFactory) {
     }
