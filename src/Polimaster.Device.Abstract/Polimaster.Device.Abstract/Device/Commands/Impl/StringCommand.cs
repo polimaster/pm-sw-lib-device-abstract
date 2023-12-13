@@ -10,3 +10,11 @@ public abstract class StringCommand : ACommand<string> {
     protected StringCommand(ILoggerFactory? loggerFactory) : base(loggerFactory) {
     }
 }
+/// <summary>
+/// String <see cref="ACommand{T}"/> implementation with verifying result returned from device
+/// </summary>
+public abstract class StringCommandVerified : ACommandVerified<string> {
+    /// <inheritdoc />
+    protected StringCommandVerified(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    }
+}

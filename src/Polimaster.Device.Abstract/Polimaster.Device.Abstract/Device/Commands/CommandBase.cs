@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Device.Commands; 
 
 /// <summary>
 /// 
 /// </summary>
-public abstract class CommandBase {
+public abstract class CommandBase<T> {
     /// <summary>
     /// Command logger
     /// </summary>
@@ -16,7 +17,7 @@ public abstract class CommandBase {
     /// 
     /// </summary>
     /// <param name="loggerFactory"></param>
-    public CommandBase(ILoggerFactory? loggerFactory) {
+    protected CommandBase(ILoggerFactory? loggerFactory) {
         Logger = loggerFactory?.CreateLogger(GetType());
     }
     
@@ -32,4 +33,17 @@ public abstract class CommandBase {
     /// <param name="e"></param>
     /// <param name="methodName"></param>
     protected void LogError(Exception e, string methodName) => Logger?.LogError(e, "Error while sending {N} command {C}",methodName, GetType().Name);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <typeparam name="TStream"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    protected IDeviceStream<T> GetStream<TStream>(TStream stream) {
+        if (stream is not IDeviceStream<T> str)
+            throw new ArgumentException($"{typeof(T)} is not suitable for reading/writing from {typeof(TStream)}");
+        return str;
+    }
 }

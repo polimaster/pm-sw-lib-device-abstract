@@ -11,3 +11,12 @@ public abstract class ByteCommand : ACommand<byte[]>{
     protected ByteCommand(ILoggerFactory? loggerFactory) : base(loggerFactory) {
     }
 }
+
+/// <summary>
+///Byte array <see cref="ACommand{T}"/> implementation with verifying result returned from device
+/// </summary>
+public abstract class ByteCommandVerified : ACommandVerified<byte[]>{
+    /// <inheritdoc />
+    protected ByteCommandVerified(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    }
+}

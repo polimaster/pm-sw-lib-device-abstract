@@ -12,7 +12,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// </summary>
 /// <typeparam name="T">Type of data to write</typeparam>
 /// <typeparam name="TSteamData">Data type for device <see cref="IDeviceStream{T}"/></typeparam>
-public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
+public abstract class ADataReader<T, TSteamData> : CommandBase<TSteamData>, IDataReader<T> {
     /// <inheritdoc />
     protected ADataReader(ILoggerFactory? loggerFactory) : base(loggerFactory) {
     }
@@ -34,8 +34,7 @@ public abstract class ADataReader<T, TSteamData> : CommandBase, IDataReader<T> {
 
     /// <inheritdoc />
     public virtual async Task<T> Read<TStream>(TStream stream, CancellationToken cancellationToken) {
-        if (stream is not IDeviceStream<TSteamData> str)
-            throw new ArgumentException($"{typeof(TSteamData)} is not suitable for reading/writing from {typeof(TStream)}");
+        var str = GetStream(stream);
         LogCommand(nameof(Read));
 
         try {

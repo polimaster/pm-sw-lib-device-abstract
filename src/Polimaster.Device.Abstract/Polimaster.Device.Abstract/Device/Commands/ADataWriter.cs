@@ -12,7 +12,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// </summary>
 /// <typeparam name="T">Type of data to write</typeparam>
 /// <typeparam name="TSteamData">Data type for device <see cref="IDeviceStream{T}"/></typeparam>
-public abstract class ADataWriter<T, TSteamData> : CommandBase, IDataWriter<T> {
+public abstract class ADataWriter<T, TSteamData> : CommandBase<TSteamData>, IDataWriter<T> {
     /// <inheritdoc />
     protected ADataWriter(ILoggerFactory? loggerFactory) : base(loggerFactory) {
     }
@@ -27,8 +27,7 @@ public abstract class ADataWriter<T, TSteamData> : CommandBase, IDataWriter<T> {
 
     /// <inheritdoc />
     public virtual async Task Write<TStream>(TStream stream, T data, CancellationToken cancellationToken) {
-        if (stream is not IDeviceStream<TSteamData> str)
-            throw new ArgumentException($"{typeof(TSteamData)} is not suitable for writing to {typeof(TStream)}");
+        var str = GetStream(stream);
         LogCommand(nameof(Write));
         try {
             await str.WriteAsync(Compile(data), cancellationToken);
