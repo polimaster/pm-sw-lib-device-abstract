@@ -14,7 +14,7 @@ public class SocketStringStream : IDeviceStream<string> {
     /// <summary>
     /// Buffer length while reading stream
     /// </summary>
-    public int BuffLength {
+    public virtual int BuffLength {
         get => _stream.BuffLength;
         set => _stream.BuffLength = value;
     }
@@ -22,7 +22,7 @@ public class SocketStringStream : IDeviceStream<string> {
     /// <summary>
     /// String <see cref="Encoding"/>
     /// </summary>
-    public Encoding Encoding { get; set; } = Encoding.UTF8;
+    public virtual Encoding Encoding { get; set; } = Encoding.UTF8;
     
     /// <summary>
     /// 

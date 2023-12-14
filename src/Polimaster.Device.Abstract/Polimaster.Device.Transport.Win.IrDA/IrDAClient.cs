@@ -52,9 +52,10 @@ public class IrDAClient : AClient<byte[], IrDaDevice> {
 
     /// <inheritdoc />
     public override Task OpenAsync(CancellationToken token) {
-        if (_wrapped is { Connected: true }) return Task.CompletedTask;
-        Reset();
-        _wrapped?.BeginConnect(Params.Name, null, _wrapped).AsyncWaitHandle.WaitOne(1000);
+        Open();
+        // if (_wrapped is { Connected: true }) return Task.CompletedTask;
+        // Reset();
+        // _wrapped?.BeginConnect(Params.Name, null, _wrapped).AsyncWaitHandle.WaitOne(1000);
         return Task.CompletedTask;
     }
 

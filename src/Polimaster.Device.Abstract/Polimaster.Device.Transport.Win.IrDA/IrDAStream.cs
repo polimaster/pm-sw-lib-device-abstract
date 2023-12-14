@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport.Stream.Socket;
 
@@ -11,12 +13,16 @@ public class IrDAStream : SocketByteStream {
     public IrDAStream(ISocketStream stream, ILoggerFactory? loggerFactory = null) : base(stream, loggerFactory) {
     }
 
-    // public override async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
-    //     var buff = new byte[10000];
-    //     var len = await _stream.ReadAsync(buff, 0, BUFF_LENGTH, cancellationToken);
-    //     
-    //     var data = new byte[len];
-    //     for (var i = 0; i < len; i++) data[i] = buff[i];
-    //     return data;
-    // }
+    /// <inheritdoc />
+    public override int BuffLength { get; set; } = 10000;
+
+    /// <inheritdoc />
+    public override async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
+        var buff = new byte[BuffLength];
+        var len = await Stream.ReadAsync(buff, 0, BuffLength, cancellationToken);
+        
+        var data = new byte[len];
+        for (var i = 0; i < len; i++) data[i] = buff[i];
+        return data;
+    }
 }

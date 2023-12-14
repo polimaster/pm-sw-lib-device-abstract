@@ -10,12 +10,15 @@ namespace Polimaster.Device.Abstract.Transport.Stream.Socket;
 /// </summary>
 public class SocketByteStream : IDeviceStream<byte[]> {
     private readonly ILogger? _logger;
-    private readonly ISocketStream _stream;
+    /// <summary>
+    /// Underlying stream
+    /// </summary>
+    protected readonly ISocketStream Stream;
     
     /// <summary>
     /// Buffer length while reading stream
     /// </summary>
-    public int BuffLength { get; set; } = 256;
+    public virtual int BuffLength { get; set; } = 256;
 
     /// <summary>
     /// 
@@ -23,15 +26,15 @@ public class SocketByteStream : IDeviceStream<byte[]> {
     /// <param name="stream"></param>
     /// <param name="loggerFactory"></param>
     public SocketByteStream(ISocketStream stream, ILoggerFactory? loggerFactory = null) {
-        _stream = stream;
+        Stream = stream;
         _logger = loggerFactory?.CreateLogger(GetType());
     }
 
     /// <inheritdoc />
     public virtual async Task WriteAsync(byte[] buffer, CancellationToken cancellationToken) {
         _logger?.LogDebug("Call {F} with: {V} bytes", nameof(WriteAsync), buffer.Length);
-        await _stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
-        await _stream.FlushAsync(cancellationToken);
+        await Stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
+        await Stream.FlushAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -41,12 +44,12 @@ public class SocketByteStream : IDeviceStream<byte[]> {
         var result = new List<byte>();
         var buffer = new byte[BuffLength];
         do {
-            var bytes = await _stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+            var bytes = await Stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
             if (bytes == 0) continue;
-
+        
             result.AddRange(buffer);
-        } while (_stream.DataAvailable);
-
+        } while (Stream.DataAvailable);
+        
         return result.ToArray();
     }
 }
