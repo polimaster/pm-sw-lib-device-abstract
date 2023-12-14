@@ -4,14 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Abstract"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Abstract.Tests", "Polimaster.Device.Abstract.Tests\Polimaster.Device.Abstract.Tests.csproj", "{1F7D4873-C68E-4977-AA25-800253A36B45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Transport.Http", "Polimaster.Device.Transport.Http\Polimaster.Device.Transport.Http.csproj", "{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Transport.Win.Usb", "Polimaster.Device.Transport.Win.Usb\Polimaster.Device.Transport.Win.Usb.csproj", "{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Transport.Win.IrDA", "Polimaster.Device.Transport.Win.IrDA\Polimaster.Device.Transport.Win.IrDA.csproj", "{02C04A78-59DF-4A2B-BF17-A93271519811}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polimaster.Device.Transport.Win.Usb.Tests", "Polimaster.Device.Transport.Win.Usb.Tests\Polimaster.Device.Transport.Win.Usb.Tests.csproj", "{04405BDE-D9B7-468E-8CDD-0D8FE9CA55C5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,21 +18,5 @@ Global
 		{1F7D4873-C68E-4977-AA25-800253A36B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F7D4873-C68E-4977-AA25-800253A36B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F7D4873-C68E-4977-AA25-800253A36B45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F34A14E0-46F4-4D5F-BC32-59990B05D9F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D51DC46B-5C18-4FE3-9A6A-E70BF093BF05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{02C04A78-59DF-4A2B-BF17-A93271519811}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02C04A78-59DF-4A2B-BF17-A93271519811}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02C04A78-59DF-4A2B-BF17-A93271519811}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02C04A78-59DF-4A2B-BF17-A93271519811}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04405BDE-D9B7-468E-8CDD-0D8FE9CA55C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04405BDE-D9B7-468E-8CDD-0D8FE9CA55C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04405BDE-D9B7-468E-8CDD-0D8FE9CA55C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04405BDE-D9B7-468E-8CDD-0D8FE9CA55C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
