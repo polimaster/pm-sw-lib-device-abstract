@@ -11,14 +11,14 @@ public interface IHasBattery {
     /// <summary>
     /// Status of device battery
     /// </summary>
-    BatteryStatus BatteryStatus { get; }
+    BatteryStatus? BatteryStatus { get; }
 
     /// <summary>
     /// Read battery status from device
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="token"></param>
     /// <returns><see cref="BatteryStatus"/></returns>
-    Task<BatteryStatus> RefreshBatteryStatus(CancellationToken cancellationToken = new());
+    Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token = new());
 }
 
 /// <summary>
