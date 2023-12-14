@@ -11,11 +11,13 @@ namespace Polimaster.Device.Transport.Win.IrDA;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Transport.AClient{T,TConnectionParams}" />
 public class IrDAClient : AClient<byte[], IrDaDevice> {
-    
-    private InTheHand.Net.Sockets.IrDAClient? _wrapped;
+    /// <summary>
+    /// Underlying wrapped IrDA client
+    /// </summary>
+    protected InTheHand.Net.Sockets.IrDAClient? Wrapped;
     
     /// <inheritdoc />
-    public override bool Connected =>  _wrapped is { Connected: true };
+    public override bool Connected =>  Wrapped is { Connected: true };
     
     /// <inheritdoc />
     public IrDAClient(IrDaDevice @params, ILoggerFactory? loggerFactory) : base(@params, loggerFactory) {
@@ -24,30 +26,30 @@ public class IrDAClient : AClient<byte[], IrDaDevice> {
     /// <inheritdoc />
     public override void Close() {
         try {
-            _wrapped?.Close();
-            _wrapped?.Dispose();
+            Wrapped?.Close();
+            Wrapped?.Dispose();
         } finally {
-            _wrapped = null;
+            Wrapped = null;
         }
     }
 
     /// <inheritdoc />
     public override void Reset() {
         Close();
-        _wrapped = new InTheHand.Net.Sockets.IrDAClient();
+        Wrapped = new InTheHand.Net.Sockets.IrDAClient();
     }
 
     /// <inheritdoc />
     public override IDeviceStream<byte[]> GetStream() {
-        if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
-        return new IrDAStream(new SocketWrapper(_wrapped.Client, true), LoggerFactory);
+        if (Wrapped is not { Connected: true }) throw new DeviceClientException($"{Wrapped?.GetType().Name} is closed or null");
+        return new IrDAStream(new SocketWrapper(Wrapped.Client, true), LoggerFactory);
     }
 
     /// <inheritdoc />
     public override void Open() {
-        if (_wrapped is { Connected: true }) return;
+        if (Wrapped is { Connected: true }) return;
         Reset();
-        _wrapped?.Connect(Params.Name);
+        Wrapped?.Connect(Params.Name);
     }
 
     /// <inheritdoc />

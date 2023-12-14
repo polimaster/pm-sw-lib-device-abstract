@@ -33,7 +33,7 @@ public abstract class IrDADiscovery : ATransportDiscovery {
             var di = IrDAClient.DiscoverDevices(DeviceIdentifier);
             var res = di.Select(device => new IrDATransport(new IrDAClient(device, LoggerFactory), LoggerFactory));
             
-            Found?.Invoke(res.ToList());
+            Found?.Invoke(res);
         } finally { _inDiscoveringState = false; }
     }
     
