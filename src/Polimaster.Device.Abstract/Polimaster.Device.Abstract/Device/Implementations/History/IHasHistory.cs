@@ -1,4 +1,4 @@
-﻿using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+﻿using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 

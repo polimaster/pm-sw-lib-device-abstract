@@ -1,51 +1,65 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
 /// Device transport layer (USB, Tcp, Bluetooth etc)
 /// </summary>
-public interface ITransport : IDisposable {
+public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <summary>
     /// Connection identifier
     /// </summary>
     string ConnectionId { get; }
 
     /// <summary>
-    /// Open device stream reader/writer
+    /// Indicates connection will be closed
     /// </summary>
+    public event Action? Closing;
+
+    /// <summary>
+    /// Open device connection
+    /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IDeviceStream> Open();
+    Task OpenAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Open device connection
+    /// </summary>
+    void Open();
 
     /// <summary>
     /// Close connection
     /// </summary>
-    Task Close();
+    void Close();
 
     /// <summary>
-    /// Occurs when connection opened
+    /// Execute command
     /// </summary>
-    Action? Opened { get; set; }
+    /// <param name="command">Command to execute</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task Exec(ICommand command, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Occurs when connection closed
+    /// Write data with <see cref="IDataWriter{T}"/>
     /// </summary>
-    Action? Closed { get; set; }
-}
-
-/// <inheritdoc cref="ITransport"/>
-/// <typeparam name="TConnectionParams">Parameters while connecting to device</typeparam>
-/// <typeparam name="TClient">Client type</typeparam>
-public interface ITransport<out TClient, out TConnectionParams> : ITransport
-    where TClient : IClient<TConnectionParams>, new() {
+    /// <param name="writer"><see cref="IDataWriter{T}"/></param>
+    /// <param name="data">Data to write</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <typeparam name="TData">Type of data</typeparam>
+    /// <returns></returns>
+    Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken);
+    
     /// <summary>
-    /// Transport client
+    /// Read data with <see cref="IDataReader{T}"/>
     /// </summary>
-    TClient? Client { get; }
-
-    /// <summary>
-    /// Parameters for connection
-    /// </summary>
-    TConnectionParams? ConnectionParams { get; }
+    /// <param name="reader"><see cref="IDataReader{T}"/></param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <typeparam name="TData">Type of data</typeparam>
+    /// <returns></returns>
+    Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken);
 }

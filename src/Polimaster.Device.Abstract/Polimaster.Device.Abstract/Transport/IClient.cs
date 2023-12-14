@@ -1,23 +1,20 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
 /// Client which make connection to device
 /// </summary>
-/// <typeparam name="TConnectionParams">Type of device connection parameters</typeparam>
-public interface IClient<in TConnectionParams> : IDisposable {
+/// <typeparam name="T">Type for <see cref="IDeviceStream{T}"/></typeparam>
+public interface IClient<T> : IDisposable, IStringify {
+
     /// <summary>
     /// Returns true if client connected
     /// </summary>
     bool Connected { get; }
-
-    /// <summary>
-    /// Logger factory
-    /// </summary>
-    ILoggerFactory? LoggerFactory { get; set; }
 
     /// <summary>
     /// Close connection
@@ -27,29 +24,23 @@ public interface IClient<in TConnectionParams> : IDisposable {
     /// <summary>
     /// Get device stream for read/write operations
     /// </summary>
-    /// <returns><see cref="IDeviceStream"/></returns>
-    Task<IDeviceStream> GetStream();
+    /// <returns><see cref="IDeviceStream{T}"/></returns>
+    IDeviceStream<T> GetStream();
 
     /// <summary>
     /// Open connection
     /// </summary>
-    /// <param name="connectionParams"></param>
-    void Open(TConnectionParams connectionParams);
+    void Open();
 
     /// <summary>
     /// Open connection
     /// </summary>
-    /// <param name="connectionParams"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    Task OpenAsync(TConnectionParams connectionParams);
+    Task OpenAsync(CancellationToken token);
 
     /// <summary>
-    /// Occurs when connection opened
+    /// Reset internal connection
     /// </summary>
-    Action? Opened { get; set; }
-
-    /// <summary>
-    /// Occurs when connection closed
-    /// </summary>
-    Action? Closed { get; set; }
+    void Reset();
 }

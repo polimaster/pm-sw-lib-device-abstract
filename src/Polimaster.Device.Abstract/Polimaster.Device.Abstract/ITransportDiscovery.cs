@@ -25,10 +25,10 @@ public interface ITransportDiscovery : IDisposable {
     /// <summary>
     /// Occurs when device found on interface
     /// </summary>
-    Action<IEnumerable<ITransport>>? Found { get; set; }
+    public event Action<IEnumerable<ITransport>>? Found;
 
     /// <summary>
     /// Occurs when device detached from interface
     /// </summary>
-    Action<IEnumerable<ITransport>>? Lost { get; set; }
+    public event Action<IEnumerable<ITransport>>? Lost;
 }

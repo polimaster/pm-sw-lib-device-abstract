@@ -1,11 +1,32 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class AClient<TConnectionParams> : IClient<TConnectionParams> {
+public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IStringify {
+    /// <summary>
+    /// Logger factory
+    /// </summary>
+    protected ILoggerFactory? LoggerFactory { get; }
+
+    /// <summary>
+    /// Connection parameters
+    /// </summary>
+    protected readonly TConnectionParams Params;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="params">Connection parameters</param>
+    /// <param name="loggerFactory"></param>
+    protected AClient(TConnectionParams @params, ILoggerFactory? loggerFactory) {
+        LoggerFactory = loggerFactory;
+        Params = @params;
+    }
+
     /// <inheritdoc />
     public abstract void Dispose();
 
@@ -13,23 +34,21 @@ public abstract class AClient<TConnectionParams> : IClient<TConnectionParams> {
     public abstract bool Connected { get; }
 
     /// <inheritdoc />
-    public ILoggerFactory? LoggerFactory { get; set; }
-
-    /// <inheritdoc />
     public abstract void Close();
 
     /// <inheritdoc />
-    public abstract Task<IDeviceStream> GetStream();
+    public abstract IDeviceStream<T> GetStream();
 
     /// <inheritdoc />
-    public abstract void Open(TConnectionParams connectionParams);
+    public abstract void Open();
+
+    /// <param name="token"></param>
+    /// <inheritdoc />
+    public abstract Task OpenAsync(CancellationToken token);
 
     /// <inheritdoc />
-    public abstract Task OpenAsync(TConnectionParams connectionParams);
+    public abstract void Reset();
 
-    /// <inheritdoc />
-    public abstract Action? Opened { get; set; }
-
-    /// <inheritdoc />
-    public abstract Action? Closed { get; set; }
+    /// <inheritdoc cref="IStringify.ToString" />
+    public override string ToString() => Params.ToString();
 }

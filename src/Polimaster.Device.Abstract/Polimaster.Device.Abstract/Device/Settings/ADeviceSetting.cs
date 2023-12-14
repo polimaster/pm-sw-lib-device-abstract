@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
-using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Device.Commands;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -13,20 +13,37 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
-    /// <inheritdoc />
-    public virtual ICommand<T>? ReadCommand { get; set; }
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="reader">Command for read data</param>
+    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
+    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null) {
+        Reader = reader;
+        Writer = writer;
+    }
+
+    /// <summary>
+    /// Command for read data
+    /// </summary>
+    protected IDataReader<T> Reader { get; }
+
+    /// <summary>
+    /// Command for write data
+    /// </summary>
+    protected IDataWriter<T>? Writer { get; }
 
     /// <inheritdoc />
-    public virtual ICommand<T>? WriteCommand { get; set; }
+    public bool ReadOnly => Writer == null;
 
     /// <inheritdoc />
-    public bool ReadOnly => WriteCommand == null;
-
-    /// <inheritdoc />
-    public virtual T? Value { get; set; }
+    public abstract T? Value { get; set; }
 
     /// <inheritdoc />
     public bool IsDirty { get; protected set; }
+
+    /// <inheritdoc />
+    public abstract bool IsSynchronized { get; protected set; }
 
     /// <inheritdoc />
     public bool IsValid => ValidationErrors == null || !ValidationErrors.Any();
@@ -35,16 +52,27 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public bool IsError => Exception != null;
 
     /// <inheritdoc />
-    public IEnumerable<SettingValidationException>? ValidationErrors { get; protected set; }
+    public IEnumerable<ValidationResult>? ValidationErrors { get; protected set; }
 
     /// <inheritdoc />
     public Exception? Exception { get; protected set; }
 
     /// <inheritdoc />
-    public abstract Task Read(CancellationToken cancellationToken);
+    public abstract Task Read(ITransport transport, CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    public abstract Task CommitChanges(CancellationToken cancellationToken);
+    public abstract Task Reset(ITransport transport, CancellationToken cancellationToken);
+
+    /// <inheritdoc />
+    public abstract Task CommitChanges(ITransport transport, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.
+    /// </summary>
+    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
+    protected virtual void Validate(T? value) {
+        ValidationErrors = null;
+    }
 
     /// <inheritdoc />
     public override string? ToString() {

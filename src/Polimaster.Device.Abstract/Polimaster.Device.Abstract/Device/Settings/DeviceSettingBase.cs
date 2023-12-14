@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Commands.Interfaces;
-using Polimaster.Device.Abstract.Device.Settings.Interfaces;
+using Polimaster.Device.Abstract.Device.Commands;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -11,84 +11,79 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 /// <inheritdoc cref="IDeviceSetting{T}"/>
 public class DeviceSettingBase<T> : ADeviceSetting<T> {
+    /// <summary>
+    /// Set limit of threads to 1, witch can access to read/write operations at a time. 
+    /// </summary>
+    protected SemaphoreSlim Semaphore { get; } = new(1, 1);
+    
+    /// <inheritdoc />
+    protected DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null) : base(reader, writer) {
+    }
 
     private T? _value;
-    private ICommand<T>? _readCommand;
-    private ICommand<T>? _writeCommand;
-
-    /// <inheritdoc />
-    public override ICommand<T>? ReadCommand {
-        get => _readCommand;
-        set {
-            _readCommand = value;
-            if (_readCommand == null) return;
-            SetValue(_readCommand.Value);
-            _readCommand.ValueChanged += SetValue;
-        }
-    }
-
-    /// <inheritdoc />
-    public override ICommand<T>? WriteCommand {
-        get => _writeCommand;
-        set {
-            _writeCommand = value;
-            if (_writeCommand == null) return;
-            SetValue(_writeCommand.Value);
-            _writeCommand.ValueChanged += SetValue;
-        }
-    }
 
     /// <inheritdoc />
     public override T? Value {
         get => _value;
         set {
-            try {
-                Validate(value);
-                SetValue(value);
-                IsDirty = true;
-            } catch (Exception e) {
-                Exception = e;
-            }
+            Validate(value);
+            SetValue(value);
+            IsDirty = true;
         }
     }
+
+    /// <inheritdoc />
+    public override bool IsSynchronized { get; protected set; }
 
     /// <summary>
     /// Set value from internal Read/Write commands
     /// </summary>
     /// <param name="value"></param>
-    protected void SetValue(T? value) {
+    private void SetValue(T? value) {
         IsDirty = false;
         Exception = null;
         _value = value;
     }
 
     /// <inheritdoc />
-    public override async Task Read(CancellationToken cancellationToken) {
+    public override Task Read(ITransport transport, CancellationToken cancellationToken) {
+        return IsSynchronized ? Task.CompletedTask : Reset(transport, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public override async Task Reset(ITransport transport, CancellationToken cancellationToken) {
+        await Semaphore.WaitAsync(cancellationToken);
         try {
-            if (ReadCommand != null) await ReadCommand.Send(cancellationToken);
+            var v = await transport.Read(Reader, cancellationToken);
+            SetValue(v);
+            IsSynchronized = true;
         } catch (Exception e) {
+            IsSynchronized = false;
             SetValue(default);
             Exception = e;
+        } finally {
+            Semaphore.Release();
         }
     }
 
     /// <inheritdoc />
-    public override async Task CommitChanges(CancellationToken cancellationToken) {
-        if (!IsDirty || !IsValid) return;
+    public override async Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
+        if (!IsValid) {
+            Exception = new Exception($"Value of {GetType().Name} is not valid");
+            return;
+        }
+        
+        if (Writer == null || !IsDirty) return;
+        await Semaphore.WaitAsync(cancellationToken);
         try {
-            if (WriteCommand != null) {
-                WriteCommand.Value = Value;
-                await WriteCommand.Send(cancellationToken);
-            }
+            await transport.Write(Writer!, Value, cancellationToken);
+            IsDirty = false;
+            Exception = null;
+            IsSynchronized = true;
         } catch (Exception e) {
             Exception = e;
+        } finally {
+            Semaphore.Release();
         }
     }
-    
-    /// <summary>
-    /// Validates value while assignment.
-    /// </summary>
-    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
-    /// <exception cref="SettingValidationException">Throws if validation failed.</exception>
-    protected virtual void Validate(T? value) { }
 }

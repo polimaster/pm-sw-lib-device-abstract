@@ -20,7 +20,7 @@ public struct DeviceInfo {
     /// <summary>
     /// Full model specification. Eq "PM1703 MOIIBT"
     /// </summary>
-    public string ModelFull => $"{Model}-{Modification}";
+    public string ModelFull => $"{Model}{Modification}";
 
     /// <summary>
     /// Serial number
