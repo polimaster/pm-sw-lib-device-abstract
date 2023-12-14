@@ -43,7 +43,7 @@ public abstract class CommandBase<T> {
     /// <exception cref="ArgumentException"></exception>
     protected IDeviceStream<T> GetStream<TStream>(TStream stream) {
         if (stream is not IDeviceStream<T> str)
-            throw new ArgumentException($"{typeof(T)} is not suitable for reading/writing from {typeof(TStream)}");
+            throw new ArgumentException($"Parameter {nameof(stream)} should implement {typeof(IDeviceStream<T>)}, actual type is {typeof(TStream)}");
         return str;
     }
 }
