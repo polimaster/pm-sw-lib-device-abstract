@@ -18,7 +18,10 @@ jobs:
           source-url: https://nuget.pkg.github.com/polimaster/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: dotnet build src/Polimaster.Device.Abstract/Polimaster.Device.Abstract --configuration Release
+      - name: Build
+        run: dotnet build src/Polimaster.Device.Abstract/Polimaster.Device.Abstract --configuration Release
+      - name: Run tests
+        run: dotnet test src/Polimaster.Device.Abstract/Polimaster.Device.Abstract.Tests
       - name: Create the package
         run: dotnet pack src/Polimaster.Device.Abstract/Polimaster.Device.Abstract --configuration Release
       - name: Publish the package to GPR
