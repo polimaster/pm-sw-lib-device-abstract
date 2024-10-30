@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Transport.Stream;
@@ -8,7 +9,7 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Commands;
 public class MyParamReaderTest : Mocks {
     
     [Fact]
-    public async void ShouldRead() {
+    public async Task ShouldRead() {
         var cmd = new MyParamReader(LOGGER_FACTORY);
         var stream = new Mock<IDeviceStream<string>>();
 
@@ -18,7 +19,7 @@ public class MyParamReaderTest : Mocks {
     }
     
     [Fact]
-    public async void ShouldFailOnWrite() {
+    public async Task ShouldFailOnWrite() {
         // should throw exception because type of command and stream type is differs (string != int)
         var cmd = new MyParamReader(LOGGER_FACTORY);
         var stream = new Mock<IDeviceStream<int>>();

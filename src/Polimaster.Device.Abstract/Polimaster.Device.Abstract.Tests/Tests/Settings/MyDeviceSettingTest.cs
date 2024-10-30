@@ -77,7 +77,7 @@ public class MyDeviceSettingTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldRead() {
+    public async Task ShouldRead() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var p = new MyParam();
@@ -92,7 +92,7 @@ public class MyDeviceSettingTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldWrite() {
+    public async Task ShouldWrite() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
@@ -108,7 +108,7 @@ public class MyDeviceSettingTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldNotWriteValue() {
+    public async Task ShouldNotWriteValue() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
@@ -128,7 +128,7 @@ public class MyDeviceSettingTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldNotWriteReadOnly() {
+    public async Task ShouldNotWriteReadOnly() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
 
@@ -143,7 +143,7 @@ public class MyDeviceSettingTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldCatchExceptionWhileWrite() {
+    public async Task ShouldCatchExceptionWhileWrite() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
@@ -164,7 +164,7 @@ public class MyDeviceSettingTest : Mocks {
     
 
     [Fact]
-    public async void ShouldCatchExceptionWhileRead() {
+    public async Task ShouldCatchExceptionWhileRead() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var ex = new Exception();
