@@ -44,15 +44,15 @@ public class MyDevice : ADevice, IMyDevice {
         // building device commands and settings
         var paramReader = new MyParamReader(loggerFactory);
         var paramWriter = new MyParamWriter(loggerFactory);
-        MyParamSetting = new MyParamSetting(paramReader, paramWriter);
+        MyParamSetting = new MyParamSetting(paramReader, paramWriter, "MyParamSettingGroup");
 
         var plainReader = new PlainReader(loggerFactory);
         var plainWriter = new PlainWriter(loggerFactory);
-        StringSetting = new StringSetting(plainReader, plainWriter);
+        StringSetting = new StringSetting(plainReader, plainWriter, "StringSettingGroup");
 
         var intervalReader = new HistoryIntervalReader(loggerFactory);
         var intervalWriter = new HistoryIntervalWriter(loggerFactory);
-        HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter);
+        HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter, "Behaviour");
 
         HistoryManager = new HistoryManager(loggerFactory);
 

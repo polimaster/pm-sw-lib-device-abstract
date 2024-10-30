@@ -11,6 +11,11 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 /// <typeparam name="T">Type of setting <see cref="Value"/></typeparam>
 public interface IDeviceSetting<T> {
+
+    /// <summary>
+    /// Setting group name. On example, "Sound", "Behaviour", "Gamma" etc.
+    /// </summary>
+    string? GroupName { get; }
     
     /// <summary>
     /// Indicates if setting is readonly

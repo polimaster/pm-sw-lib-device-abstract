@@ -17,7 +17,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     protected SemaphoreSlim Semaphore { get; } = new(1, 1);
     
     /// <inheritdoc />
-    protected DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null) : base(reader, writer) {
+    protected DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null, string? groupName = null) : base(reader, writer, groupName) {
     }
 
     private T? _value;

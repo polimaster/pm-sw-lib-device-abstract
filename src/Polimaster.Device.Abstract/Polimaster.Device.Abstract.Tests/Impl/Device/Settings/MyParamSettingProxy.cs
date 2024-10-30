@@ -5,7 +5,7 @@ namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 
 public class MyParamSettingProxy(IDeviceSetting<MyParam?> proxiedSetting)
     : ADeviceSettingProxy<string, MyParam?>(proxiedSetting) {
-    public static readonly string[] FORBIDDEN_VALUES = { "string1", "string2" };
+    public static readonly string[] FORBIDDEN_VALUES = ["string1", "string2"];
 
     protected override string? GetProxied() {
         return ProxiedSetting.Value?.Value;
@@ -23,12 +23,12 @@ public class MyParamSettingProxy(IDeviceSetting<MyParam?> proxiedSetting)
         base.Validate(value);
         
         if (value == null) {
-            ValidationErrors = new[] { new ValidationResult("Value is null") };
+            ValidationErrors = [new ValidationResult("Value is null")];
             return;
         }
 
         if (FORBIDDEN_VALUES.Contains(value)) {
-            ValidationErrors = new[] { new ValidationResult($"{value} cant be set as value") };
+            ValidationErrors = [new ValidationResult($"{value} cant be set as value")];
         }
     }
 }

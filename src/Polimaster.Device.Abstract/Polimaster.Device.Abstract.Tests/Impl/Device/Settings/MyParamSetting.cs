@@ -7,13 +7,13 @@ using ValidationResult = Polimaster.Device.Abstract.Device.Settings.ValidationRe
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings; 
 
-public class MyParamSetting(IDataReader<MyParam?> reader, IDataWriter<MyParam?>? writer = null)
-    : DeviceSettingBase<MyParam?>(reader, writer) {
+public class MyParamSetting(IDataReader<MyParam?> reader, IDataWriter<MyParam?>? writer = null, string? groupName = null)
+    : DeviceSettingBase<MyParam?>(reader, writer, groupName) {
     protected override void Validate(MyParam? value) {
         base.Validate(value);
         
         if (value == null) {
-            ValidationErrors = new[] { new ValidationResult("Value is null") };
+            ValidationErrors = [new ValidationResult("Value is null")];
             return;
         }
         
