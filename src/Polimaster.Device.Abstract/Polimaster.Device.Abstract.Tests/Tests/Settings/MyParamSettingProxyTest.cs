@@ -11,6 +11,17 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 public class MyParamSettingProxyTest : Mocks {
 
     [Fact]
+    public void ShouldHaveDefaultBehaviour() {
+        var reader = new Mock<IDataReader<MyParam?>>();
+        var setting = new MyParamSetting(reader.Object);
+
+        var proxy = new MyParamSettingProxy(setting);
+
+        Assert.Null(proxy.Behaviour?.GroupName);
+        Assert.Equal(SettingAccessLevel.BASE, proxy.Behaviour?.AccessLevel);
+    }
+
+    [Fact]
     public void ShouldHaveValidBehaviour() {
         var reader = new Mock<IDataReader<MyParam?>>();
         var setting = new MyParamSetting(reader.Object);
