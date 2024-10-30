@@ -8,6 +8,21 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 
 public class MyDeviceSettingTest : Mocks {
+
+    [Fact]
+    public void ShouldHaveGroupName() {
+        var reader = new Mock<IDataReader<MyParam?>>();
+        var writer = new Mock<IDataWriter<MyParam?>>();
+        const string groupName = "MyGroup";
+
+        var p = new MyParam { Value = "test" };
+        var setting = new MyParamSetting(reader.Object, writer.Object, groupName) {
+            Value = p
+        };
+
+        Assert.Equal(groupName, setting.GroupName);
+    }
+
     
     [Fact]
     public void ShouldSetProperty() {
