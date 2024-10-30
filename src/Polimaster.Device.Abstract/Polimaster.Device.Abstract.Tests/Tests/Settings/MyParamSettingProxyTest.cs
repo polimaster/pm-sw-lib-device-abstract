@@ -8,6 +8,19 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests.Tests.Settings; 
 
 public class MyParamSettingProxyTest : Mocks {
+
+    [Fact]
+    public void ShouldHaveGroupName() {
+        var reader = new Mock<IDataReader<MyParam?>>();
+        var setting = new MyParamSetting(reader.Object);
+        const string groupName = "MyGroup";
+
+        var proxy = new MyParamSettingProxy(setting, groupName);
+
+        Assert.Equal(groupName, proxy.GroupName);
+    }
+
+
     [Fact]
     public async void ShouldSetProperty() {
         var reader = new Mock<IDataReader<MyParam?>>();
