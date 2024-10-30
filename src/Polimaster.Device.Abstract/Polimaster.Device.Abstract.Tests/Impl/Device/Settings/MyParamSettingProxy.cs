@@ -3,8 +3,8 @@ using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 
-public class MyParamSettingProxy(IDeviceSetting<MyParam?> proxiedSetting)
-    : ADeviceSettingProxy<string, MyParam?>(proxiedSetting) {
+public class MyParamSettingProxy(IDeviceSetting<MyParam?> proxiedSetting, ISettingBehaviour? settingBehaviour = null)
+    : ADeviceSettingProxy<string, MyParam?>(proxiedSetting, settingBehaviour) {
     public static readonly string[] FORBIDDEN_VALUES = ["string1", "string2"];
 
     protected override string? GetProxied() {

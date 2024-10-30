@@ -2,12 +2,38 @@
 using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Settings; 
 
 public class MyParamSettingProxyTest : Mocks {
+
+    [Fact]
+    public void ShouldHaveDefaultBehaviour() {
+        var reader = new Mock<IDataReader<MyParam?>>();
+        var setting = new MyParamSetting(reader.Object);
+
+        var proxy = new MyParamSettingProxy(setting);
+
+        Assert.Null(proxy.Behaviour?.GroupName);
+        Assert.Equal(SettingAccessLevel.BASE, proxy.Behaviour?.AccessLevel);
+    }
+
+    [Fact]
+    public void ShouldHaveValidBehaviour() {
+        var reader = new Mock<IDataReader<MyParam?>>();
+        var setting = new MyParamSetting(reader.Object);
+        var myParamBehaviour = new SettingBehaviourBase(SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
+
+        var proxy = new MyParamSettingProxy(setting, myParamBehaviour);
+
+        Assert.Equal(myParamBehaviour.GroupName, proxy.Behaviour?.GroupName);
+        Assert.Equal(myParamBehaviour.AccessLevel, proxy.Behaviour?.AccessLevel);
+    }
+
+
     [Fact]
     public async void ShouldSetProperty() {
         var reader = new Mock<IDataReader<MyParam?>>();
