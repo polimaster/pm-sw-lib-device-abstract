@@ -6,7 +6,7 @@
         <AssemblyName>Polimaster.Device.Abstract</AssemblyName>
         <Company>Polimaster</Company>
         <Authors>Polimaster</Authors>
-        <Version>$(Version)</Version>
+        <Version>1.0.1</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
@@ -15,6 +15,7 @@
         <PackageProjectUrl>https://github.com/polimaster/pm-sw-lib-device-abstract</PackageProjectUrl>
         <RepositoryUrl>https://github.com/polimaster/pm-sw-lib-device-abstract</RepositoryUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
         
     </PropertyGroup>
     <ItemGroup>
