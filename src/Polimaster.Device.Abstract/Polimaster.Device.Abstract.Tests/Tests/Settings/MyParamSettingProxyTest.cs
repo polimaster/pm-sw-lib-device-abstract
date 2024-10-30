@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
 using Polimaster.Device.Abstract.Transport;
 
@@ -10,14 +11,15 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 public class MyParamSettingProxyTest : Mocks {
 
     [Fact]
-    public void ShouldHaveGroupName() {
+    public void ShouldHaveValidBehaviour() {
         var reader = new Mock<IDataReader<MyParam?>>();
         var setting = new MyParamSetting(reader.Object);
-        const string groupName = "MyGroup";
+        var myParamBehaviour = new SettingBehaviourBase(SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
 
-        var proxy = new MyParamSettingProxy(setting, groupName);
+        var proxy = new MyParamSettingProxy(setting, myParamBehaviour);
 
-        Assert.Equal(groupName, proxy.GroupName);
+        Assert.Equal(myParamBehaviour.GroupName, proxy.Behaviour?.GroupName);
+        Assert.Equal(myParamBehaviour.AccessLevel, proxy.Behaviour?.AccessLevel);
     }
 
 

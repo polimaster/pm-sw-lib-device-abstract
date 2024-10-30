@@ -16,10 +16,10 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     /// Constructor
     /// </summary>
     /// <param name="proxiedSetting">Setting to proxy</param>
-    /// <param name="groupName">Setting <see cref="GroupName"/></param>
-    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, string? groupName = null) {
+    /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
+    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingBehaviour? settingBehaviour = null) {
         ProxiedSetting = proxiedSetting;
-        GroupName = groupName;
+        Behaviour = settingBehaviour ?? new SettingBehaviourBase();
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     protected IDeviceSetting<TProxied> ProxiedSetting { get; }
 
     /// <inheritdoc />
-    public string? GroupName { get; }
+    public ISettingBehaviour? Behaviour { get; }
 
     /// <inheritdoc />
     public bool ReadOnly => ProxiedSetting.ReadOnly;

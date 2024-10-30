@@ -41,18 +41,23 @@ public class MyDevice : ADevice, IMyDevice {
         _timeReader = new TimeReader(loggerFactory);
         _timeWriter = new TimeWriter(loggerFactory);
 
+        var myParamBehaviour = new SettingBehaviourBase(SettingAccessLevel.BASE, "MyParamSettingGroup");
+
         // building device commands and settings
         var paramReader = new MyParamReader(loggerFactory);
         var paramWriter = new MyParamWriter(loggerFactory);
-        MyParamSetting = new MyParamSetting(paramReader, paramWriter, "MyParamSettingGroup");
+        MyParamSetting = new MyParamSetting(paramReader, paramWriter, myParamBehaviour);
 
+
+        var stringSettingBehaviour = new SettingBehaviourBase(SettingAccessLevel.EXTENDED, "StringSettingGroup");
         var plainReader = new PlainReader(loggerFactory);
         var plainWriter = new PlainWriter(loggerFactory);
-        StringSetting = new StringSetting(plainReader, plainWriter, "StringSettingGroup");
+        StringSetting = new StringSetting(plainReader, plainWriter, stringSettingBehaviour);
 
+        var historyIntervalBehaviour = new SettingBehaviourBase(SettingAccessLevel.ADVANCED, "Behaviour");
         var intervalReader = new HistoryIntervalReader(loggerFactory);
         var intervalWriter = new HistoryIntervalWriter(loggerFactory);
-        HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter, "Behaviour");
+        HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter, historyIntervalBehaviour);
 
         HistoryManager = new HistoryManager(loggerFactory);
 

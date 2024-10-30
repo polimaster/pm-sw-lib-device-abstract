@@ -18,11 +18,11 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// </summary>
     /// <param name="reader">Command for read data</param>
     /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
-    /// <param name="groupName">Setting <see cref="GroupName"/></param>
-    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, string? groupName = null) {
+    /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
+    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingBehaviour? settingBehaviour = null) {
         Reader = reader;
         Writer = writer;
-        GroupName = groupName;
+        Behaviour = settingBehaviour ?? new SettingBehaviourBase();
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     protected IDataWriter<T>? Writer { get; }
 
     /// <inheritdoc />
-    public string? GroupName { get; }
+    public ISettingBehaviour? Behaviour { get; }
 
     /// <inheritdoc />
     public bool ReadOnly => Writer == null;
