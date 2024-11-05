@@ -17,6 +17,7 @@ public class MyParamSettingProxyTest : Mocks {
 
         var proxy = new MyParamSettingProxy(setting);
 
+        Assert.Null(proxy.Behaviour?.Name);
         Assert.Null(proxy.Behaviour?.GroupName);
         Assert.Equal(SettingAccessLevel.BASE, proxy.Behaviour?.AccessLevel);
     }
@@ -25,10 +26,15 @@ public class MyParamSettingProxyTest : Mocks {
     public void ShouldHaveValidBehaviour() {
         var reader = new Mock<IDataReader<MyParam?>>();
         var setting = new MyParamSetting(reader.Object);
-        var myParamBehaviour = new SettingBehaviourBase(SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
+        var myParamBehaviour = new SettingBehaviourBase {
+            AccessLevel = SettingAccessLevel.EXTENDED,
+            Name = "MyParamSettingProxyTest",
+            GroupName = "MyParamSettingGroup"
+        };
 
         var proxy = new MyParamSettingProxy(setting, myParamBehaviour);
 
+        Assert.Equal(myParamBehaviour.Name, proxy.Behaviour?.Name);
         Assert.Equal(myParamBehaviour.GroupName, proxy.Behaviour?.GroupName);
         Assert.Equal(myParamBehaviour.AccessLevel, proxy.Behaviour?.AccessLevel);
     }
