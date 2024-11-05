@@ -17,6 +17,7 @@ public class MyParamSettingProxyTest : Mocks {
 
         var proxy = new MyParamSettingProxy(setting);
 
+        Assert.Null(proxy.Behaviour?.Name);
         Assert.Null(proxy.Behaviour?.GroupName);
         Assert.Equal(SettingAccessLevel.BASE, proxy.Behaviour?.AccessLevel);
     }
@@ -25,17 +26,22 @@ public class MyParamSettingProxyTest : Mocks {
     public void ShouldHaveValidBehaviour() {
         var reader = new Mock<IDataReader<MyParam?>>();
         var setting = new MyParamSetting(reader.Object);
-        var myParamBehaviour = new SettingBehaviourBase(SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
+        var myParamBehaviour = new SettingBehaviourBase {
+            AccessLevel = SettingAccessLevel.EXTENDED,
+            Name = "MyParamSettingProxyTest",
+            GroupName = "MyParamSettingGroup"
+        };
 
         var proxy = new MyParamSettingProxy(setting, myParamBehaviour);
 
+        Assert.Equal(myParamBehaviour.Name, proxy.Behaviour?.Name);
         Assert.Equal(myParamBehaviour.GroupName, proxy.Behaviour?.GroupName);
         Assert.Equal(myParamBehaviour.AccessLevel, proxy.Behaviour?.AccessLevel);
     }
 
 
     [Fact]
-    public async void ShouldSetProperty() {
+    public async Task ShouldSetProperty() {
         var reader = new Mock<IDataReader<MyParam?>>();
         var transport = new Mock<ITransport>();
         
@@ -51,7 +57,7 @@ public class MyParamSettingProxyTest : Mocks {
     }
     
     [Fact]
-    public async void ShouldValidateValue() {
+    public async Task ShouldValidateValue() {
         var reader = new Mock<IDataReader<MyParam?>>();
         var transport = new Mock<ITransport>();
 
@@ -74,7 +80,7 @@ public class MyParamSettingProxyTest : Mocks {
     }
     
     [Fact]
-    public async void ShouldRead() {
+    public async Task ShouldRead() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var p = new MyParam { Value = "123456" };
@@ -90,7 +96,7 @@ public class MyParamSettingProxyTest : Mocks {
     }
     
     [Fact]
-    public async void ShouldWrite() {
+    public async Task ShouldWrite() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
@@ -107,7 +113,7 @@ public class MyParamSettingProxyTest : Mocks {
     
     
     [Fact]
-    public async void ShouldNotWriteValue() {
+    public async Task ShouldNotWriteValue() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
@@ -136,7 +142,7 @@ public class MyParamSettingProxyTest : Mocks {
     
     
     [Fact]
-    public async void ShouldCatchExceptionWhileWrite() {
+    public async Task ShouldCatchExceptionWhileWrite() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
@@ -159,7 +165,7 @@ public class MyParamSettingProxyTest : Mocks {
     
     
     [Fact]
-    public async void ShouldCatchExceptionWhileRead() {
+    public async Task ShouldCatchExceptionWhileRead() {
         var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var ex = new Exception();

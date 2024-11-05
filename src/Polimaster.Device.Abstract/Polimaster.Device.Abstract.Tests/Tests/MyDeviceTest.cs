@@ -40,7 +40,7 @@ public class MyDeviceTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldExecute() {
+    public async Task ShouldExecute() {
         var transport = new Mock<ITransport>();
         var f = new Mock<Func<ITransport, Task>>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
@@ -54,7 +54,7 @@ public class MyDeviceTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldCatchExceptionOnExecute() {
+    public async Task ShouldCatchExceptionOnExecute() {
         var transport = new Mock<ITransport>();
         var exception = new Exception();
         var f = new Mock<Func<ITransport, Task>>();
@@ -74,7 +74,7 @@ public class MyDeviceTest : Mocks {
     
 
     [Fact]
-    public async void ShouldReadInfo() {
+    public async Task ShouldReadInfo() {
         var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
@@ -87,7 +87,7 @@ public class MyDeviceTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldReadSettings() {
+    public async Task ShouldReadSettings() {
         var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
@@ -111,7 +111,7 @@ public class MyDeviceTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldWriteSettings() {
+    public async Task ShouldWriteSettings() {
         var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         

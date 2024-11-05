@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System.Threading.Tasks;
+using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 using Polimaster.Device.Abstract.Transport.Stream.Socket;
 
@@ -7,7 +8,7 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Transport;
 public class MyDeviceStreamTest : Mocks {
     
     [Fact]
-    public async void ShouldWrite() {
+    public async Task ShouldWrite() {
         var mock = new Mock<ISocketStream>();
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
         const string str = "TEST_0";
@@ -18,7 +19,7 @@ public class MyDeviceStreamTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldRead() {
+    public async Task ShouldRead() {
         var mock = new Mock<ISocketStream>();
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
         

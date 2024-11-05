@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
@@ -32,7 +33,7 @@ public class MyTransportTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldOpenAsync() {
+    public async Task ShouldOpenAsync() {
         var client = new Mock<IClient<string>>();
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
 
@@ -57,7 +58,7 @@ public class MyTransportTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldWrite() {
+    public async Task ShouldWrite() {
         var client = new Mock<IClient<string>>();
         var stream = new Mock<IDeviceStream<string>>();
         client.Setup(e => e.GetStream()).Returns(stream.Object);
@@ -73,7 +74,7 @@ public class MyTransportTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldRead() {
+    public async Task ShouldRead() {
         var client = new Mock<IClient<string>>();
         var stream = new Mock<IDeviceStream<string>>();
         client.Setup(e => e.GetStream()).Returns(stream.Object);
@@ -91,7 +92,7 @@ public class MyTransportTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldExec() {
+    public async Task ShouldExec() {
         var client = new Mock<IClient<string>>();
         var stream = new Mock<IDeviceStream<string>>();
         client.Setup(e => e.GetStream()).Returns(stream.Object);
@@ -106,7 +107,7 @@ public class MyTransportTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldResetClientOnFail() {
+    public async Task ShouldResetClientOnFail() {
         var client = new Mock<IClient<string>>();
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception("FAIL");

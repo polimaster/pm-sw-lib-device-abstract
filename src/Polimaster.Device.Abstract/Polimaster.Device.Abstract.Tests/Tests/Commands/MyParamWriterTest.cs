@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
@@ -10,7 +11,7 @@ public class MyParamWriterTest : Mocks {
     private readonly MyParam _param = new() { CommandPid = 1, Value = "VALUE" };
 
     [Fact]
-    public async void ShouldWrite() {
+    public async Task ShouldWrite() {
         var cmd = new MyParamWriter(LOGGER_FACTORY);
         var stream = new Mock<IDeviceStream<string>>();
 
@@ -21,7 +22,7 @@ public class MyParamWriterTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldFailOnWrite() {
+    public async Task ShouldFailOnWrite() {
         // should throw exception because type of command and stream type is differs (string != int)
         var cmd = new MyParamWriter(LOGGER_FACTORY);
         var stream = new Mock<IDeviceStream<int>>();

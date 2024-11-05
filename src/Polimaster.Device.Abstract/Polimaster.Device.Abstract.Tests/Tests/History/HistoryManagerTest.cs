@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Tests.Tests.History;
 
 public class HistoryManagerTest : Mocks {
     [Fact]
-    public async void ShouldReadHistory() {
+    public async Task ShouldReadHistory() {
         var transport = new Mock<ITransport>();
         transport.Setup(e => e.Read(It.IsAny<HistoryReader>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(new HistoryReaderChunk { HasReachedTheEnd = true }));
@@ -28,7 +28,7 @@ public class HistoryManagerTest : Mocks {
     }
 
     [Fact]
-    public async void ShouldWipeHistory() {
+    public async Task ShouldWipeHistory() {
         var transport = new Mock<ITransport>();
         var hm = new HistoryManager(LOGGER_FACTORY);
 
