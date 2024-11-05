@@ -41,4 +41,10 @@ public struct DeviceInfo {
     /// Firmware version
     /// </summary>
     public Version? FirmwareVersion;
+
+
+    /// <summary>
+    /// Date of manufacturing
+    /// </summary>
+    public DateTime? ManufacturingDate;
 }
