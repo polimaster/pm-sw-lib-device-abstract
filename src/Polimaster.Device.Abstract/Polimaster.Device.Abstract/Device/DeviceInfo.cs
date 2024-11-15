@@ -47,4 +47,9 @@ public struct DeviceInfo {
     /// Date of manufacturing
     /// </summary>
     public DateTime? ManufacturingDate;
+
+    /// <summary>
+    /// Date of calibration
+    /// </summary>
+    public DateTime? CalibrationDate;
 }
