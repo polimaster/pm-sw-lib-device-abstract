@@ -120,7 +120,7 @@ public abstract class ATransport<T> : ITransport {
 
 
     /// <inheritdoc />
-    public async Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken) {
+    public virtual async Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken) {
         Logger?.LogDebug("Executing {Name}", writer.GetType().Name);
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try { await Execute(); } catch {
@@ -141,7 +141,7 @@ public abstract class ATransport<T> : ITransport {
     }
 
     /// <inheritdoc />
-    public async Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken) {
+    public virtual async Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken) {
         Logger?.LogDebug("Executing {Name}", reader.GetType().Name);
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try { return await Execute(); } catch {
