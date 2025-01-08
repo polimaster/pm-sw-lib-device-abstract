@@ -28,7 +28,7 @@ public struct DeviceInfo {
     public string? Serial;
 
     /// <summary>
-    /// Firmware number or ID
+    /// Global unique identifier for device
     /// </summary>
     public string? Id;
 
