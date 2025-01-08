@@ -73,7 +73,7 @@ public abstract class ADeviceManager<TDiscovery, TDevice> : ADeviceManager<TDevi
     }
 
     /// <summary>
-    /// When override fill <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Attached"/> action.
+    /// When override remove from <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.
     /// </summary>
     /// <param name="transports"></param>
     protected virtual void OnLost(IEnumerable<ITransport> transports) {
@@ -90,7 +90,7 @@ public abstract class ADeviceManager<TDiscovery, TDevice> : ADeviceManager<TDevi
     }
 
     /// <summary>
-    /// When override remove from <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.
+    /// When override fill <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Attached"/> action.
     /// </summary>
     /// <param name="transports"></param>
     protected virtual void OnFound(IEnumerable<ITransport> transports) {
