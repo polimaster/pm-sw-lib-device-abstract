@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -10,12 +11,11 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// </summary>
 /// <param name="loggerFactory"></param>
 /// <typeparam name="T"></typeparam>
-public abstract class ACommandVerified<T>(ILoggerFactory? loggerFactory) : ACommand<T>(loggerFactory) {
+public abstract class ACommandVerified<T>(ITransport<T> transport, ILoggerFactory? loggerFactory) : ACommand<T>(transport, loggerFactory) {
     /// <inheritdoc />
-    public override async Task Exec<TStream>(TStream stream, CancellationToken cancellationToken) {
-        await base.Exec(stream, cancellationToken);
-        var str = GetStream(stream);
-        var response = await str.ReadAsync(cancellationToken);
+    public override async Task Exec(CancellationToken cancellationToken) {
+        await base.Exec(cancellationToken);
+        var response = await Transport.ReadAsync(cancellationToken);
         try {
             Verify(response);
         } catch (Exception e) {

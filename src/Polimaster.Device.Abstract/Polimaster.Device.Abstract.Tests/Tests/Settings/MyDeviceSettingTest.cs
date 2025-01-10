@@ -84,22 +84,20 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldRead() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var p = new MyParam();
-        transport.Setup(e => e.Read(reader.Object, Token)).Returns(Task.FromResult(p)!);
+        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p)!);
         
         var setting = new MyParamSetting(reader.Object);
 
-        await setting.Read(transport.Object, Token);
+        await setting.Read(Token);
         
-        transport.Verify(e => e.Read(reader.Object, Token));
+        reader.Verify(e => e.Read(Token));
         Assert.Equal(p, setting.Value);
     }
 
     [Fact]
     public async Task ShouldWrite() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
 
@@ -108,14 +106,13 @@ public class MyDeviceSettingTest : Mocks {
             Value = p
         };
 
-        await setting.CommitChanges(transport.Object, Token);
+        await setting.CommitChanges(Token);
         
-        transport.Verify(e => e.Write(writer.Object, p, Token));
+        writer.Verify(e => e.Write(p, Token));
     }
 
     [Fact]
     public async Task ShouldNotWriteValue() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
 
@@ -124,18 +121,18 @@ public class MyDeviceSettingTest : Mocks {
             Value = p
         };
 
-        await setting.CommitChanges(transport.Object, Token);
+        await setting.CommitChanges(Token);
         
         Assert.True(setting.IsError);
         Assert.True(setting.IsDirty);
         Assert.NotNull(setting.Exception);
         
-        transport.Verify(e => e.Write(writer.Object, p, Token), Times.Never);
+        writer.Verify(e => e.Write(p, Token), Times.Never);
     }
 
     [Fact]
     public async Task ShouldNotWriteReadOnly() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<ITransport<string>>();
         var reader = new Mock<IDataReader<MyParam?>>();
 
         var p = new MyParam { Value = "test" };
@@ -143,14 +140,13 @@ public class MyDeviceSettingTest : Mocks {
             Value = p
         };
 
-        await setting.CommitChanges(transport.Object, Token);
+        await setting.CommitChanges(Token);
         
-        transport.Verify(e => e.Write(It.IsAny<IDataWriter<MyParam>>(), p, Token), Times.Never);
+        transport.Verify(e => e.WriteAsync(It.IsAny<string>(), Token), Times.Never);
     }
 
     [Fact]
     public async Task ShouldCatchExceptionWhileWrite() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var writer = new Mock<IDataWriter<MyParam?>>();
         
@@ -160,9 +156,9 @@ public class MyDeviceSettingTest : Mocks {
         };
 
         var ex = new Exception();
-        transport.Setup(e => e.Write(writer.Object, p, Token)).ThrowsAsync(ex);
+        writer.Setup(e => e.Write(It.IsAny<MyParam>(), Token)).ThrowsAsync(ex);
         
-        await setting.CommitChanges(transport.Object, Token);
+        await setting.CommitChanges(Token);
         
         Assert.Equal(ex, setting.Exception);
         Assert.True(setting.IsError);
@@ -171,15 +167,14 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldCatchExceptionWhileRead() {
-        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
         var ex = new Exception();
         
-        transport.Setup(e => e.Read(reader.Object, Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
+        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         
         var setting = new MyParamSetting(reader.Object);
 
-        await setting.Read(transport.Object, Token);
+        await setting.Read(Token);
         Assert.Equal(ex, setting.Exception);
         Assert.Null(setting.Value);
         Assert.True(setting.IsError);

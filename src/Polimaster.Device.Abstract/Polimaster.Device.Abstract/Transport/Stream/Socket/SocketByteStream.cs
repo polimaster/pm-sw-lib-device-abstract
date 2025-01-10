@@ -9,7 +9,11 @@ namespace Polimaster.Device.Abstract.Transport.Stream.Socket;
 /// Device byte stream implementation
 /// </summary>
 public class SocketByteStream : IDeviceStream<byte[]> {
+    /// <summary>
+    /// See <see cref="ILogger"/>
+    /// </summary>
     private readonly ILogger? _logger;
+
     /// <summary>
     /// Underlying stream
     /// </summary>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -100,18 +99,18 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     }
 
     /// <inheritdoc />
-    public virtual Task Reset(ITransport transport, CancellationToken cancellationToken) {
-        return ProxiedSetting.Reset(transport, cancellationToken);
+    public virtual Task Reset(CancellationToken cancellationToken) {
+        return ProxiedSetting.Reset(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual Task CommitChanges(ITransport transport, CancellationToken cancellationToken) {
+    public virtual Task CommitChanges(CancellationToken cancellationToken) {
         if (ValidationErrors != null && ValidationErrors.Any()) return Task.CompletedTask;
-        return ProxiedSetting.CommitChanges(transport, cancellationToken);
+        return ProxiedSetting.CommitChanges(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual Task Read(ITransport transport, CancellationToken cancellationToken) {
-        return ProxiedSetting.Read(transport, cancellationToken);
+    public virtual Task Read(CancellationToken cancellationToken) {
+        return ProxiedSetting.Read(cancellationToken);
     }
 }

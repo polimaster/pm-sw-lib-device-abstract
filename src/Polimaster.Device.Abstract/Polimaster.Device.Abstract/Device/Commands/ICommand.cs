@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -11,9 +10,7 @@ public interface ICommand {
     /// <summary>
     /// Sends command to device stream
     /// </summary>
-    /// <param name="stream">Transport <see cref="IDeviceStream{T}"/></param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <typeparam name="TStream">Stream type</typeparam>
     /// <returns></returns>
-    Task Exec<TStream>(TStream stream, CancellationToken cancellationToken);
+    Task Exec(CancellationToken cancellationToken);
 }

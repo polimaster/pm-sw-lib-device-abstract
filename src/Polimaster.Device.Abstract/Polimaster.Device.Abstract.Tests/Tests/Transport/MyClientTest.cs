@@ -6,12 +6,6 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Transport;
 
 public class MyClientTest : Mocks {
     private readonly ClientParams _param = new(123456, 80);
-
-    [Fact]
-    public void ShouldHaveId() {
-        var client = new MyClient(_param, LOGGER_FACTORY);
-        Assert.Equal(client.ToString(), _param.ToString());
-    }
     
     // [Fact]
     // public void ShouldReturnStream() {

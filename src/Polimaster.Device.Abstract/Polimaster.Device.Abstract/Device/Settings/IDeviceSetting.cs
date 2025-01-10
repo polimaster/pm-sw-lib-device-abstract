@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -61,19 +60,18 @@ public interface IDeviceSetting<T> {
     /// Reads setting from device
     /// </summary>
     /// <returns></returns>
-    Task Read(ITransport transport, CancellationToken cancellationToken = new());
+    Task Read(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Force to read setting from device
     /// </summary>
     /// <returns></returns>
-    Task Reset(ITransport transport, CancellationToken cancellationToken = new());
+    Task Reset(CancellationToken cancellationToken = new());
 
     /// <summary>
     /// Writes <see cref="Value"/> to device if it <see cref="IsDirty"/>
     /// </summary>
-    /// <param name="transport"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task CommitChanges(ITransport transport, CancellationToken cancellationToken = new());
+    Task CommitChanges(CancellationToken cancellationToken = new());
 }

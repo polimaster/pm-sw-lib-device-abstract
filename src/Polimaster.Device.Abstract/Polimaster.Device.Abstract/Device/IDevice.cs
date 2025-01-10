@@ -12,12 +12,18 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device with identifier
 /// </summary>
-public interface IDevice : IDisposable, IEquatable<IDevice> {
+/// <typeparam name="T">Transport type</typeparam>
+public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> {
     
     /// <summary>
     /// Unique identifier of device
     /// </summary>
     string Id { get; }
+
+    /// <summary>
+    /// <see cref="ITransport{T}"/> for executing device commands
+    /// </summary>
+    ITransport<T> Transport { get; }
 
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
@@ -48,7 +54,7 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// <summary>
     /// Writes settings to device.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates thru this properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
+    /// Method iterates <see cref="IDevice{T}"/> properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -59,25 +65,4 @@ public interface IDevice : IDisposable, IEquatable<IDevice> {
     /// </summary>
     /// <returns></returns>
     IEnumerable<PropertyInfo> GetSettings();
-
-    /// <summary>
-    /// Read/write device data with managed transport connection. Connection will be opened and closed after execution.
-    /// This prevents situation when opened connection times out while idle and following calls throws exceptions.
-    /// </summary>
-    /// <example>
-    /// await device.Execute(async (transport) =&gt; {
-    ///     await transport.Read(reader);
-    /// });
-    /// </example>
-    /// <param name="action">Function to call</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task Execute(Func<ITransport, Task> action, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Verify if current device has the same transport
-    /// </summary>
-    /// <param name="transport"></param>
-    /// <returns></returns>
-    bool HasSame(ITransport transport);
 }

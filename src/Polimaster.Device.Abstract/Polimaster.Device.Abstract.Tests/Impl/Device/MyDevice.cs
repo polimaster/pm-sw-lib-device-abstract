@@ -18,7 +18,7 @@ public interface IMyDevice : IHasBattery, IHasDose, IHasTemperatureSensor, IHasH
     IDeviceSetting<string?> StringSetting { get; }
 }
 
-public class MyDevice : ADevice, IMyDevice {
+public class MyDevice : ADevice<string>, IMyDevice {
     public IDeviceSetting<ushort?> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; private set; }
@@ -33,13 +33,13 @@ public class MyDevice : ADevice, IMyDevice {
     private readonly TimeReader _timeReader;
     private readonly TimeWriter _timeWriter;
 
-    public MyDevice(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
-        _infoReader = new DeviceInfoReader(loggerFactory);
-        _batteryStatusReader = new BatteryStatusReader(loggerFactory);
-        _resetDose = new ResetDose(loggerFactory);
-        _temperatureReader = new TemperatureReader(loggerFactory);
-        _timeReader = new TimeReader(loggerFactory);
-        _timeWriter = new TimeWriter(loggerFactory);
+    public MyDevice(ITransport<string> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+        _infoReader = new DeviceInfoReader(Transport, loggerFactory);
+        _batteryStatusReader = new BatteryStatusReader(Transport, loggerFactory);
+        _resetDose = new ResetDose(Transport, loggerFactory);
+        _temperatureReader = new TemperatureReader(Transport, loggerFactory);
+        _timeReader = new TimeReader(Transport, loggerFactory);
+        _timeWriter = new TimeWriter(Transport, loggerFactory);
 
         var myParamBehaviour = new SettingBehaviourBase {
             AccessLevel = SettingAccessLevel.BASE,
@@ -47,8 +47,8 @@ public class MyDevice : ADevice, IMyDevice {
         };
 
         // building device commands and settings
-        var paramReader = new MyParamReader(loggerFactory);
-        var paramWriter = new MyParamWriter(loggerFactory);
+        var paramReader = new MyParamReader(Transport, loggerFactory);
+        var paramWriter = new MyParamWriter(Transport, loggerFactory);
         MyParamSetting = new MyParamSetting(paramReader, paramWriter, myParamBehaviour);
 
 
@@ -56,53 +56,41 @@ public class MyDevice : ADevice, IMyDevice {
             AccessLevel = SettingAccessLevel.EXTENDED,
             GroupName = "StringSettingGroup"
         };
-        var plainReader = new PlainReader(loggerFactory);
-        var plainWriter = new PlainWriter(loggerFactory);
+        var plainReader = new PlainReader(Transport, loggerFactory);
+        var plainWriter = new PlainWriter(Transport, loggerFactory);
         StringSetting = new StringSetting(plainReader, plainWriter, stringSettingBehaviour);
 
         var historyIntervalBehaviour = new SettingBehaviourBase {
             AccessLevel = SettingAccessLevel.ADVANCED,
             GroupName = "Behaviour"
         };
-        var intervalReader = new HistoryIntervalReader(loggerFactory);
-        var intervalWriter = new HistoryIntervalWriter(loggerFactory);
+        var intervalReader = new HistoryIntervalReader(Transport, loggerFactory);
+        var intervalWriter = new HistoryIntervalWriter(Transport, loggerFactory);
         HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter, historyIntervalBehaviour);
 
-        HistoryManager = new HistoryManager(loggerFactory);
+        HistoryManager = new HistoryManager(Transport, loggerFactory);
 
     }
 
 
     public override async Task<DeviceInfo?> ReadDeviceInfo(CancellationToken token = new()) {
-        DeviceInfo = null;
-        await Execute(async transport => { DeviceInfo = await transport.Read(_infoReader, token); }, token);
+        DeviceInfo = await _infoReader.Read(token);
         return DeviceInfo;
     }
 
     public async Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token = new()) {
-        BatteryStatus = null;
-        await Execute(async transport => { BatteryStatus = await transport.Read(_batteryStatusReader, token); }, token);
+        BatteryStatus = await _batteryStatusReader.Read(token);
         return BatteryStatus;
     }
 
-    public async Task ResetDose(CancellationToken token = new()) {
-        await Execute(async transport => { await transport.Exec(_resetDose, token); }, token);
-    }
+    public async Task ResetDose(CancellationToken token = new()) => await _resetDose.Exec(token);
 
-    public async Task<double?> ReadTemperature(CancellationToken token = new()) {
-        double? t = null;
-        await Execute(async transport => { t = await transport.Read(_temperatureReader, token); }, token);
-        return t;
-    }
+    public async Task<double?> ReadTemperature(CancellationToken token = new()) => await _temperatureReader.Read(token);
 
-    public async Task SetTime(CancellationToken token = new(), DateTime? dateTime = default) {
+    public async Task SetTime(CancellationToken token = new(), DateTime? dateTime = null) {
         var t = dateTime ?? DateTime.Now;
-        await Execute(async transport => { await transport.Write(_timeWriter, t, token); }, token);
+        await _timeWriter.Write(t, token);
     }
 
-    public async Task<DateTime?> GetTime(CancellationToken token = new()) {
-        DateTime? t = null;
-        await Execute(async transport => { t = await transport.Read(_timeReader, token); }, token);
-        return t;
-    }
+    public async Task<DateTime?> GetTime(CancellationToken token = new()) => await _timeReader.Read(token);
 }

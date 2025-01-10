@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
-public interface IMyDeviceDiscovery : ITransportDiscovery;
+public interface IMyDeviceDiscovery : ITransportDiscovery<ClientParams>;
 
-public class MyDeviceDiscovery(ILoggerFactory? loggerFactory) : ATransportDiscovery(loggerFactory), IMyDeviceDiscovery {
+public class MyDeviceDiscovery(ILoggerFactory? loggerFactory) : ATransportDiscovery<ClientParams>(loggerFactory), IMyDeviceDiscovery {
     protected override int Sleep => 1;
     
     private bool _inProgress;
@@ -22,20 +21,20 @@ public class MyDeviceDiscovery(ILoggerFactory? loggerFactory) : ATransportDiscov
         _inProgress = true;
 
         // simulate found
-        IEnumerable<ITransport> found = new List<ITransport> {
-            new MyTransport(new MyClient(new ClientParams(1243, 80), LoggerFactory), LoggerFactory)
+        IEnumerable<ClientParams> found = new List<ClientParams> {
+            new(1243, 80)
         };
         Found?.Invoke(found);
         
         // simulate lost
-        IEnumerable<ITransport> lost = new List<ITransport> {
-            new MyTransport(new MyClient(new ClientParams(4567, 80), LoggerFactory), LoggerFactory)
+        IEnumerable<ClientParams> lost = new List<ClientParams> {
+            new(4567, 80)
         };
         Lost?.Invoke(lost);
         
         _inProgress = false;
     }
 
-    public override event Action<IEnumerable<ITransport>>? Found;
-    public override event Action<IEnumerable<ITransport>>? Lost;
+    public override event Action<IEnumerable<ClientParams>>? Found;
+    public override event Action<IEnumerable<ClientParams>>? Lost;
 }

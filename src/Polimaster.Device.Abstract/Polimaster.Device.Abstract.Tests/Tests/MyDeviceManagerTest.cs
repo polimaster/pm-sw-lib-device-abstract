@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
+using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests; 
@@ -17,16 +17,17 @@ public class MyDeviceManagerTest : Mocks {
         manager.Attached += device => {
             devAttached = device;
         };
-        
-        var transport = new Mock<ITransport>();
-        var connectionId = Guid.NewGuid().ToString();
-        transport.Setup(e => e.ConnectionId).Returns(connectionId);
-        var list = new List<ITransport> { transport.Object };
+
+        var p = new ClientParams(1, 1);
+        var client = new MyClient(p, null);
+
+        var transport = new Mock<ITransport<string>>();
+        transport.Setup(e => e.Client).Returns(client);
+        var list = new List<ClientParams> { new(1,1) };
         
         disco.Raise(e => e.Found += null, list);
         Assert.Equal(list.Count, manager.Devices.Count);
-        Assert.Equal(connectionId, devAttached?.Id);
-        
+        Assert.Equal(client, devAttached?.Transport.Client);
         
         MyDevice? devRemoved = null;
         manager.Removed += device => {
@@ -35,7 +36,7 @@ public class MyDeviceManagerTest : Mocks {
         
         disco.Raise(e => e.Lost += null, list);
         Assert.Empty(manager.Devices);
-        Assert.Equal(connectionId, devRemoved?.Id);
+        Assert.Equal(client, devRemoved?.Transport.Client);
         
     }
     

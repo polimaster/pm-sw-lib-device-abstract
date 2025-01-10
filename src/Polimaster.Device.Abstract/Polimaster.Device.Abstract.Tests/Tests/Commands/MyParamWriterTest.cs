@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
-using Polimaster.Device.Abstract.Transport.Stream;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Commands;
 
@@ -12,25 +11,12 @@ public class MyParamWriterTest : Mocks {
 
     [Fact]
     public async Task ShouldWrite() {
-        var cmd = new MyParamWriter(LOGGER_FACTORY);
-        var stream = new Mock<IDeviceStream<string>>();
+        var transport = new Mock<ITransport<string>>();
+        var cmd = new MyParamWriter(transport.Object, LOGGER_FACTORY);
 
-        await cmd.Write(stream.Object, _param, Token);
+        await cmd.Write(_param, Token);
 
         var compiled = $"{Cmd.PREFIX}{_param.CommandPid}:{_param.Value}";
-        stream.Verify(e => e.WriteAsync(compiled, Token));
-    }
-
-    [Fact]
-    public async Task ShouldFailOnWrite() {
-        // should throw exception because type of command and stream type is differs (string != int)
-        var cmd = new MyParamWriter(LOGGER_FACTORY);
-        var stream = new Mock<IDeviceStream<int>>();
-
-        Exception? exception = null;
-        try { await cmd.Write(stream.Object, _param, Token); } catch (Exception e) { exception = e; }
-
-        Assert.NotNull(exception);
-        Assert.IsType<ArgumentException>(exception);
+        transport.Verify(e => e.WriteAsync(compiled, Token));
     }
 }

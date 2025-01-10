@@ -9,6 +9,9 @@ namespace Polimaster.Device.Abstract.Transport.Stream.Socket;
 /// Device string stream implementation
 /// </summary>
 public class SocketStringStream : IDeviceStream<string> {
+    /// <summary>
+    /// See <see cref="SocketByteStream"/>
+    /// </summary>
     private readonly SocketByteStream _stream;
     
     /// <summary>
