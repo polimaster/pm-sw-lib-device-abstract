@@ -54,8 +54,6 @@ public abstract class ATransport<T> : ITransport<T> {
         Client = client;
     }
 
-
-    /// <param name="cancellationToken"></param>
     /// <inheritdoc />
     public virtual async Task OpenAsync(CancellationToken cancellationToken) {
         if (Client.Connected) return;

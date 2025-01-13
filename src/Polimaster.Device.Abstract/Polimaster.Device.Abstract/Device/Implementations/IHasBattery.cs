@@ -16,9 +16,9 @@ public interface IHasBattery {
     /// <summary>
     /// Read battery status from device
     /// </summary>
-    /// <param name="token"></param>
+    /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <returns><see cref="BatteryStatus"/></returns>
-    Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token = new());
+    Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token);
 }
 
 /// <summary>

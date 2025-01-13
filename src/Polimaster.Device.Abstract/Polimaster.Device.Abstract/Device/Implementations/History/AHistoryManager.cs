@@ -14,36 +14,31 @@ public abstract class AHistoryManager<T, THistory> : IHistoryManager<THistory> {
     protected ITransport<T> Transport { get; }
 
     /// <summary>
-    /// Logger factory
-    /// </summary>
-    protected ILoggerFactory? LoggerFactory { get; }
-    /// <summary>
     /// Logger
     /// </summary>
-    protected ILogger? Logger { get; }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="transport"></param>
-    /// <param name="loggerFactory"></param>
-    protected AHistoryManager(ITransport<T> transport, ILoggerFactory? loggerFactory) {
-        Transport = transport;
-        LoggerFactory = loggerFactory;
-        Logger = loggerFactory?.CreateLogger(GetType());
-
-        Transport.Closing += Stop;
-    }
+    protected readonly ILogger? Logger;
 
     /// <inheritdoc />
     public abstract event Action<HistoryChunk<THistory>>? HasNext;
 
     /// <inheritdoc />
-    public abstract Task Read(CancellationToken token = new());
+    public abstract Task Read(CancellationToken token);
 
     /// <inheritdoc />
     public abstract void Stop();
 
     /// <inheritdoc />
-    public abstract Task Wipe(CancellationToken token = new());
+    public abstract Task Wipe(CancellationToken token);
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="transport"><see cref="ITransport{T}"/></param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
+    protected AHistoryManager(ITransport<T> transport, ILoggerFactory? loggerFactory) {
+        Transport = transport;
+        Logger = loggerFactory?.CreateLogger(GetType());
+
+        Transport.Closing += Stop;
+    }
 }

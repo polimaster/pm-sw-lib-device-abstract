@@ -59,19 +59,21 @@ public interface IDeviceSetting<T> {
     /// <summary>
     /// Reads setting from device
     /// </summary>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task Read(CancellationToken cancellationToken = new());
+    Task Read(CancellationToken cancellationToken);
 
     /// <summary>
     /// Force to read setting from device
     /// </summary>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task Reset(CancellationToken cancellationToken = new());
+    Task Reset(CancellationToken cancellationToken);
 
     /// <summary>
     /// Writes <see cref="Value"/> to device if it <see cref="IsDirty"/>
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task CommitChanges(CancellationToken cancellationToken = new());
+    Task CommitChanges(CancellationToken cancellationToken);
 }

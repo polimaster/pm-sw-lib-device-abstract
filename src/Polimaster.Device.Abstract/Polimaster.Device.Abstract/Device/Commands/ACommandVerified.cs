@@ -9,8 +9,8 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <summary>
 /// Command with verifying result returned from device
 /// </summary>
-/// <param name="loggerFactory"></param>
-/// <typeparam name="T"></typeparam>
+/// <param name="loggerFactory">Logger factory</param>
+/// <param name="transport"><see cref="ITransport{T}"/></param>
 public abstract class ACommandVerified<T>(ITransport<T> transport, ILoggerFactory? loggerFactory) : ACommand<T>(transport, loggerFactory) {
     /// <inheritdoc />
     public override async Task Exec(CancellationToken cancellationToken) {

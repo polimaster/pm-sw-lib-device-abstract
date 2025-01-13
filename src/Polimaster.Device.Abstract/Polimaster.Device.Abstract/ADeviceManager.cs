@@ -79,22 +79,22 @@ public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> 
     /// <summary>
     /// Create new device from found transport connection
     /// </summary>
-    /// <param name="transport"></param>
-    /// <returns></returns>
+    /// <param name="transport"><see cref="ITransport{T}"/></param>
+    /// <returns><see cref="IDevice{T}"/></returns>
     protected abstract TDevice CreateDevice(ITransport<T> transport);
 
     /// <summary>
     /// Create new transport connection
     /// </summary>
     /// <param name="client"></param>
-    /// <returns></returns>
+    /// <returns><see cref="ITransport{T}"/></returns>
     protected abstract ITransport<T> CreateTransport(IClient<T> client);
 
     /// <summary>
-    /// Create new client from <see cref="TConnectionParams"/>
+    /// Create new client from parameters
     /// </summary>
-    /// <param name="connectionParams"></param>
-    /// <returns></returns>
+    /// <param name="connectionParams">Client connection parameters</param>
+    /// <returns><see cref="IClient{T}"/></returns>
     protected abstract IClient<T> CreateClient(TConnectionParams connectionParams);
 
     /// <summary>

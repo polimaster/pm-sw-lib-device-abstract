@@ -11,7 +11,7 @@ public interface IDataWriter<in T> {
     /// <summary>
     /// Write data
     /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <param name="data">Data to write</param>
     /// <returns></returns>
     Task Write(T data, CancellationToken cancellationToken);

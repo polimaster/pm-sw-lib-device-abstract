@@ -24,7 +24,7 @@ public interface ITransport<T> : IDisposable {
     /// <summary>
     /// Open device connection
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task OpenAsync(CancellationToken cancellationToken);
 
@@ -42,14 +42,14 @@ public interface ITransport<T> : IDisposable {
     /// Write data with <see cref="IDataWriter{T}"/>
     /// </summary>
     /// <param name="data">Data to write</param>
-    /// <param name="cancellationToken">Cancellation token</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task WriteAsync(T data, CancellationToken cancellationToken);
     
     /// <summary>
     /// Read data with <see cref="IDataReader{T}"/>
     /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task<T> ReadAsync(CancellationToken cancellationToken);
 }

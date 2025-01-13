@@ -76,7 +76,7 @@ public class MyDeviceTest : Mocks {
         
         Assert.Null(dev.DeviceInfo);
         
-        await dev.ReadDeviceInfo();
+        await dev.ReadDeviceInfo(CancellationToken.None);
 
         Assert.NotNull(dev.DeviceInfo);
         transport.Verify(e => e.ReadAsync(It.IsAny<CancellationToken>()));

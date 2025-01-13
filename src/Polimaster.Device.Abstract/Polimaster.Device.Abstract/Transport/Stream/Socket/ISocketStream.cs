@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,17 +15,17 @@ public interface ISocketStream {
     bool DataAvailable { get; }
 
     /// <summary>
-    /// See <see cref="NetworkStream.WriteAsync(byte[],int,int,System.Threading.CancellationToken)"/>
+    /// See <see cref="Stream.WriteAsync(byte[],int,int,System.Threading.CancellationToken)"/>
     /// </summary>
     Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken);
 
     /// <summary>
-    /// See <see cref="NetworkStream.FlushAsync(System.Threading.CancellationToken)"/>
+    /// See <see cref="Stream.FlushAsync(System.Threading.CancellationToken)"/>
     /// </summary>
     Task FlushAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// See <see cref="NetworkStream.ReadAsync(byte[],int,int,System.Threading.CancellationToken)"/>
+    /// See <see cref="Stream.ReadAsync(byte[],int,int,System.Threading.CancellationToken)"/>
     /// </summary>
     Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken);
 }

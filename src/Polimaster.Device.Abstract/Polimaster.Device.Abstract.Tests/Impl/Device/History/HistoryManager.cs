@@ -17,7 +17,7 @@ public class HistoryManager(ITransport<string> transport, ILoggerFactory? logger
 
     public override event Action<HistoryChunk<HistoryRecord>>? HasNext;
 
-    public override async Task Read(CancellationToken token = new()) {
+    public override async Task Read(CancellationToken token) {
         if (_readCancellationToken != null) {
             Logger?.LogDebug("Reading history is already in progress");
             return;
@@ -48,6 +48,6 @@ public class HistoryManager(ITransport<string> transport, ILoggerFactory? logger
 
     public override void Stop() => _readCancellationToken?.Cancel();
 
-    public override async Task Wipe(CancellationToken token = new()) =>
+    public override async Task Wipe(CancellationToken token) =>
         await _historyWiper.Exec(token);
 }

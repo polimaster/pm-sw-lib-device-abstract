@@ -48,10 +48,10 @@ public abstract class ADevice<T> : IDevice<T> {
     
 
     /// <inheritdoc />
-    public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken = new());
+    public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    public async Task ReadAllSettings(CancellationToken cancellationToken = new()) {
+    public async Task ReadAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetSettings();
         foreach (var info in ds) {
@@ -61,7 +61,7 @@ public abstract class ADevice<T> : IDevice<T> {
     }
 
     /// <inheritdoc />
-    public async Task WriteAllSettings(CancellationToken cancellationToken = new()) {
+    public async Task WriteAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetSettings();
         foreach (var info in ds) {
@@ -71,11 +71,11 @@ public abstract class ADevice<T> : IDevice<T> {
     }
 
     /// <summary>
-    /// Execute method on device setting object
+    /// Execute method on device setting <see cref="IDeviceSetting{T}"/>
     /// </summary>
-    /// <param name="info"></param>
-    /// <param name="methodName"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="info">Target property</param>
+    /// <param name="methodName">Method to execute</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
         var method = info.PropertyType.GetMethod(methodName);
         var setting = info.GetValue(this);

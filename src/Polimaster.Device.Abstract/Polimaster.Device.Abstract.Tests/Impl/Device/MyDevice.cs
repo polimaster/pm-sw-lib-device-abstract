@@ -73,24 +73,24 @@ public class MyDevice : ADevice<string>, IMyDevice {
     }
 
 
-    public override async Task<DeviceInfo?> ReadDeviceInfo(CancellationToken token = new()) {
+    public override async Task<DeviceInfo?> ReadDeviceInfo(CancellationToken token) {
         DeviceInfo = await _infoReader.Read(token);
         return DeviceInfo;
     }
 
-    public async Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token = new()) {
+    public async Task<BatteryStatus?> RefreshBatteryStatus(CancellationToken token) {
         BatteryStatus = await _batteryStatusReader.Read(token);
         return BatteryStatus;
     }
 
-    public async Task ResetDose(CancellationToken token = new()) => await _resetDose.Exec(token);
+    public async Task ResetDose(CancellationToken token) => await _resetDose.Exec(token);
 
-    public async Task<double?> ReadTemperature(CancellationToken token = new()) => await _temperatureReader.Read(token);
+    public async Task<double?> ReadTemperature(CancellationToken token) => await _temperatureReader.Read(token);
 
-    public async Task SetTime(CancellationToken token = new(), DateTime? dateTime = null) {
+    public async Task SetTime(CancellationToken token, DateTime? dateTime = null) {
         var t = dateTime ?? DateTime.Now;
         await _timeWriter.Write(t, token);
     }
 
-    public async Task<DateTime?> GetTime(CancellationToken token = new()) => await _timeReader.Read(token);
+    public async Task<DateTime?> GetTime(CancellationToken token) => await _timeReader.Read(token);
 }

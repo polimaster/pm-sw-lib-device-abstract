@@ -10,7 +10,7 @@ public interface IHasTemperatureSensor {
     /// <summary>
     /// Read device temperature
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task<double?> ReadTemperature(CancellationToken cancellationToken = new());
+    Task<double?> ReadTemperature(CancellationToken cancellationToken);
 }

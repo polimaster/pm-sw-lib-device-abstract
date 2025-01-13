@@ -40,7 +40,7 @@ public interface IClient<T> : IDisposable, IEquatable<IClient<T>> {
     /// <summary>
     /// Open connection
     /// </summary>
-    /// <param name="token"></param>
+    /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task OpenAsync(CancellationToken token);
 
