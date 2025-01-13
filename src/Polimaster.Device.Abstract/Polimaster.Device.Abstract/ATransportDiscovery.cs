@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract;
 
 /// <inheritdoc />
-public abstract class ATransportDiscovery : ITransportDiscovery {
-    /// <summary>
-    /// 
-    /// </summary>
-    protected readonly ILoggerFactory? LoggerFactory;
-
+public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscovery<TConnectionParams> {
     /// <summary>
     /// Logger
     /// </summary>
@@ -24,14 +18,16 @@ public abstract class ATransportDiscovery : ITransportDiscovery {
     /// </summary>
     protected virtual int Sleep => 1000;
 
+    /// <summary>
+    /// Cancellation token source used in <see cref="Start"/>
+    /// </summary>
     private CancellationTokenSource? _watchTokenSource;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="loggerFactory"></param>
     protected ATransportDiscovery(ILoggerFactory? loggerFactory) {
-        LoggerFactory = loggerFactory;
         Logger = loggerFactory?.CreateLogger(GetType());
     }
 
@@ -61,10 +57,10 @@ public abstract class ATransportDiscovery : ITransportDiscovery {
     }
 
     /// <inheritdoc />
-    public abstract event Action<IEnumerable<ITransport>>? Found;
+    public abstract event Action<IEnumerable<TConnectionParams>>? Found;
 
     /// <inheritdoc />
-    public abstract event Action<IEnumerable<ITransport>>? Lost;
+    public abstract event Action<IEnumerable<TConnectionParams>>? Lost;
 
     /// <inheritdoc />
     public virtual void Dispose() {

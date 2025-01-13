@@ -10,7 +10,7 @@ public interface IHasDose {
     /// <summary>
     /// Resets accumulated dose on device
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task ResetDose(CancellationToken cancellationToken = new());
+    Task ResetDose(CancellationToken cancellationToken);
 }

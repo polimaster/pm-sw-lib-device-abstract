@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 
@@ -8,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 /// </summary>
 public abstract class ByteCommand : ACommand<byte[]>{
     /// <inheritdoc />
-    protected ByteCommand(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected ByteCommand(ITransport<byte[]> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }
 
@@ -17,6 +18,6 @@ public abstract class ByteCommand : ACommand<byte[]>{
 /// </summary>
 public abstract class ByteCommandVerified : ACommandVerified<byte[]>{
     /// <inheritdoc />
-    protected ByteCommandVerified(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected ByteCommandVerified(ITransport<byte[]> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

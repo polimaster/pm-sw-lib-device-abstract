@@ -11,7 +11,7 @@ public class Pm1703 : ADevice, IPm1703 {
     public BatteryStatus BatteryStatus { get; private set; }
     public IDeviceSetting<ushort?> HistoryInterval { get; private set; } = null!;
 
-    public override async Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken = new()) {
+    public override async Task<DeviceInfo> ReadDeviceInfo(CancellationToken cancellationToken) {
         var readSerialNumber = CommandBuilder.Build<SerialNumberRead>();
         await readSerialNumber.Send(cancellationToken);
 
@@ -36,13 +36,13 @@ public class Pm1703 : ADevice, IPm1703 {
             .Build<ushort?>();
     }
 
-    public async Task SetTime(CancellationToken cancellationToken = new(), DateTime? dateTime = default) {
+    public async Task SetTime(CancellationToken cancellationToken, DateTime? dateTime = default) {
         var c = CommandBuilder.Build<TimeWrite>();
         c.Value = dateTime ?? DateTime.Now;
         await c.Send(cancellationToken);
     }
 
-    public async Task<DateTime?> GetTime(CancellationToken cancellationToken = new()) {
+    public async Task<DateTime?> GetTime(CancellationToken cancellationToken) {
         var c = CommandBuilder.Build<TimeRead>();
         await c.Send(cancellationToken);
         return c.Value;

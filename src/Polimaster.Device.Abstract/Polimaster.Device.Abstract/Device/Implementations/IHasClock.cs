@@ -11,15 +11,15 @@ public interface IHasClock {
     /// <summary>
     /// Sets date and time on device
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <param name="dateTime">Time</param>
     /// <returns></returns>
-    Task SetTime(CancellationToken cancellationToken = new(), DateTime? dateTime = default);
+    Task SetTime(CancellationToken cancellationToken, DateTime? dateTime = null);
 
     /// <summary>
     /// Reads current date and time from device
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>Current date and time on device</returns>
-    Task<DateTime?> GetTime(CancellationToken cancellationToken = new());
+    Task<DateTime?> GetTime(CancellationToken cancellationToken);
 }

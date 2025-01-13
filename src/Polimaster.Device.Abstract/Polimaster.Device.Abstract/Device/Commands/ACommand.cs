@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Exceptions;
-using Polimaster.Device.Abstract.Transport.Stream;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -12,16 +12,15 @@ public abstract class ACommand<T> : CommandBase<T>, ICommand {
     /// <summary>
     /// Compile command
     /// </summary>
-    /// <returns>Compiled command to send to <see cref="IDeviceStream{T}"/></returns>
+    /// <returns>Compiled command to send to <see cref="Transport"/></returns>
     /// <exception cref="CommandCompilationException"></exception>
     protected abstract T Compile();
 
     /// <inheritdoc />
-    public virtual async Task Exec<TStream>(TStream stream, CancellationToken cancellationToken) {
-        var str = GetStream(stream);
+    public virtual async Task Exec(CancellationToken cancellationToken) {
         LogCommand(nameof(Exec));
         try {
-            await str.WriteAsync(Compile(), cancellationToken);
+            await Transport.WriteAsync(Compile(), cancellationToken);
         } catch (Exception e) {
             LogError(e, nameof(Exec));
             throw;
@@ -29,6 +28,6 @@ public abstract class ACommand<T> : CommandBase<T>, ICommand {
     }
 
     /// <inheritdoc />
-    protected ACommand(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected ACommand(ITransport<T> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

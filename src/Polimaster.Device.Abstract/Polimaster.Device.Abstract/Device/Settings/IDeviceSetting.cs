@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
 /// Device setting
 /// </summary>
-/// <typeparam name="T">Type of setting <see cref="Value"/></typeparam>
+/// <typeparam name="T">Data type of <see cref="Value"/></typeparam>
 public interface IDeviceSetting<T> {
 
     /// <summary>
@@ -60,20 +59,21 @@ public interface IDeviceSetting<T> {
     /// <summary>
     /// Reads setting from device
     /// </summary>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task Read(ITransport transport, CancellationToken cancellationToken = new());
+    Task Read(CancellationToken cancellationToken);
 
     /// <summary>
     /// Force to read setting from device
     /// </summary>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task Reset(ITransport transport, CancellationToken cancellationToken = new());
+    Task Reset(CancellationToken cancellationToken);
 
     /// <summary>
     /// Writes <see cref="Value"/> to device if it <see cref="IsDirty"/>
     /// </summary>
-    /// <param name="transport"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task CommitChanges(ITransport transport, CancellationToken cancellationToken = new());
+    Task CommitChanges(CancellationToken cancellationToken);
 }

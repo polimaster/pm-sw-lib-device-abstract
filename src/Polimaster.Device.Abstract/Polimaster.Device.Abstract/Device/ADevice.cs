@@ -13,20 +13,20 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device abstract implementation
 /// </summary>
-/// <inheritdoc cref="IDevice"/>
-public abstract class ADevice : IDevice {
+/// <inheritdoc cref="IDevice{T}"/>
+public abstract class ADevice<T> : IDevice<T> {
 
     /// <summary>
     /// Transport layer
     /// </summary>
-    /// <see cref="ITransport"/>
-    private readonly ITransport _transport;
+    /// <see cref="ITransport{T}"/>
+    public ITransport<T> Transport { get; }
 
     /// <inheritdoc />
     public DeviceInfo? DeviceInfo { get; protected set; }
 
     /// <inheritdoc />
-    public virtual string Id => _transport.ConnectionId;
+    public virtual string Id => Transport.Client.ConnectionId;
 
     /// <inheritdoc />
     public event Action? IsDisposing;
@@ -41,17 +41,17 @@ public abstract class ADevice : IDevice {
     /// </summary>
     /// <param name="transport">Device transport layer</param>
     /// <param name="loggerFactory">Logger factory</param>
-    protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
-        _transport = transport;
+    protected ADevice(ITransport<T> transport, ILoggerFactory? loggerFactory = null) {
+        Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
     }
     
 
     /// <inheritdoc />
-    public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken = new());
+    public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    public async Task ReadAllSettings(CancellationToken cancellationToken = new()) {
+    public async Task ReadAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetSettings();
         foreach (var info in ds) {
@@ -61,7 +61,7 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public async Task WriteAllSettings(CancellationToken cancellationToken = new()) {
+    public async Task WriteAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetSettings();
         foreach (var info in ds) {
@@ -70,13 +70,12 @@ public abstract class ADevice : IDevice {
         }
     }
 
-    /// <inheritdoc />
-    public virtual async Task Execute(Func<ITransport, Task> action, CancellationToken cancellationToken = new()) {
-        await _transport.OpenAsync(cancellationToken);
-        await action.Invoke(_transport);
-        _transport.Close();
-    }
-
+    /// <summary>
+    /// Execute method on device setting <see cref="IDeviceSetting{T}"/>
+    /// </summary>
+    /// <param name="info">Target property</param>
+    /// <param name="methodName">Method to execute</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
         var method = info.PropertyType.GetMethod(methodName);
         var setting = info.GetValue(this);
@@ -84,9 +83,8 @@ public abstract class ADevice : IDevice {
 
         // dynamic awaitable = m?.Invoke(setting, null) ?? throw new InvalidOperationException();
         // if (awaitable != null) await awaitable;
-        var p = new object[2];
-        p[0] = _transport;
-        p[1] = cancellationToken;
+        var p = new object[1];
+        p[0] = cancellationToken;
         var task = (Task)method.Invoke(setting, p);
         if (task != null) await task;
     }
@@ -100,19 +98,14 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public bool Equals(IDevice other) {
+    public bool Equals(IDevice<T> other) {
         return Id.Equals(other.Id);
-    }
-    
-    /// <inheritdoc />
-    public bool HasSame(ITransport transport) {
-        return _transport.ConnectionId.Equals(transport.ConnectionId);
     }
     
     /// <inheritdoc />
     public void Dispose() {
         Logger?.LogDebug("Disposing device {D}", Id);
         IsDisposing?.Invoke();
-        _transport.Dispose();
+        Transport.Dispose();
     }
 }

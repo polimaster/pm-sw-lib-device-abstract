@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
@@ -19,9 +18,8 @@ public interface IHistoryManager<THistory> {
     /// <summary>
     /// Reads history from device
     /// </summary>
-    /// <param name="transport"></param>
-    /// <param name="token"></param>
-    Task Read(ITransport transport, CancellationToken token = new());
+    /// <param name="token">The token to monitor for cancellation requests.</param>
+    Task Read(CancellationToken token);
 
     /// <summary>
     /// Cancels history reading
@@ -32,8 +30,7 @@ public interface IHistoryManager<THistory> {
     /// <summary>
     /// Wipe history from device
     /// </summary>
-    /// <param name="transport"></param>
-    /// <param name="token"></param>
+    /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task Wipe(ITransport transport, CancellationToken token = new());
+    Task Wipe(CancellationToken token);
 }

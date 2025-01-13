@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport.Stream;
@@ -6,7 +7,7 @@ using Polimaster.Device.Abstract.Transport.Stream;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IStringify {
+public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IFormattable {
     /// <summary>
     /// Logger factory
     /// </summary>
@@ -16,6 +17,9 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnecti
     /// Connection parameters
     /// </summary>
     protected readonly TConnectionParams Params;
+
+    /// <inheritdoc />
+    public virtual string ConnectionId => $"{GetType().Name}#{Params}";
 
     /// <summary>
     /// 
@@ -49,6 +53,6 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnecti
     /// <inheritdoc />
     public abstract void Reset();
 
-    /// <inheritdoc cref="IStringify.ToString" />
-    public override string ToString() => Params.ToString();
+    /// <inheritdoc />
+    public virtual bool Equals(IClient<T> other) => ConnectionId.Equals(other.ConnectionId);
 }

@@ -12,7 +12,7 @@ public class HistoryIntervalRead : StringCommand<ushort?> {
         throw new NullReferenceException();
     }
     
-    public override async Task Send(CancellationToken cancellationToken = new()) {
+    public override async Task Send(CancellationToken cancellationToken) {
         await Read(cancellationToken);
     }
 }

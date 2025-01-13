@@ -6,13 +6,15 @@ using Polimaster.Device.Abstract.Device.Commands;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
-/// Device transport layer (USB, Tcp, Bluetooth etc)
+/// Device transport layer (USB, Tcp, Bluetooth etc.)
 /// </summary>
-public interface ITransport : IDisposable, IEquatable<ITransport> {
+public interface ITransport<T> : IDisposable {
     /// <summary>
     /// Connection identifier
     /// </summary>
-    string ConnectionId { get; }
+    // string ConnectionId { get; }
+
+    IClient<T> Client { get; }
 
     /// <summary>
     /// Indicates connection will be closed
@@ -22,7 +24,7 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     /// <summary>
     /// Open device connection
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task OpenAsync(CancellationToken cancellationToken);
 
@@ -37,29 +39,17 @@ public interface ITransport : IDisposable, IEquatable<ITransport> {
     void Close();
 
     /// <summary>
-    /// Execute command
-    /// </summary>
-    /// <param name="command">Command to execute</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task Exec(ICommand command, CancellationToken cancellationToken);
-
-    /// <summary>
     /// Write data with <see cref="IDataWriter{T}"/>
     /// </summary>
-    /// <param name="writer"><see cref="IDataWriter{T}"/></param>
     /// <param name="data">Data to write</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <typeparam name="TData">Type of data</typeparam>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task Write<TData>(IDataWriter<TData> writer, TData data, CancellationToken cancellationToken);
+    Task WriteAsync(T data, CancellationToken cancellationToken);
     
     /// <summary>
     /// Read data with <see cref="IDataReader{T}"/>
     /// </summary>
-    /// <param name="reader"><see cref="IDataReader{T}"/></param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <typeparam name="TData">Type of data</typeparam>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task<TData> Read<TData>(IDataReader<TData> reader, CancellationToken cancellationToken);
+    Task<T> ReadAsync(CancellationToken cancellationToken);
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 
@@ -8,6 +9,6 @@ namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 /// <typeparam name="T">Type of data to read</typeparam>
 public abstract class StringReader<T> : ADataReader<T, string> {
     /// <inheritdoc />
-    protected StringReader(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected StringReader(ITransport<string> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

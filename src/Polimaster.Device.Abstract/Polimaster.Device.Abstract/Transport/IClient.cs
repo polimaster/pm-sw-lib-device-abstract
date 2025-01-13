@@ -9,7 +9,12 @@ namespace Polimaster.Device.Abstract.Transport;
 /// Client which make connection to device
 /// </summary>
 /// <typeparam name="T">Type for <see cref="IDeviceStream{T}"/></typeparam>
-public interface IClient<T> : IDisposable, IStringify {
+public interface IClient<T> : IDisposable, IEquatable<IClient<T>> {
+
+    /// <summary>
+    /// Connection identifier
+    /// </summary>
+    string ConnectionId { get; }
 
     /// <summary>
     /// Returns true if client connected
@@ -35,7 +40,7 @@ public interface IClient<T> : IDisposable, IStringify {
     /// <summary>
     /// Open connection
     /// </summary>
-    /// <param name="token"></param>
+    /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task OpenAsync(CancellationToken token);
 

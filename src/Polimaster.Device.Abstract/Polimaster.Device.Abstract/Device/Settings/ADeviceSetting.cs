@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Device.Commands;
-using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -16,30 +14,16 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="reader">Command for read data</param>
-    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
     /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
-    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingBehaviour? settingBehaviour = null) {
-        Reader = reader;
-        Writer = writer;
+    protected ADeviceSetting(ISettingBehaviour? settingBehaviour = null) {
         Behaviour = settingBehaviour ?? new SettingBehaviourBase();
     }
-
-    /// <summary>
-    /// Command for read data
-    /// </summary>
-    protected IDataReader<T> Reader { get; }
-
-    /// <summary>
-    /// Command for write data
-    /// </summary>
-    protected IDataWriter<T>? Writer { get; }
 
     /// <inheritdoc />
     public ISettingBehaviour? Behaviour { get; }
 
     /// <inheritdoc />
-    public bool ReadOnly => Writer == null;
+    public abstract bool ReadOnly { get; }
 
     /// <inheritdoc />
     public abstract T? Value { get; set; }
@@ -63,13 +47,13 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public Exception? Exception { get; protected set; }
 
     /// <inheritdoc />
-    public abstract Task Read(ITransport transport, CancellationToken cancellationToken);
+    public abstract Task Read(CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    public abstract Task Reset(ITransport transport, CancellationToken cancellationToken);
+    public abstract Task Reset(CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    public abstract Task CommitChanges(ITransport transport, CancellationToken cancellationToken);
+    public abstract Task CommitChanges(CancellationToken cancellationToken);
     
     /// <summary>
     /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.

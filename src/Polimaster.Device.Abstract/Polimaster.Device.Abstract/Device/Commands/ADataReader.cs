@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Exceptions;
+using Polimaster.Device.Abstract.Transport;
 using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
@@ -14,7 +15,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <typeparam name="TSteamData">Data type for device <see cref="IDeviceStream{T}"/></typeparam>
 public abstract class ADataReader<T, TSteamData> : CommandBase<TSteamData>, IDataReader<T> {
     /// <inheritdoc />
-    protected ADataReader(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected ADataReader(ITransport<TSteamData> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 
     /// <summary>
@@ -33,13 +34,11 @@ public abstract class ADataReader<T, TSteamData> : CommandBase<TSteamData>, IDat
     protected abstract T Parse(TSteamData? res);
 
     /// <inheritdoc />
-    public virtual async Task<T> Read<TStream>(TStream stream, CancellationToken cancellationToken) {
-        var str = GetStream(stream);
+    public virtual async Task<T> Read(CancellationToken cancellationToken) {
         LogCommand(nameof(Read));
-
         try {
-            await str.WriteAsync(Compile(), cancellationToken);
-            var res = await str.ReadAsync(cancellationToken);
+            await Transport.WriteAsync(Compile(), cancellationToken);
+            var res = await Transport.ReadAsync(cancellationToken);
             return Parse(res);
         } catch (Exception e) {
             LogError(e, nameof(Read));

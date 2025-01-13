@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests;
 
@@ -10,8 +10,8 @@ public class MyDeviceDiscoveryTest : Mocks {
     public void ShouldSearch() {
         var disco = new MyDeviceDiscovery(LOGGER_FACTORY);
 
-        IEnumerable<ITransport>? found = null;
-        IEnumerable<ITransport>? lost = null;
+        IEnumerable<ClientParams>? found = null;
+        IEnumerable<ClientParams>? lost = null;
         disco.Found += transports => { found = transports; };
         disco.Lost += transports => { lost = transports; };
         disco.Start(Token);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 
@@ -8,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 /// <typeparam name="T">Type of data to write</typeparam>
 public abstract class ByteWriter<T> : ADataWriter<T, byte[]> {
     /// <inheritdoc />
-    protected ByteWriter(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected ByteWriter(ITransport<byte[]> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }
 
@@ -18,6 +19,6 @@ public abstract class ByteWriter<T> : ADataWriter<T, byte[]> {
 /// <typeparam name="T">Type of data to write</typeparam>
 public abstract class ByteWriterVerified<T> : ADataWriterVerified<T, byte[]> {
     /// <inheritdoc />
-    protected ByteWriterVerified(ILoggerFactory? loggerFactory) : base(loggerFactory) {
+    protected ByteWriterVerified(ITransport<byte[]> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }
