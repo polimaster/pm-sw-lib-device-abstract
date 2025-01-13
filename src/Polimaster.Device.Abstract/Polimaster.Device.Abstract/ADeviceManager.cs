@@ -49,7 +49,7 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
 /// Device manager
 /// </summary>
 /// <typeparam name="TDevice"><see cref="IDevice{T}"/></typeparam>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Data type for underlying <see cref="ITransport{T}"/> and <see cref="IClient{T}"/></typeparam>
 /// <typeparam name="TDiscovery"><see cref="ITransportDiscovery{TConnectionParams}"/></typeparam>
 /// <typeparam name="TConnectionParams"></typeparam>
 public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> :
@@ -66,7 +66,7 @@ public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> 
     public override event Action<TDevice>? Removed;
 
     /// <summary>
-    ///
+    /// Constructor
     /// </summary>
     /// <param name="discovery"></param>
     /// <param name="loggerFactory"></param>
@@ -111,6 +111,7 @@ public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> 
         return;
 
         void Removed(TDevice dev) {
+            Logger?.LogDebug("Device lost: {D}", dev.Id);
             this.Removed?.Invoke(dev);
             dev.Dispose();
         }
@@ -129,6 +130,7 @@ public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> 
             var transport = CreateTransport(client);
             var dev = CreateDevice(transport);
             Devices.Add(dev);
+            Logger?.LogDebug("Device found: {D}", dev.Id);
             Attached?.Invoke(dev);
         }
     }

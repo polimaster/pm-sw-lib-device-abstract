@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <summary>
 /// Device setting
 /// </summary>
-/// <typeparam name="T">Type of setting <see cref="Value"/></typeparam>
+/// <typeparam name="T">Data type of <see cref="Value"/></typeparam>
 public interface IDeviceSetting<T> {
 
     /// <summary>

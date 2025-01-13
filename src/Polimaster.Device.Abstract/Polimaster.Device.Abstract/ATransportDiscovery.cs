@@ -9,11 +9,6 @@ namespace Polimaster.Device.Abstract;
 /// <inheritdoc />
 public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscovery<TConnectionParams> {
     /// <summary>
-    ///
-    /// </summary>
-    protected readonly ILoggerFactory? LoggerFactory;
-
-    /// <summary>
     /// Logger
     /// </summary>
     protected readonly ILogger? Logger;
@@ -33,7 +28,6 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
     /// </summary>
     /// <param name="loggerFactory"></param>
     protected ATransportDiscovery(ILoggerFactory? loggerFactory) {
-        LoggerFactory = loggerFactory;
         Logger = loggerFactory?.CreateLogger(GetType());
     }
 
