@@ -1,4 +1,6 @@
 ﻿namespace System.Runtime.CompilerServices;
 
-// see https://nicolaiarocci.substack.com/p/making-the-latest-c-language-features
+/// <summary>
+/// see https://nicolaiarocci.substack.com/p/making-the-latest-c-language-features
+/// </summary>
 internal static class IsExternalInit {}
