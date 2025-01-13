@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Device.Implementations.Status;
 /// <summary>
 /// Device online status
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Status data type</typeparam>
 public interface IDeviceStatus<T> {
     /// <summary>
     /// Read device status.
@@ -17,20 +17,21 @@ public interface IDeviceStatus<T> {
     Task<T> Read(CancellationToken token = new());
 
     /// <summary>
-    /// Start reading online status
+    /// Start watch for status changes
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
     void Start(CancellationToken token = new());
 
     /// <summary>
-    /// Cancels reading device status
+    /// Cancels watch for status changes
     /// </summary>
     /// <returns></returns>
     void Stop();
 
     /// <summary>
-    /// Occurs when new data got from device
+    /// Occurs when new data got from device.
+    /// Ensure <see cref="Start"/> called to get any changes.
     /// </summary>
     public event Action<T> HasNext;
 }
