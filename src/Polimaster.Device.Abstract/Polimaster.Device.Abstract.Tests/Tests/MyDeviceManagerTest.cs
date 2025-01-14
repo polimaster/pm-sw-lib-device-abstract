@@ -13,7 +13,7 @@ public class MyDeviceManagerTest : Mocks {
         var disco = new Mock<IMyDeviceDiscovery>();
         var manager = new MyDeviceManager(disco.Object, LOGGER_FACTORY);
 
-        MyDevice? devAttached = null;
+        IMyDevice? devAttached = null;
         manager.Attached += device => {
             devAttached = device;
         };
@@ -21,7 +21,7 @@ public class MyDeviceManagerTest : Mocks {
         var p = new ClientParams(1, 1);
         var client = new MyClient(p, null);
 
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         transport.Setup(e => e.Client).Returns(client);
         var list = new List<ClientParams> { new(1,1) };
         
@@ -29,7 +29,7 @@ public class MyDeviceManagerTest : Mocks {
         Assert.Equal(list.Count, manager.Devices.Count);
         Assert.Equal(client, devAttached?.Transport.Client);
         
-        MyDevice? devRemoved = null;
+        IMyDevice? devRemoved = null;
         manager.Removed += device => {
             devRemoved = device;
         };

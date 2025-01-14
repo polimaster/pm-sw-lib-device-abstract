@@ -10,9 +10,9 @@ namespace Polimaster.Device.Abstract.Tests.Tests.History;
 public class HistoryManagerTest : Mocks {
     [Fact]
     public async Task ShouldReadHistory() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         transport.Setup(e => e.ReadAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(string.Empty));
+            .Returns(Task.FromResult<byte[]>([]));
 
         HistoryChunk<HistoryRecord>? res = null;
         var hm = new HistoryManager(transport.Object, LOGGER_FACTORY);
@@ -28,11 +28,11 @@ public class HistoryManagerTest : Mocks {
 
     [Fact]
     public async Task ShouldWipeHistory() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var hm = new HistoryManager(transport.Object, LOGGER_FACTORY);
 
         await hm.Wipe(Token);
         
-        transport.Verify(e => e.WriteAsync(It.IsAny<string>(), Token));
+        transport.Verify(e => e.WriteAsync(It.IsAny<byte[]>(), Token));
     }
 }

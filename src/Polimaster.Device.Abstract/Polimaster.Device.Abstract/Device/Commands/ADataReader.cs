@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Exceptions;
 using Polimaster.Device.Abstract.Transport;
-using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -12,10 +11,9 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// Device data reader
 /// </summary>
 /// <typeparam name="T">Type of data to write</typeparam>
-/// <typeparam name="TSteamData">Data type for device <see cref="IDeviceStream{T}"/></typeparam>
-public abstract class ADataReader<T, TSteamData> : CommandBase<TSteamData>, IDataReader<T> {
+public abstract class ADataReader<T> : CommandBase, IDataReader<T> {
     /// <inheritdoc />
-    protected ADataReader(ITransport<TSteamData> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected ADataReader(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 
     /// <summary>
@@ -23,7 +21,7 @@ public abstract class ADataReader<T, TSteamData> : CommandBase<TSteamData>, IDat
     /// </summary>
     /// <returns></returns>
     /// <exception cref="CommandCompilationException"></exception>
-    protected abstract TSteamData Compile();
+    protected abstract byte[] Compile();
 
     /// <summary>
     /// Parse data received from device
@@ -31,10 +29,10 @@ public abstract class ADataReader<T, TSteamData> : CommandBase<TSteamData>, IDat
     /// <param name="res"></param>
     /// <returns></returns>
     /// <exception cref="CommandResultParsingException"></exception>
-    protected abstract T Parse(TSteamData? res);
+    protected abstract T? Parse(byte[] res);
 
     /// <inheritdoc />
-    public virtual async Task<T> Read(CancellationToken cancellationToken) {
+    public virtual async Task<T?> Read(CancellationToken cancellationToken) {
         LogCommand(nameof(Read));
         try {
             await Transport.WriteAsync(Compile(), cancellationToken);

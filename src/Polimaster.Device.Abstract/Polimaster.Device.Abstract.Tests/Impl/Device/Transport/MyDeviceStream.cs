@@ -4,4 +4,4 @@ using Polimaster.Device.Abstract.Transport.Stream.Socket;
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 
 public class MyDeviceStream(ISocketStream stream, ILoggerFactory? loggerFactory = null)
-    : SocketStringStream(stream, loggerFactory);
+    : SocketByteStream(stream, loggerFactory);

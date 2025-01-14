@@ -7,7 +7,7 @@ using Polimaster.Device.Abstract.Transport.Stream;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <inheritdoc />
-public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnectionParams : IFormattable {
+public abstract class AClient<TConnectionParams> : IClient where TConnectionParams : IFormattable {
     /// <summary>
     /// Logger factory
     /// </summary>
@@ -41,7 +41,7 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnecti
     public abstract void Close();
 
     /// <inheritdoc />
-    public abstract IDeviceStream<T> GetStream();
+    public abstract IDeviceStream GetStream();
 
     /// <inheritdoc />
     public abstract void Open();
@@ -54,5 +54,5 @@ public abstract class AClient<T, TConnectionParams> : IClient<T> where TConnecti
     public abstract void Reset();
 
     /// <inheritdoc />
-    public virtual bool Equals(IClient<T> other) => ConnectionId.Equals(other.ConnectionId);
+    public virtual bool Equals(IClient other) => ConnectionId.Equals(other.ConnectionId);
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands.Impl; 
@@ -6,18 +7,22 @@ namespace Polimaster.Device.Abstract.Device.Commands.Impl;
 /// <summary>
 /// String data writer
 /// </summary>
-/// <typeparam name="T">Type of data to write</typeparam>
-public abstract class StringWriter<T> : ADataWriter<T, string> {
+public abstract class StringWriter : ADataWriter<string> {
     /// <inheritdoc />
-    protected StringWriter(ITransport<string> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected StringWriter(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
+
+    /// <inheritdoc />
+    protected override byte[] Compile(string data) => Encoding.UTF8.GetBytes(data);
 }
 /// <summary>
 /// String data writer with verifying result returned from device
 /// </summary>
-/// <typeparam name="T">Type of data to write</typeparam>
-public abstract class StringWriterVerified<T> : ADataWriterVerified<T, string> {
+public abstract class StringWriterVerified : ADataWriterVerified<string> {
     /// <inheritdoc />
-    protected StringWriterVerified(ITransport<string> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected StringWriterVerified(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
+
+    /// <inheritdoc />
+    protected override byte[] Compile(string data) => Encoding.UTF8.GetBytes(data);
 }

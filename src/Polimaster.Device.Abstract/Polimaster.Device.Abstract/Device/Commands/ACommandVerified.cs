@@ -10,8 +10,8 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// Command with verifying result returned from device
 /// </summary>
 /// <param name="loggerFactory">Logger factory</param>
-/// <param name="transport"><see cref="ITransport{T}"/></param>
-public abstract class ACommandVerified<T>(ITransport<T> transport, ILoggerFactory? loggerFactory) : ACommand<T>(transport, loggerFactory) {
+/// <param name="transport"><see cref="ITransport"/></param>
+public abstract class ACommandVerified(ITransport transport, ILoggerFactory? loggerFactory) : ACommand(transport, loggerFactory) {
     /// <inheritdoc />
     public override async Task Exec(CancellationToken cancellationToken) {
         await base.Exec(cancellationToken);
@@ -27,5 +27,5 @@ public abstract class ACommandVerified<T>(ITransport<T> transport, ILoggerFactor
     /// Verify data returned from device. Should throw exception if response data incorrect.
     /// </summary>
     /// <param name="response"></param>
-    protected abstract void Verify(T? response);
+    protected abstract void Verify(byte[] response);
 }

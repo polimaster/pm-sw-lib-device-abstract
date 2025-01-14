@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Commands.Impl;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Commands; 
 
-public class TemperatureReader(ITransport<string> transport, ILoggerFactory? loggerFactory)
-    : StringReader<double?>(transport, loggerFactory) {
-    protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}TEMPERATURE";
+public class TemperatureReader(ITransport transport, ILoggerFactory? loggerFactory)
+    : ADataReader<double?>(transport, loggerFactory) {
+    protected override byte[] Compile() => Encoding.UTF8.GetBytes($"{Cmd.PREFIX}{Cmd.QUESTION_MARK}TEMPERATURE");
 
-    protected override double? Parse(string? res) {
+    protected override double? Parse(byte[] res) {
         return 22;
     }
 }

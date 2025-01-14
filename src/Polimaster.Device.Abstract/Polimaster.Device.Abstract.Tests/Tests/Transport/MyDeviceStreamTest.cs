@@ -11,9 +11,9 @@ public class MyDeviceStreamTest : Mocks {
     public async Task ShouldWrite() {
         var mock = new Mock<ISocketStream>();
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
-        const string str = "TEST_0";
+        var str = "TEST_0"u8.ToArray();
         
-        await stream.WriteAsync(str, Token);
+        await stream.WriteAsync<object>(str, Token);
         
         mock.Verify(e => e.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), Token));
     }
@@ -23,7 +23,7 @@ public class MyDeviceStreamTest : Mocks {
         var mock = new Mock<ISocketStream>();
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
         
-        await stream.ReadAsync(Token);
+        await stream.ReadAsync<object>(Token);
         
         mock.Verify(e => e.ReadAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), Token));
     }

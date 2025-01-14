@@ -132,7 +132,7 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldNotWriteReadOnly() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var reader = new Mock<IDataReader<MyParam?>>();
 
         var p = new MyParam { Value = "test" };
@@ -142,7 +142,7 @@ public class MyDeviceSettingTest : Mocks {
 
         await setting.CommitChanges(Token);
         
-        transport.Verify(e => e.WriteAsync(It.IsAny<string>(), Token), Times.Never);
+        transport.Verify(e => e.WriteAsync(It.IsAny<byte[]>(), Token), Times.Never);
     }
 
     [Fact]

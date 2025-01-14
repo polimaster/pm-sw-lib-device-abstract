@@ -8,8 +8,7 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Client which make connection to device
 /// </summary>
-/// <typeparam name="T">Type for <see cref="IDeviceStream{T}"/></typeparam>
-public interface IClient<T> : IDisposable, IEquatable<IClient<T>> {
+public interface IClient : IDisposable, IEquatable<IClient> {
 
     /// <summary>
     /// Connection identifier
@@ -29,8 +28,8 @@ public interface IClient<T> : IDisposable, IEquatable<IClient<T>> {
     /// <summary>
     /// Get device stream for read/write operations
     /// </summary>
-    /// <returns><see cref="IDeviceStream{T}"/></returns>
-    IDeviceStream<T> GetStream();
+    /// <returns><see cref="IDeviceStream"/></returns>
+    IDeviceStream GetStream();
 
     /// <summary>
     /// Open connection
