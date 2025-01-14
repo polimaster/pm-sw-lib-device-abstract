@@ -107,7 +107,6 @@ public abstract class ATransport : ITransport {
             var stream = Client.GetStream();
             await stream.WriteAsync(data, cancellationToken, channel);
             Thread.Sleep(Sleep);
-            Thread.Sleep(Sleep);
         }
     }
 
