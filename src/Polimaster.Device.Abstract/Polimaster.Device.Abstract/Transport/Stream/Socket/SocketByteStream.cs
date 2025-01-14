@@ -35,14 +35,14 @@ public class SocketByteStream : IDeviceStream {
     }
 
     /// <inheritdoc />
-    public virtual async Task WriteAsync(byte[] buffer, CancellationToken cancellationToken) {
-        _logger?.LogDebug("Call {F} with: {V} bytes", nameof(WriteAsync), buffer.Length);
-        await Stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
+    public virtual async Task WriteAsync<T>(byte[] data, CancellationToken cancellationToken, T? channel = default) {
+        _logger?.LogDebug("Call {F} with: {V} bytes", nameof(WriteAsync), data.Length);
+        await Stream.WriteAsync(data, 0, data.Length, cancellationToken);
         await Stream.FlushAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public virtual async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
+    public virtual async Task<byte[]> ReadAsync<T>(CancellationToken cancellationToken, T? channel = default) {
         _logger?.LogDebug("Call: {F}", nameof(ReadAsync));
 
         var result = new List<byte>();

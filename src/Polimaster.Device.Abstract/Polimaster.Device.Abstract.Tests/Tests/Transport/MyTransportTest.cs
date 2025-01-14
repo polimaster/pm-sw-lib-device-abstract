@@ -57,9 +57,9 @@ public class MyTransportTest : Mocks {
         var param = Guid.NewGuid().ToByteArray();
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
-        await tr.WriteAsync(param, Token);
+        await tr.WriteAsync<object>(param, Token);
         
-        stream.Verify(e => e.WriteAsync(param, Token));
+        stream.Verify(e => e.WriteAsync(param, Token, It.IsAny<object>()));
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class MyTransportTest : Mocks {
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         await tr.ReadAsync(Token);
 
-        stream.Verify(e => e.ReadAsync(Token));
+        stream.Verify(e => e.ReadAsync(Token, It.IsAny<object>()));
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class MyTransportTest : Mocks {
         client.Setup(e => e.GetStream()).Returns(stream.Object);
 
         var ex = new Exception("FAIL");
-        stream.Setup(e => e.ReadAsync(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
+        stream.Setup(e => e.ReadAsync(Token, It.IsAny<object>())).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         
