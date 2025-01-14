@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Commands.Exceptions;
 using Polimaster.Device.Abstract.Transport;
-using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
@@ -12,15 +11,14 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// Device data writer
 /// </summary>
 /// <typeparam name="T">Type of data to write</typeparam>
-/// <typeparam name="TSteamData">Data type for device <see cref="IDeviceStream{T}"/></typeparam>
-public abstract class ADataWriter<T, TSteamData> : CommandBase<TSteamData>, IDataWriter<T> {
+public abstract class ADataWriter<T> : CommandBase, IDataWriter<T> {
     /// <summary>
     /// Compile command
     /// </summary>
     /// <param name="data">Data to write</param>
     /// <returns></returns>
     /// <exception cref="CommandCompilationException"></exception>
-    protected abstract TSteamData Compile(T data);
+    protected abstract byte[] Compile(T data);
 
     /// <inheritdoc />
     public virtual async Task Write(T data, CancellationToken cancellationToken) {
@@ -35,6 +33,6 @@ public abstract class ADataWriter<T, TSteamData> : CommandBase<TSteamData>, IDat
 
 
     /// <inheritdoc />
-    protected ADataWriter(ITransport<TSteamData> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected ADataWriter(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

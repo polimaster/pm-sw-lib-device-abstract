@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text;
+using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
@@ -11,12 +12,12 @@ public class MyParamWriterTest : Mocks {
 
     [Fact]
     public async Task ShouldWrite() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var cmd = new MyParamWriter(transport.Object, LOGGER_FACTORY);
 
         await cmd.Write(_param, Token);
 
-        var compiled = $"{Cmd.PREFIX}{_param.CommandPid}:{_param.Value}";
+        var compiled = Encoding.UTF8.GetBytes($"{Cmd.PREFIX}{_param.CommandPid}:{_param.Value}");
         transport.Verify(e => e.WriteAsync(compiled, Token));
     }
 }

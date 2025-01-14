@@ -9,7 +9,7 @@ using Polimaster.Device.Abstract.Transport.Stream.Socket;
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Transport; 
 
 public class MyClient(ClientParams @params, ILoggerFactory? loggerFactory)
-    : AClient<string, ClientParams>(@params, loggerFactory) {
+    : AClient<ClientParams>(@params, loggerFactory) {
     private TcpClient? _wrapped;
 
     /// <inheritdoc />
@@ -29,7 +29,7 @@ public class MyClient(ClientParams @params, ILoggerFactory? loggerFactory)
     }
 
     /// <inheritdoc />
-    public override IDeviceStream<string> GetStream() {
+    public override IDeviceStream GetStream() {
         if (_wrapped is not { Connected: true }) throw new DeviceClientException($"{_wrapped?.GetType().Name} is closed or null");
         return new MyDeviceStream(new SocketWrapper(_wrapped.Client, true), LoggerFactory);
     }

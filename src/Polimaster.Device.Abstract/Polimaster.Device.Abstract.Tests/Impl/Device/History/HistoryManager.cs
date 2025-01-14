@@ -9,8 +9,8 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.History; 
 
-public class HistoryManager(ITransport<string> transport, ILoggerFactory? loggerFactory)
-    : AHistoryManager<string, HistoryRecord>(transport, loggerFactory) {
+public class HistoryManager(ITransport transport, ILoggerFactory? loggerFactory)
+    : AHistoryManager<HistoryRecord>(transport, loggerFactory) {
     private readonly HistoryReader _historyReader = new(transport, loggerFactory);
     private readonly HistoryWiper _historyWiper = new(transport, loggerFactory);
     private CancellationTokenSource? _readCancellationToken;

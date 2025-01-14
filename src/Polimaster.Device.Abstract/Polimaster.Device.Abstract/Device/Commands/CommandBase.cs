@@ -7,12 +7,12 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <summary>
 /// 
 /// </summary>
-public abstract class CommandBase<T> {
+public abstract class CommandBase {
 
     /// <summary>
-    /// <see cref="ITransport{T}"/> layer for executing command
+    /// <see cref="ITransport"/> layer for executing command
     /// </summary>
-    protected ITransport<T> Transport { get; }
+    protected ITransport Transport { get; }
 
 
     /// <summary>
@@ -25,7 +25,7 @@ public abstract class CommandBase<T> {
     /// </summary>
     /// <param name="transport"></param>
     /// <param name="loggerFactory"></param>
-    protected CommandBase(ITransport<T> transport, ILoggerFactory? loggerFactory) {
+    protected CommandBase(ITransport transport, ILoggerFactory? loggerFactory) {
         Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
     }

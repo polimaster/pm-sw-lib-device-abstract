@@ -8,12 +8,11 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Abstract transport layer
 /// </summary>
-/// <typeparam name="T">Type of <see cref="IClient{T}"/> data</typeparam>
-public abstract class ATransport<T> : ITransport<T> {
+public abstract class ATransport : ITransport {
     /// <summary>
     /// Underlying client
     /// </summary>
-    public IClient<T> Client { get; }
+    public IClient Client { get; }
 
     /// <summary>
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
@@ -49,7 +48,7 @@ public abstract class ATransport<T> : ITransport<T> {
     /// </summary>
     /// <param name="client"></param>
     /// <param name="loggerFactory"></param>
-    protected ATransport(IClient<T> client, ILoggerFactory? loggerFactory) {
+    protected ATransport(IClient client, ILoggerFactory? loggerFactory) {
         Logger = loggerFactory?.CreateLogger(GetType());
         Client = client;
     }
@@ -91,7 +90,7 @@ public abstract class ATransport<T> : ITransport<T> {
     }
 
     /// <inheritdoc />
-    public virtual async Task WriteAsync(T data, CancellationToken cancellationToken) {
+    public virtual async Task WriteAsync(byte[] data, CancellationToken cancellationToken) {
         Logger?.LogDebug("Executing {Name}", nameof(WriteAsync));
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try { await Execute(); } catch {
@@ -113,7 +112,7 @@ public abstract class ATransport<T> : ITransport<T> {
     }
 
     /// <inheritdoc />
-    public virtual async Task<T> ReadAsync(CancellationToken cancellationToken) {
+    public virtual async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
         Logger?.LogDebug("Executing {Name}", nameof(ReadAsync));
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
 
@@ -127,7 +126,7 @@ public abstract class ATransport<T> : ITransport<T> {
             if (SyncStreamAccess) Semaphore.Release();
         }
 
-        async Task<T> Execute() {
+        async Task<byte[]> Execute() {
             var stream = Client.GetStream();
             var res = await stream.ReadAsync(cancellationToken);
             Thread.Sleep(Sleep);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -12,10 +13,10 @@ public class MyDeviceTest : Mocks {
     [Fact]
     public void ShouldTrackId() {
         var guid = Guid.NewGuid().ToString();
-        var client = new Mock<IClient<string>>();
+        var client = new Mock<IClient>();
         client.Setup(e => e.ConnectionId).Returns(guid);
 
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var dev1 = new MyDevice(transport.Object, LOGGER_FACTORY);
         var dev2 = new MyDevice(transport.Object, LOGGER_FACTORY);
 
@@ -27,8 +28,8 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public void ShouldDispose() {
-        var transport = new Mock<ITransport<string>>();
-        transport.Setup(e => e.Client).Returns(new Mock<IClient<string>>().Object);
+        var transport = new Mock<ITransport>();
+        transport.Setup(e => e.Client).Returns(new Mock<IClient>().Object);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
         var check = false;
@@ -42,7 +43,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldExecute() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
         await dev.GetTime(Token);
@@ -52,7 +53,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldCatchExceptionOnExecute() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var exception = new Exception();
         transport.Setup(e => e.ReadAsync(Token)).ThrowsAsync(exception);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
@@ -71,7 +72,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldReadInfo() {
-        var transport = new Mock<ITransport<string>>();
+        var transport = new Mock<ITransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
         Assert.Null(dev.DeviceInfo);
@@ -84,12 +85,12 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldReadSettings() {
-        var transport = new Mock<ITransport<string>>();
-        transport.Setup(e => e.Client).Returns(new Mock<IClient<string>>().Object);
+        var transport = new Mock<ITransport>();
+        transport.Setup(e => e.Client).Returns(new Mock<IClient>().Object);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
         const ushort v = 10;
-        transport.Setup(e => e.ReadAsync(Token)).Returns(Task.FromResult(v.ToString()));
+        transport.Setup(e => e.ReadAsync(Token)).Returns(Task.FromResult(BitConverter.GetBytes(v)));
         
         await dev.HistoryInterval.Read(Token);
         transport.Verify(e => e.ReadAsync(Token), Times.Exactly(1));
@@ -102,8 +103,8 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldWriteSettings() {
-        var transport = new Mock<ITransport<string>>();
-        transport.Setup(e => e.Client).Returns(new Mock<IClient<string>>().Object);
+        var transport = new Mock<ITransport>();
+        transport.Setup(e => e.Client).Returns(new Mock<IClient>().Object);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
         const ushort v = 10;
@@ -111,10 +112,10 @@ public class MyDeviceTest : Mocks {
         await dev.WriteAllSettings(Token);
         
         // should write changed value
-        transport.Verify(e => e.WriteAsync("CMD=INTERVAL:10", Token));
+        transport.Verify(e => e.WriteAsync(Encoding.UTF8.GetBytes("CMD=INTERVAL:10"), Token));
         
         // should NOT write because no changes
-        transport.Verify(e => e.WriteAsync("CMD=INTERVAL:1", Token), Times.Never);
+        transport.Verify(e => e.WriteAsync(Encoding.UTF8.GetBytes("CMD=INTERVAL:1"), Token), Times.Never);
         
     }
     

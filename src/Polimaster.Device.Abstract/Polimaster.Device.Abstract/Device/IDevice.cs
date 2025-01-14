@@ -12,8 +12,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device with identifier
 /// </summary>
-/// <typeparam name="T">Transport type</typeparam>
-public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> {
+public interface IDevice : IDisposable, IEquatable<IDevice> {
     
     /// <summary>
     /// Unique identifier of device
@@ -21,9 +20,9 @@ public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> {
     string Id { get; }
 
     /// <summary>
-    /// <see cref="ITransport{T}"/> for executing device commands
+    /// <see cref="ITransport"/> for executing device commands
     /// </summary>
-    ITransport<T> Transport { get; }
+    ITransport Transport { get; }
 
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
@@ -54,7 +53,7 @@ public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> {
     /// <summary>
     /// Writes settings to device.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates <see cref="IDevice{T}"/> properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
+    /// Method iterates <see cref="IDevice"/> properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>

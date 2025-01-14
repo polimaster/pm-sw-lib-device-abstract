@@ -7,11 +7,11 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
 /// <inheritdoc />
-public abstract class AHistoryManager<T, THistory> : IHistoryManager<THistory> {
+public abstract class AHistoryManager<THistory> : IHistoryManager<THistory> {
     /// <summary>
     ///
     /// </summary>
-    protected ITransport<T> Transport { get; }
+    protected ITransport Transport { get; }
 
     /// <summary>
     /// Logger
@@ -33,9 +33,9 @@ public abstract class AHistoryManager<T, THistory> : IHistoryManager<THistory> {
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="transport"><see cref="ITransport{T}"/></param>
+    /// <param name="transport"><see cref="ITransport"/></param>
     /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-    protected AHistoryManager(ITransport<T> transport, ILoggerFactory? loggerFactory) {
+    protected AHistoryManager(ITransport transport, ILoggerFactory? loggerFactory) {
         Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
 

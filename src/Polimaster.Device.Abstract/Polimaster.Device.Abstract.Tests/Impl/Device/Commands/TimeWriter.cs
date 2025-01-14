@@ -1,15 +1,12 @@
 ﻿using System;
+using System.Text;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Commands.Impl;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device.Commands; 
 
-public class TimeWriter : StringWriter<DateTime> {
-    public TimeWriter(ITransport<string> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
-    }
-
-    protected override string Compile(DateTime data) {
-        return $"{Cmd.PREFIX}TIME:{data}";
-    }
+public class TimeWriter(ITransport transport, ILoggerFactory? loggerFactory)
+    : ADataWriter<DateTime>(transport, loggerFactory) {
+    protected override byte[] Compile(DateTime data) => Encoding.UTF8.GetBytes($"{Cmd.PREFIX}TIME:{data}");
 }

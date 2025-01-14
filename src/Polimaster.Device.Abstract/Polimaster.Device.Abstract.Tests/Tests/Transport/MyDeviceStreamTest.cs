@@ -11,7 +11,7 @@ public class MyDeviceStreamTest : Mocks {
     public async Task ShouldWrite() {
         var mock = new Mock<ISocketStream>();
         var stream = new MyDeviceStream(mock.Object, LOGGER_FACTORY);
-        const string str = "TEST_0";
+        var str = "TEST_0"u8.ToArray();
         
         await stream.WriteAsync(str, Token);
         

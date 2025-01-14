@@ -5,10 +5,10 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Tests.Impl.Device; 
 
 public class MyDeviceManager(IMyDeviceDiscovery discovery, ILoggerFactory? loggerFactory)
-    : ADeviceManager<MyDevice, string, IMyDeviceDiscovery, ClientParams>(discovery, loggerFactory) {
-    protected override MyDevice CreateDevice(ITransport<string> transport) => new(transport, LoggerFactory);
+    : ADeviceManager<IMyDevice, IMyDeviceDiscovery, ClientParams>(discovery, loggerFactory) {
+    protected override IMyDevice CreateDevice(ITransport transport) => new MyDevice(transport, LoggerFactory);
 
-    protected override ITransport<string> CreateTransport(IClient<string> client) => new MyTransport(client, LoggerFactory);
+    protected override ITransport CreateTransport(IClient client) => new MyTransport(client, LoggerFactory);
 
-    protected override IClient<string> CreateClient(ClientParams connectionParams) => new MyClient(connectionParams, LoggerFactory);
+    protected override IClient CreateClient(ClientParams connectionParams) => new MyClient(connectionParams, LoggerFactory);
 }

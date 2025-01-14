@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Transport.Stream.Socket;
 /// <summary>
 /// Device byte stream implementation
 /// </summary>
-public class SocketByteStream : IDeviceStream<byte[]> {
+public class SocketByteStream : IDeviceStream {
     /// <summary>
     /// See <see cref="ILogger"/>
     /// </summary>

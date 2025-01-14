@@ -44,16 +44,14 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
     }
 }
 
-
 /// <summary>
 /// Device manager
 /// </summary>
-/// <typeparam name="TDevice"><see cref="IDevice{T}"/></typeparam>
-/// <typeparam name="T">Data type for underlying <see cref="ITransport{T}"/> and <see cref="IClient{T}"/></typeparam>
 /// <typeparam name="TDiscovery"><see cref="ITransportDiscovery{TConnectionParams}"/></typeparam>
 /// <typeparam name="TConnectionParams"></typeparam>
-public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> :
-    ADeviceManager<TDevice> where TDevice: IDevice<T> where TDiscovery : ITransportDiscovery<TConnectionParams> {
+/// <typeparam name="TDevice"></typeparam>
+public abstract class ADeviceManager<TDevice, TDiscovery, TConnectionParams> :
+    ADeviceManager<TDevice> where TDiscovery : ITransportDiscovery<TConnectionParams> where TDevice : IDevice, IDisposable {
     /// <summary>
     /// See <see cref="ITransportDiscovery{TConnectionParams}"/>
     /// </summary>
@@ -79,23 +77,22 @@ public abstract class ADeviceManager<TDevice, T, TDiscovery, TConnectionParams> 
     /// <summary>
     /// Create new device from found transport connection
     /// </summary>
-    /// <param name="transport"><see cref="ITransport{T}"/></param>
-    /// <returns><see cref="IDevice{T}"/></returns>
-    protected abstract TDevice CreateDevice(ITransport<T> transport);
+    /// <param name="transport"><see cref="ITransport"/></param>
+    protected abstract TDevice CreateDevice(ITransport transport);
 
     /// <summary>
     /// Create new transport connection
     /// </summary>
     /// <param name="client"></param>
-    /// <returns><see cref="ITransport{T}"/></returns>
-    protected abstract ITransport<T> CreateTransport(IClient<T> client);
+    /// <returns><see cref="ITransport"/></returns>
+    protected abstract ITransport CreateTransport(IClient client);
 
     /// <summary>
     /// Create new client from parameters
     /// </summary>
     /// <param name="connectionParams">Client connection parameters</param>
-    /// <returns><see cref="IClient{T}"/></returns>
-    protected abstract IClient<T> CreateClient(TConnectionParams connectionParams);
+    /// <returns><see cref="IClient"/></returns>
+    protected abstract IClient CreateClient(TConnectionParams connectionParams);
 
     /// <summary>
     /// When override remove from <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.

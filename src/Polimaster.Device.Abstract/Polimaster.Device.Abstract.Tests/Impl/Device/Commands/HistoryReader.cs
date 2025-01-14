@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Device.Commands.Impl;
+using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.History;
 using Polimaster.Device.Abstract.Transport;
 
@@ -17,11 +18,11 @@ public struct HistoryReaderChunk {
     }
 }
 
-public class HistoryReader(ITransport<string> transport, ILoggerFactory? loggerFactory)
-    : StringReader<HistoryReaderChunk>(transport, loggerFactory) {
-    protected override string Compile() => $"{Cmd.PREFIX}{Cmd.QUESTION_MARK}HISTORY";
+public class HistoryReader(ITransport transport, ILoggerFactory? loggerFactory)
+    : ADataReader<HistoryReaderChunk>(transport, loggerFactory) {
+    protected override byte[] Compile() => Encoding.UTF8.GetBytes($"{Cmd.PREFIX}{Cmd.QUESTION_MARK}HISTORY");
 
-    protected override HistoryReaderChunk Parse(string? res) {
+    protected override HistoryReaderChunk Parse(byte[] res) {
         return new HistoryReaderChunk {
             HasReachedTheEnd = true,
             Records = new List<HistoryRecord>()

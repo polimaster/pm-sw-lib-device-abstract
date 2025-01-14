@@ -8,14 +8,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <inheritdoc cref="Polimaster.Device.Abstract.Device.Commands.ICommand" />
-public abstract class ACommand<T> : CommandBase<T>, ICommand {
-    /// <summary>
-    /// Compile command
-    /// </summary>
-    /// <returns>Compiled command to send to <see cref="Transport"/></returns>
-    /// <exception cref="CommandCompilationException"></exception>
-    protected abstract T Compile();
-
+public abstract class ACommand : CommandBase, ICommand {
     /// <inheritdoc />
     public virtual async Task Exec(CancellationToken cancellationToken) {
         LogCommand(nameof(Exec));
@@ -27,7 +20,14 @@ public abstract class ACommand<T> : CommandBase<T>, ICommand {
         }
     }
 
+    /// <summary>
+    /// Compile command
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="CommandCompilationException"></exception>
+    protected abstract byte[] Compile();
+
     /// <inheritdoc />
-    protected ACommand(ITransport<T> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected ACommand(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }
