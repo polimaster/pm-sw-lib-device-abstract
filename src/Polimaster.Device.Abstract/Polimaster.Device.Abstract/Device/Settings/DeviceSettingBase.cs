@@ -21,7 +21,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
     /// <param name="reader">Command for read data</param>
     /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
-    protected DeviceSettingBase(IDataReader<T?> reader, IDataWriter<T>? writer = null, ISettingBehaviour? settingBehaviour = null)
+    protected DeviceSettingBase(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingBehaviour? settingBehaviour = null)
         : base(settingBehaviour) {
         Reader = reader;
         Writer = writer;
@@ -30,7 +30,7 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <summary>
     /// Command for read data
     /// </summary>
-    protected IDataReader<T?> Reader { get; }
+    protected IDataReader<T> Reader { get; }
 
     /// <summary>
     /// Command for write data
