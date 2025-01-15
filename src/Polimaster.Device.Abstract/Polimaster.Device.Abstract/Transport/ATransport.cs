@@ -93,9 +93,12 @@ public abstract class ATransport : ITransport {
     public virtual async Task WriteAsync<T>(byte[] data, CancellationToken cancellationToken, T? channel = default) {
         Logger?.LogDebug("Executing {Name}", nameof(WriteAsync));
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
-        try { await Execute(); } catch {
+        try {
+            await OpenAsync(cancellationToken);
+            await Execute();
+        } catch {
             Client.Reset();
-            await Client.OpenAsync(cancellationToken);
+            await OpenAsync(cancellationToken);
             await Execute();
         } finally {
             if (SyncStreamAccess) Semaphore.Release();
@@ -126,10 +129,11 @@ public abstract class ATransport : ITransport {
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
 
         try {
+            await OpenAsync(cancellationToken);
             return await Execute();
         } catch {
             Client.Reset();
-            await Client.OpenAsync(cancellationToken);
+            await OpenAsync(cancellationToken);
             return await Execute();
         } finally {
             if (SyncStreamAccess) Semaphore.Release();
