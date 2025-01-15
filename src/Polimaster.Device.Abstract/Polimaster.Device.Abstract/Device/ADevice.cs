@@ -13,13 +13,13 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device abstract implementation
 /// </summary>
-public abstract class ADevice : IDevice {
+public abstract class ADevice<T> : IDevice<T> where T : ITransport {
 
     /// <summary>
     /// Transport layer
     /// </summary>
     /// <see cref="ITransport"/>
-    public ITransport Transport { get; }
+    public T Transport { get; }
 
     /// <inheritdoc />
     public DeviceInfo? DeviceInfo { get; protected set; }
@@ -40,7 +40,7 @@ public abstract class ADevice : IDevice {
     /// </summary>
     /// <param name="transport">Device transport layer</param>
     /// <param name="loggerFactory">Logger factory</param>
-    protected ADevice(ITransport transport, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(T transport, ILoggerFactory? loggerFactory = null) {
         Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
     }
@@ -97,7 +97,7 @@ public abstract class ADevice : IDevice {
     }
 
     /// <inheritdoc />
-    public bool Equals(IDevice other) {
+    public bool Equals(IDevice<T> other) {
         return Id.Equals(other.Id);
     }
     
