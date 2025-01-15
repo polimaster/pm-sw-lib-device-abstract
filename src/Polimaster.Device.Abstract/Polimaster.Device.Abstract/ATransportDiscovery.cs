@@ -33,6 +33,7 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
 
     /// <inheritdoc />
     public virtual void Start(CancellationToken token) {
+        _watchTokenSource?.Cancel();
         _watchTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         Logger?.LogDebug("Starting device discovery");
 
