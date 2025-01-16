@@ -52,6 +52,7 @@ public class MyTransportTest : Mocks {
     public async Task ShouldWrite() {
         var client = new Mock<IClient>();
         var stream = new Mock<IDeviceStream>();
+        client.Setup(e => e.Connected).Returns(true);
         client.Setup(e => e.GetStream()).Returns(stream.Object);
 
         var param = Guid.NewGuid().ToByteArray();
@@ -66,6 +67,7 @@ public class MyTransportTest : Mocks {
     public async Task ShouldRead() {
         var client = new Mock<IClient>();
         var stream = new Mock<IDeviceStream>();
+        client.Setup(e => e.Connected).Returns(true);
         client.Setup(e => e.GetStream()).Returns(stream.Object);
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
@@ -78,6 +80,7 @@ public class MyTransportTest : Mocks {
     public async Task ShouldResetClientOnFail() {
         var client = new Mock<IClient>();
         var stream = new Mock<IDeviceStream>();
+        client.Setup(e => e.Connected).Returns(true);
         client.Setup(e => e.GetStream()).Returns(stream.Object);
 
         var ex = new Exception("FAIL");
@@ -95,7 +98,6 @@ public class MyTransportTest : Mocks {
         Assert.NotNull(exception);
         Assert.Equal(ex, exception);
         client.Verify(e => e.Reset());
-        client.Verify(e => e.OpenAsync(Token));
         client.Verify(e => e.GetStream(), Times.Exactly(2));
     }
 }

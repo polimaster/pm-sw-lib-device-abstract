@@ -48,10 +48,14 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
 /// Device manager
 /// </summary>
 /// <typeparam name="TDiscovery"><see cref="ITransportDiscovery{TConnectionParams}"/></typeparam>
-/// <typeparam name="TConnectionParams"></typeparam>
-/// <typeparam name="TDevice"></typeparam>
-public abstract class ADeviceManager<TDevice, TDiscovery, TConnectionParams> :
-    ADeviceManager<TDevice> where TDiscovery : ITransportDiscovery<TConnectionParams> where TDevice : IDevice, IDisposable {
+/// <typeparam name="TConnectionParams">Connection parameters for <see cref="ITransportDiscovery{TConnectionParams}"/></typeparam>
+/// <typeparam name="TDevice">Device type</typeparam>
+/// <typeparam name="TTransport">Transport type</typeparam>
+public abstract class ADeviceManager<TDevice, TTransport, TDiscovery, TConnectionParams> :
+    ADeviceManager<TDevice>
+    where TDiscovery : ITransportDiscovery<TConnectionParams>
+    where TDevice : IDevice<TTransport>, IDisposable
+    where TTransport : ITransport {
     /// <summary>
     /// See <see cref="ITransportDiscovery{TConnectionParams}"/>
     /// </summary>
@@ -78,14 +82,14 @@ public abstract class ADeviceManager<TDevice, TDiscovery, TConnectionParams> :
     /// Create new device from found transport connection
     /// </summary>
     /// <param name="transport"><see cref="ITransport"/></param>
-    protected abstract TDevice CreateDevice(ITransport transport);
+    protected abstract TDevice CreateDevice(TTransport transport);
 
     /// <summary>
     /// Create new transport connection
     /// </summary>
     /// <param name="client"></param>
     /// <returns><see cref="ITransport"/></returns>
-    protected abstract ITransport CreateTransport(IClient client);
+    protected abstract TTransport CreateTransport(IClient client);
 
     /// <summary>
     /// Create new client from parameters

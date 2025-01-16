@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
+using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests; 
@@ -16,7 +17,7 @@ public class MyDeviceTest : Mocks {
         var client = new Mock<IClient>();
         client.Setup(e => e.ConnectionId).Returns(guid);
 
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         var dev1 = new MyDevice(transport.Object, LOGGER_FACTORY);
         var dev2 = new MyDevice(transport.Object, LOGGER_FACTORY);
 
@@ -28,7 +29,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public void ShouldDispose() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         transport.Setup(e => e.Client).Returns(new Mock<IClient>().Object);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
@@ -43,7 +44,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldExecute() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
         await dev.GetTime(Token);
@@ -53,7 +54,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldCatchExceptionOnExecute() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         var exception = new Exception();
         transport.Setup(e => e.ReadAsync(Token)).ThrowsAsync(exception);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
@@ -72,7 +73,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldReadInfo() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         
         Assert.Null(dev.DeviceInfo);
@@ -85,7 +86,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldReadSettings() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         transport.Setup(e => e.Client).Returns(new Mock<IClient>().Object);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
@@ -103,7 +104,7 @@ public class MyDeviceTest : Mocks {
 
     [Fact]
     public async Task ShouldWriteSettings() {
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         transport.Setup(e => e.Client).Returns(new Mock<IClient>().Object);
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
         

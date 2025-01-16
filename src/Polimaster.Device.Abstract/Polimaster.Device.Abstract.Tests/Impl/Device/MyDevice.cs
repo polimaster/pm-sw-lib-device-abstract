@@ -9,16 +9,16 @@ using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
 using Polimaster.Device.Abstract.Tests.Impl.Device.History;
 using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
-public interface IMyDevice : IDevice, IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
+public interface IMyDevice : IDevice<IMyTransport>, IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
     IDeviceSetting<MyParam?> MyParamSetting { get; }
     IDeviceSetting<string> StringSetting { get; }
 }
 
-public class MyDevice : ADevice, IMyDevice {
+public class MyDevice : ADevice<IMyTransport>, IMyDevice {
     public IDeviceSetting<ushort?> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; private set; }
@@ -33,7 +33,7 @@ public class MyDevice : ADevice, IMyDevice {
     private readonly TimeReader _timeReader;
     private readonly TimeWriter _timeWriter;
 
-    public MyDevice(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    public MyDevice(IMyTransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
         _infoReader = new DeviceInfoReader(Transport, loggerFactory);
         _batteryStatusReader = new BatteryStatusReader(Transport, loggerFactory);
         _resetDose = new ResetDose(Transport, loggerFactory);
