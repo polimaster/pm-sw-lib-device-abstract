@@ -1,6 +1,6 @@
 ﻿using System;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Tests.Impl;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Transport;
 
@@ -8,10 +8,10 @@ public class MyClientTest : Mocks {
     private readonly ClientParams _param = new(123456, 80);
     
     // [Fact]
-    // public void ShouldReturnStream() {
+    // public async Task ShouldReturnStream() {
     //     var client = new MyClient(_param, LOGGER_FACTORY);
     //
-    //     client.Open();
+    //     await client.Open(Token);
     //     var stream = client.GetStream();
     //
     //     Assert.True(stream is MyDeviceStream);
@@ -37,14 +37,14 @@ public class MyClientTest : Mocks {
     }
 
     // [Fact]
-    // public void ShouldCloseConnection() {
+    // public async Task ShouldCloseConnection() {
     //     var client = new MyClient(_param, LOGGER_FACTORY);
-    //     
+    //
     //     client.Close();
-    //     
-    //     client.Open();
+    //
+    //     await client.Open(Token);
     //     Assert.True(client.Connected);
-    //     
+    //
     //     client.Close();
     //     Assert.False(client.Connected);
     // }

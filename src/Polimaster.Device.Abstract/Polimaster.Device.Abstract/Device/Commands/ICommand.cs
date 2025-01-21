@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// </summary>
 public interface ICommand {
     /// <summary>
-    /// Sends command to device stream
+    /// Send command to device stream
     /// </summary>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>

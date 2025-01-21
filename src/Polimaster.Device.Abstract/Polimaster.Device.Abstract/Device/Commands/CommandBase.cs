@@ -4,21 +4,21 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Commands;
 
 /// <summary>
-/// Command base class with <see cref="ITransport"/>
+/// Command base class with <see cref="ITransport{TStream}"/>
 /// </summary>
-public abstract class CommandBase : ALogged {
+public abstract class CommandBase<TStream> : ALogged {
 
     /// <summary>
-    /// <see cref="ITransport"/> layer for executing command
+    /// <see cref="ITransport{TStream}"/> layer for executing command
     /// </summary>
-    protected ITransport Transport { get; }
+    protected ITransport<TStream> Transport { get; }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="transport"></param>
     /// <param name="loggerFactory"></param>
-    protected CommandBase(ITransport transport, ILoggerFactory? loggerFactory) : base(loggerFactory){
+    protected CommandBase(ITransport<TStream> transport, ILoggerFactory? loggerFactory) : base(loggerFactory){
         Transport = transport;
     }
 }

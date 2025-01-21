@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
-using Polimaster.Device.Abstract.Transport;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests; 
 
@@ -21,13 +20,13 @@ public class MyDeviceManagerTest : Mocks {
         var p = new ClientParams(1, 1);
         var client = new MyClient(p, null);
 
-        var transport = new Mock<ITransport>();
+        var transport = new Mock<IMyTransport>();
         transport.Setup(e => e.Client).Returns(client);
         var list = new List<ClientParams> { new(1,1) };
         
         disco.Raise(e => e.Found += null, list);
         Assert.Equal(list.Count, manager.Devices.Count);
-        Assert.Equal(client, devAttached?.Transport.Client);
+        Assert.True(devAttached?.HasSame(transport.Object));
         
         IMyDevice? devRemoved = null;
         manager.Removed += device => {
@@ -36,7 +35,7 @@ public class MyDeviceManagerTest : Mocks {
         
         disco.Raise(e => e.Lost += null, list);
         Assert.Empty(manager.Devices);
-        Assert.Equal(client, devRemoved?.Transport.Client);
+        Assert.True(devRemoved?.HasSame(transport.Object));
         
     }
     

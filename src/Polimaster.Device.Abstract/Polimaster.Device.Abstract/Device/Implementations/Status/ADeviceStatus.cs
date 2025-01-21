@@ -8,11 +8,12 @@ namespace Polimaster.Device.Abstract.Device.Implementations.Status;
 
 /// <summary>See <see cref="IDeviceStatus{TStatus}"/></summary>
 /// <typeparam name="TStatus">Data type for <see cref="IDeviceStatus{TStatus}"/></typeparam>
-public abstract class ADeviceStatus<TStatus> : IDeviceStatus<TStatus> {
+/// <typeparam name="TStream"></typeparam>
+public abstract class ADeviceStatus<TStatus, TStream> : IDeviceStatus<TStatus> {
     /// <summary>
-    /// <see cref="ITransport"/>
+    /// See <see cref="ITransport{TStream}"/>
     /// </summary>
-    protected ITransport Transport { get; }
+    protected ITransport<TStream> Transport { get; }
 
     /// <summary>
     /// Logger
@@ -36,7 +37,7 @@ public abstract class ADeviceStatus<TStatus> : IDeviceStatus<TStatus> {
     /// </summary>
     /// <param name="transport"></param>
     /// <param name="loggerFactory"></param>
-    protected ADeviceStatus(ITransport transport, ILoggerFactory? loggerFactory) {
+    protected ADeviceStatus(ITransport<TStream> transport, ILoggerFactory? loggerFactory) {
         Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
 

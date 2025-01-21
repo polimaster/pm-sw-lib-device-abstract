@@ -8,11 +8,11 @@ namespace Polimaster.Device.Abstract.Transport;
 /// <summary>
 /// Abstract transport layer
 /// </summary>
-public abstract class ATransport : ITransport {
+public abstract class ATransport<TStream> : ITransport<TStream> {
     /// <summary>
     /// Underlying client
     /// </summary>
-    public IClient Client { get; }
+    public IClient<TStream> Client { get; }
 
     /// <summary>
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
@@ -21,7 +21,7 @@ public abstract class ATransport : ITransport {
     protected virtual SemaphoreSlim Semaphore { get; } = new(1, 1);
 
     /// <summary>
-    /// If enabled, only one call of <see cref="ReadAsync"/> or <see cref="WriteAsync"/> will be executed at a time
+    /// If enabled, only one call of <see cref="ExecOnStream"/> or <see cref="Open"/> will be executed at a time
     /// </summary>
     protected virtual bool SyncStreamAccess => true;
 
@@ -44,34 +44,22 @@ public abstract class ATransport : ITransport {
     public event Action? Closing;
 
     /// <summary>
-    /// 
+    /// Constructor
     /// </summary>
-    /// <param name="client"></param>
+    /// <param name="client">See <see cref="IClient{TStream}"/></param>
     /// <param name="loggerFactory"></param>
-    protected ATransport(IClient client, ILoggerFactory? loggerFactory) {
+    protected ATransport(IClient<TStream> client, ILoggerFactory? loggerFactory) {
         Logger = loggerFactory?.CreateLogger(GetType());
         Client = client;
     }
 
     /// <inheritdoc />
-    public virtual async Task OpenAsync(CancellationToken cancellationToken) {
+    public virtual async Task Open(CancellationToken cancellationToken) {
         if (Client.Connected) return;
         if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
             Logger?.LogDebug("Open transport connection (async)");
-            await Client.OpenAsync(cancellationToken);
-        } finally {
-            if (SyncStreamAccess) Semaphore.Release();
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual void Open() {
-        if (Client.Connected) return;
-        if (SyncStreamAccess) Semaphore.Wait();
-        try {
-            Logger?.LogDebug("Open transport connection");
-            Client.Open();
+            await Client.Open(cancellationToken);
         } finally {
             if (SyncStreamAccess) Semaphore.Release();
         }
@@ -90,61 +78,30 @@ public abstract class ATransport : ITransport {
     }
 
     /// <inheritdoc />
-    public virtual async Task WriteAsync<T>(byte[] data, CancellationToken cancellationToken, T? channel = default) {
-        Logger?.LogDebug("Executing {Name}", nameof(WriteAsync));
+    public virtual async Task ExecOnStream(Func<TStream, Task> action, CancellationToken cancellationToken = new()) {
+        Logger?.LogDebug("Executing {Name}", nameof(ExecOnStream));
+
         try {
-            await OpenAsync(cancellationToken);
+            await Open(cancellationToken);
             if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
-            await Execute();
+            await Exec();
         } catch {
             Client.Reset();
-            await OpenAsync(cancellationToken);
-            await Execute();
+            await Open(cancellationToken);
+            await Exec();
+            Close();
         } finally {
             if (SyncStreamAccess) Semaphore.Release();
         }
 
         return;
 
-        async Task Execute() {
+        async Task Exec() {
             var stream = Client.GetStream();
-            await stream.WriteAsync(data, cancellationToken, channel);
+            await action.Invoke(stream);
             Thread.Sleep(Sleep);
         }
-    }
 
-    /// <inheritdoc />
-    public async Task WriteAsync(byte[] data, CancellationToken cancellationToken) {
-        await WriteAsync<object>(data, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public async Task<byte[]> ReadAsync(CancellationToken cancellationToken) {
-        return await ReadAsync<object>(cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<byte[]> ReadAsync<T>(CancellationToken cancellationToken, T? channel = default) {
-        Logger?.LogDebug("Executing {Name}", nameof(ReadAsync));
-
-        try {
-            await OpenAsync(cancellationToken);
-            if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
-            return await Execute();
-        } catch {
-            Client.Reset();
-            await OpenAsync(cancellationToken);
-            return await Execute();
-        } finally {
-            if (SyncStreamAccess) Semaphore.Release();
-        }
-
-        async Task<byte[]> Execute() {
-            var stream = Client.GetStream();
-            var res = await stream.ReadAsync(cancellationToken, channel);
-            Thread.Sleep(Sleep);
-            return res;
-        }
     }
 
     /// <inheritdoc />

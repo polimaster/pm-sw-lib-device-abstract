@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests;
 

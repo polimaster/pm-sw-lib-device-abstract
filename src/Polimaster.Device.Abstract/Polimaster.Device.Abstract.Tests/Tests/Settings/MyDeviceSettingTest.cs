@@ -3,17 +3,18 @@ using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
+using Polimaster.Device.Abstract.Tests.Impl.Settings;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 
-public class MyDeviceSettingTest : Mocks {
+public class DeviceSettingTest : Mocks {
 
     [Fact]
     public void ShouldHaveDefaultBehaviour() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "test" };
         var setting = new MyParamSetting(reader.Object, writer.Object) {
@@ -27,8 +28,8 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public void ShouldHaveValidBehaviour() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
         var myParamBehaviour = new SettingBehaviourBase {
             AccessLevel = SettingAccessLevel.BASE,
             Name = "MyParam",
@@ -48,7 +49,7 @@ public class MyDeviceSettingTest : Mocks {
     
     [Fact]
     public void ShouldSetProperty() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
 
         var p = new MyParam();
         var setting = new MyParamSetting(reader.Object) {
@@ -61,7 +62,7 @@ public class MyDeviceSettingTest : Mocks {
     
     [Fact]
     public void ShouldValidateValue() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
 
         var setting = new MyParamSetting(reader.Object) {
             Value = null
@@ -84,7 +85,7 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldRead() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         var p = new MyParam();
         reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p)!);
         
@@ -98,8 +99,8 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldWrite() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "test" };
         var setting = new MyParamSetting(reader.Object, writer.Object) {
@@ -113,8 +114,8 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldNotWriteValue() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "ve__________________________ery long string" };
         var setting = new MyParamSetting(reader.Object, writer.Object) {
@@ -132,8 +133,13 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldNotWriteReadOnly() {
-        var transport = new Mock<ITransport>();
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var transport = new Mock<IMyTransport>();
+        var client = new Mock<IClient<IMyDeviceStream>>();
+        var stream = new Mock<IMyDeviceStream>();
+        client.Setup(e => e.GetStream()).Returns(stream.Object);
+        transport.Setup(e => e.Client).Returns(client.Object);
+
+        var reader = new Mock<IDataReader<MyParam>>();
 
         var p = new MyParam { Value = "test" };
         var setting = new MyParamSetting(reader.Object) {
@@ -141,14 +147,14 @@ public class MyDeviceSettingTest : Mocks {
         };
 
         await setting.CommitChanges(Token);
-        
-        transport.Verify(e => e.WriteAsync(It.IsAny<byte[]>(), Token), Times.Never);
+        stream.Verify(e => e.Write(It.IsAny<byte[]>(), Token), Times.Never);
+        // transport.Verify(e => e.WriteAsync(It.IsAny<byte[]>(), Token), Times.Never);
     }
 
     [Fact]
     public async Task ShouldCatchExceptionWhileWrite() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
         
         var p = new MyParam { Value = "test" };
         var setting = new MyParamSetting(reader.Object, writer.Object) {
@@ -167,7 +173,7 @@ public class MyDeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldCatchExceptionWhileRead() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
         
         reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));

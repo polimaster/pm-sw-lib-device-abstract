@@ -24,7 +24,7 @@ public abstract class ALogged {
     /// Log current command
     /// </summary>
     /// <param name="methodName"></param>
-    protected void LogCommand(string methodName) => Logger?.LogDebug("Call {N} with command {C}", methodName, GetType().Name);
+    protected void LogDebug(string methodName) => Logger?.LogDebug("Call {N} with command {C}", methodName, GetType().Name);
 
     /// <summary>
     /// Log error
