@@ -12,17 +12,12 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device with identifier
 /// </summary>
-public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> where T: ITransport {
+public interface IDevice<TTransport, TStream> : IDisposable, IEquatable<IDevice<TTransport, TStream>> where TTransport : ITransport<TStream> {
     
     /// <summary>
     /// Unique identifier of device
     /// </summary>
     string Id { get; }
-
-    /// <summary>
-    /// <see cref="ITransport"/> for executing device commands
-    /// </summary>
-    T Transport { get; }
 
     /// <summary>
     /// Indicates device is disconnected and will be removed from memory
@@ -53,7 +48,7 @@ public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> where T: ITran
     /// <summary>
     /// Writes settings to device.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
-    /// Method iterates <see cref="IDevice{T}"/> properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
+    /// Method iterates <see cref="IDevice{TTransport,TStream}"/> properties and call <see cref="IDeviceSetting{T}.CommitChanges"/> on target property.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -64,4 +59,11 @@ public interface IDevice<T> : IDisposable, IEquatable<IDevice<T>> where T: ITran
     /// </summary>
     /// <returns></returns>
     IEnumerable<PropertyInfo> GetSettings();
+
+    /// <summary>
+    /// Check if device has the same <typeparamref name="TTransport"/>
+    /// </summary>
+    /// <param name="transport"></param>
+    /// <returns></returns>
+    bool HasSame(TTransport transport);
 }

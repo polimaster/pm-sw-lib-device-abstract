@@ -6,24 +6,24 @@ using Polimaster.Device.Abstract.Device;
 using Polimaster.Device.Abstract.Device.Implementations;
 using Polimaster.Device.Abstract.Device.Implementations.History;
 using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Commands;
-using Polimaster.Device.Abstract.Tests.Impl.Device.History;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
+using Polimaster.Device.Abstract.Tests.Impl.Commands;
+using Polimaster.Device.Abstract.Tests.Impl.History;
+using Polimaster.Device.Abstract.Tests.Impl.Settings;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 
-public interface IMyDevice : IDevice<IMyTransport>, IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
-    IDeviceSetting<MyParam?> MyParamSetting { get; }
+public interface IMyDevice : IDevice<IMyTransport, IMyDeviceStream>, IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
+    IDeviceSetting<MyParam> MyParamSetting { get; }
     IDeviceSetting<string> StringSetting { get; }
 }
 
-public class MyDevice : ADevice<IMyTransport>, IMyDevice {
-    public IDeviceSetting<ushort?> HistoryInterval { get; }
+public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
+    public IDeviceSetting<ushort> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; private set; }
 
-    public IDeviceSetting<MyParam?> MyParamSetting { get; }
+    public IDeviceSetting<MyParam> MyParamSetting { get; }
     public IDeviceSetting<string> StringSetting { get; }
 
     private readonly DeviceInfoReader _infoReader;

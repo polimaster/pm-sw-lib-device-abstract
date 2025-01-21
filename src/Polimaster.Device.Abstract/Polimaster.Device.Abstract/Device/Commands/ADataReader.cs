@@ -10,18 +10,10 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <summary>
 /// Device data reader
 /// </summary>
-/// <typeparam name="T">Type of data to write</typeparam>
-public abstract class ADataReader<T> : CommandBase, IDataReader<T> {
-    /// <inheritdoc />
-    protected ADataReader(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
-    }
-
-    /// <summary>
-    /// Compile command
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="CommandCompilationException"></exception>
-    protected abstract byte[] Compile();
+/// <typeparam name="TValue">Type of value to read</typeparam>
+/// <typeparam name="TData">Type of data to read/write from <typeparamref name="TStream"/></typeparam>
+/// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
+public abstract class ADataReader<TValue, TData, TStream> : CommandBase<TStream>, IDataReader<TValue> {
 
     /// <summary>
     /// Parse data received from device
@@ -29,18 +21,34 @@ public abstract class ADataReader<T> : CommandBase, IDataReader<T> {
     /// <param name="res"></param>
     /// <returns></returns>
     /// <exception cref="CommandResultParsingException"></exception>
-    protected abstract T? Parse(byte[] res);
+    protected abstract TValue? Parse(TData? res);
 
     /// <inheritdoc />
-    public virtual async Task<T?> Read(CancellationToken cancellationToken) {
-        LogCommand(nameof(Read));
+    public virtual async Task<TValue?> Read(CancellationToken cancellationToken) {
+        LogDebug(nameof(Read));
         try {
-            await Transport.WriteAsync(Compile(), cancellationToken);
-            var res = await Transport.ReadAsync(cancellationToken);
+            // await Transport.WriteAsync(Compile(), cancellationToken);
+            // var res = await Transport.ReadAsync(cancellationToken);
+            var res = default(TData);
+            await Transport.ExecOnStream(async stream => {
+                res = await Execute(stream, cancellationToken);
+            }, cancellationToken);
             return Parse(res);
         } catch (Exception e) {
             LogError(e, nameof(Read));
             throw;
         }
+    }
+
+    /// <summary>
+    /// Execute command on stream and return result
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected abstract Task<TData> Execute(TStream stream, CancellationToken cancellationToken);
+
+    /// <inheritdoc />
+    protected ADataReader(ITransport<TStream> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

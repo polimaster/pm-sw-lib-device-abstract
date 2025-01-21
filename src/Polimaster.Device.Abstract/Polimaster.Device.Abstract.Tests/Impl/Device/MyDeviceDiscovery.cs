@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Transport;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 

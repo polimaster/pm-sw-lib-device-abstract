@@ -13,13 +13,13 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device abstract implementation
 /// </summary>
-public abstract class ADevice<T> : IDevice<T> where T : ITransport {
+public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream> where TTransport : ITransport<TStream> {
 
     /// <summary>
     /// Transport layer
     /// </summary>
-    /// <see cref="ITransport"/>
-    public T Transport { get; }
+    /// <see cref="ITransport{TStream}"/>
+    protected TTransport Transport { get; }
 
     /// <inheritdoc />
     public DeviceInfo? DeviceInfo { get; protected set; }
@@ -29,22 +29,22 @@ public abstract class ADevice<T> : IDevice<T> where T : ITransport {
 
     /// <inheritdoc />
     public event Action? IsDisposing;
-    
+
     /// <summary>
     /// Logger
     /// </summary>
     protected ILogger? Logger { get; }
-    
+
     /// <summary>
     /// Device constructor
     /// </summary>
     /// <param name="transport">Device transport layer</param>
     /// <param name="loggerFactory">Logger factory</param>
-    protected ADevice(T transport, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(TTransport transport, ILoggerFactory? loggerFactory = null) {
         Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
     }
-    
+
 
     /// <inheritdoc />
     public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken);
@@ -97,8 +97,11 @@ public abstract class ADevice<T> : IDevice<T> where T : ITransport {
     }
 
     /// <inheritdoc />
-    public bool Equals(IDevice<T> other) {
-        return Id.Equals(other.Id);
+    public bool HasSame(TTransport transport) => transport.Client.Equals(Transport.Client);
+
+    /// <inheritdoc />
+    public bool Equals(IDevice<TTransport, TStream>? other) {
+        return Id.Equals(other?.Id);
     }
     
     /// <inheritdoc />

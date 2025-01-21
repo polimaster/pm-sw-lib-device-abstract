@@ -3,15 +3,15 @@ using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Device.Commands;
 using Polimaster.Device.Abstract.Device.Settings;
-using Polimaster.Device.Abstract.Tests.Impl.Device.Settings;
+using Polimaster.Device.Abstract.Tests.Impl.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Settings; 
 
-public class MyParamSettingProxyTest : Mocks {
+public class ADeviceSettingProxyTest : Mocks {
 
     [Fact]
     public void ShouldHaveDefaultBehaviour() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         var setting = new MyParamSetting(reader.Object);
 
         var proxy = new MyParamSettingProxy(setting);
@@ -23,7 +23,7 @@ public class MyParamSettingProxyTest : Mocks {
 
     [Fact]
     public void ShouldHaveValidBehaviour() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         var setting = new MyParamSetting(reader.Object);
         var myParamBehaviour = new SettingBehaviourBase {
             AccessLevel = SettingAccessLevel.EXTENDED,
@@ -41,7 +41,7 @@ public class MyParamSettingProxyTest : Mocks {
 
     [Fact]
     public async Task ShouldSetProperty() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         
         var setting = new MyParamSetting(reader.Object);
         await setting.Read(Token);
@@ -56,7 +56,7 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public async Task ShouldValidateValue() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
 
         var setting = new MyParamSetting(reader.Object);
         await setting.Read(Token);
@@ -78,7 +78,7 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public async Task ShouldRead() {
-        var setting = new Mock<IDeviceSetting<MyParam?>>();
+        var setting = new Mock<IDeviceSetting<MyParam>>();
         var proxy = new MyParamSettingProxy(setting.Object);
 
         await proxy.Read(Token);
@@ -87,8 +87,8 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public async Task ShouldWrite() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
 
         var setting = new MyParamSetting(reader.Object, writer.Object);
         await setting.Read(Token);
@@ -101,8 +101,8 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public async Task ShouldNotWriteValue() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
         
         var setting = new MyParamSetting(reader.Object, writer.Object);
         await setting.Read(Token);
@@ -118,7 +118,7 @@ public class MyParamSettingProxyTest : Mocks {
 
     [Fact]
     public void ShouldCheckReadOnly() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         
         var setting = new MyParamSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting);
@@ -129,8 +129,8 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public async Task ShouldCatchExceptionWhileWrite() {
-        var reader = new Mock<IDataReader<MyParam?>>();
-        var writer = new Mock<IDataWriter<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
         
         var setting = new MyParamSetting(reader.Object, writer.Object);
         await setting.Read(Token);
@@ -150,7 +150,7 @@ public class MyParamSettingProxyTest : Mocks {
     
     [Fact]
     public async Task ShouldCatchExceptionWhileRead() {
-        var reader = new Mock<IDataReader<MyParam?>>();
+        var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
         reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
         

@@ -10,29 +10,40 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <summary>
 /// Device data writer
 /// </summary>
-/// <typeparam name="T">Type of data to write</typeparam>
-public abstract class ADataWriter<T> : CommandBase, IDataWriter<T> {
+/// <typeparam name="TValue">Type of data to write</typeparam>
+/// <typeparam name="TData">Type of data to read/write from <typeparamref name="TStream"/></typeparam>
+/// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
+public abstract class ADataWriter<TValue, TData, TStream> : CommandBase<TStream>, IDataWriter<TValue> {
     /// <summary>
-    /// Compile command
+    /// Compile <paramref name="value"/> to <typeparamref name="TData"/> type before send to <typeparamref name="TStream"/>
     /// </summary>
-    /// <param name="data">Data to write</param>
-    /// <returns></returns>
+    /// <param name="value">Data to write</param>
+    /// <returns>Compiled value</returns>
     /// <exception cref="CommandCompilationException"></exception>
-    protected abstract byte[] Compile(T data);
+    protected abstract TData Compile(TValue value);
 
     /// <inheritdoc />
-    public virtual async Task Write(T data, CancellationToken cancellationToken) {
-        LogCommand(nameof(Write));
+    public virtual async Task Write(TValue data, CancellationToken cancellationToken) {
+        LogDebug(nameof(Write));
         try {
-            await Transport.WriteAsync(Compile(data), cancellationToken);
+            // await Transport.WriteAsync(Compile(data), cancellationToken);
+            await Transport.ExecOnStream(stream => Execute(stream, Compile(data), cancellationToken), cancellationToken);
         } catch (Exception e) {
             LogError(e, nameof(Write));
             throw;
         }
     }
 
+    /// <summary>
+    /// Execute command on stream
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="compiled"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected abstract Task Execute(TStream stream, TData compiled, CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    protected ADataWriter(ITransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected ADataWriter(ITransport<TStream> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

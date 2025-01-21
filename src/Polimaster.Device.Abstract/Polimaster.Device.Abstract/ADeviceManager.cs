@@ -51,11 +51,12 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
 /// <typeparam name="TConnectionParams">Connection parameters for <see cref="ITransportDiscovery{TConnectionParams}"/></typeparam>
 /// <typeparam name="TDevice">Device type</typeparam>
 /// <typeparam name="TTransport">Transport type</typeparam>
-public abstract class ADeviceManager<TDevice, TTransport, TDiscovery, TConnectionParams> :
+/// <typeparam name="TStream"></typeparam>
+public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, TConnectionParams> :
     ADeviceManager<TDevice>
     where TDiscovery : ITransportDiscovery<TConnectionParams>
-    where TDevice : IDevice<TTransport>, IDisposable
-    where TTransport : ITransport {
+    where TDevice : IDevice<TTransport, TStream>, IDisposable
+    where TTransport : ITransport<TStream> {
     /// <summary>
     /// See <see cref="ITransportDiscovery{TConnectionParams}"/>
     /// </summary>
@@ -81,22 +82,22 @@ public abstract class ADeviceManager<TDevice, TTransport, TDiscovery, TConnectio
     /// <summary>
     /// Create new device from found transport connection
     /// </summary>
-    /// <param name="transport"><see cref="ITransport"/></param>
+    /// <param name="transport"><see cref="ITransport{TStream}"/></param>
     protected abstract TDevice CreateDevice(TTransport transport);
 
     /// <summary>
     /// Create new transport connection
     /// </summary>
     /// <param name="client"></param>
-    /// <returns><see cref="ITransport"/></returns>
-    protected abstract TTransport CreateTransport(IClient client);
+    /// <returns><see cref="ITransport{TStream}"/></returns>
+    protected abstract TTransport CreateTransport(IClient<TStream> client);
 
     /// <summary>
     /// Create new client from parameters
     /// </summary>
     /// <param name="connectionParams">Client connection parameters</param>
-    /// <returns><see cref="IClient"/></returns>
-    protected abstract IClient CreateClient(TConnectionParams connectionParams);
+    /// <returns><see cref="IClient{TStream}"/></returns>
+    protected abstract IClient<TStream> CreateClient(TConnectionParams connectionParams);
 
     /// <summary>
     /// When override remove from <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.
@@ -104,7 +105,7 @@ public abstract class ADeviceManager<TDevice, TTransport, TDiscovery, TConnectio
     /// <param name="parameters"></param>
     protected virtual void OnLost(IEnumerable<TConnectionParams> parameters) {
         var toRemove = Devices.Where(x =>
-            parameters.Any(p => x.Transport.Client.Equals(CreateClient(p)))).ToArray();
+            parameters.Any(p => x.HasSame(CreateTransport(CreateClient(p))))).ToArray();
         foreach (var dev in toRemove) Removed(dev);
 
         Devices.RemoveAll(x => toRemove.Any(y => y.Equals(x)));
@@ -125,10 +126,10 @@ public abstract class ADeviceManager<TDevice, TTransport, TDiscovery, TConnectio
     protected virtual void OnFound(IEnumerable<TConnectionParams> parameters) {
         foreach (var parameter in parameters) {
             var client = CreateClient(parameter);
-            var found = Devices.Any(x => x.Transport.Client.Equals(client));
+            var transport = CreateTransport(client);
+            var found = Devices.Any(x => x.HasSame(transport));
             if(found) continue;
 
-            var transport = CreateTransport(client);
             var dev = CreateDevice(transport);
             Devices.Add(dev);
             Logger?.LogDebug("Device found: {D}", dev.Id);

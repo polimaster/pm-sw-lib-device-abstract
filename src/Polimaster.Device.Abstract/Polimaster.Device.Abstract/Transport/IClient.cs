@@ -1,14 +1,20 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Polimaster.Device.Abstract.Transport.Stream;
 
 namespace Polimaster.Device.Abstract.Transport;
+
 
 /// <summary>
 /// Client which make connection to device
 /// </summary>
-public interface IClient : IDisposable, IEquatable<IClient> {
+/// <typeparam name="TStream">Stream type</typeparam>
+public interface IClient<TStream> : IDisposable, IEquatable<IClient<TStream>> {
+
+    /// <summary>
+    /// Get device stream for read/write operations
+    /// </summary>
+    TStream GetStream();
 
     /// <summary>
     /// Connection identifier
@@ -26,22 +32,11 @@ public interface IClient : IDisposable, IEquatable<IClient> {
     void Close();
 
     /// <summary>
-    /// Get device stream for read/write operations
-    /// </summary>
-    /// <returns><see cref="IDeviceStream"/></returns>
-    IDeviceStream GetStream();
-
-    /// <summary>
-    /// Open connection
-    /// </summary>
-    void Open();
-
-    /// <summary>
     /// Open connection
     /// </summary>
     /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
-    Task OpenAsync(CancellationToken token);
+    Task Open(CancellationToken token);
 
     /// <summary>
     /// Reset internal connection
