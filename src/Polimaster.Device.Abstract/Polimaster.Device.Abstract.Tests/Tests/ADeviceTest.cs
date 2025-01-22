@@ -63,7 +63,7 @@ public class MyDeviceTest : Mocks {
 
         var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
 
-        const ushort v = 10;
+        var v = TimeSpan.FromSeconds(10);
         dev.HistoryInterval.Value = v;
         dev.StringSetting.Value = "test";
         await dev.WriteAllSettings(Token);
@@ -72,80 +72,4 @@ public class MyDeviceTest : Mocks {
         transport.Verify(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token), Times.Exactly(2));
     }
 
-
-
-    // [Fact]
-    // public async Task ShouldThrowExceptionOnExecute() {
-    //     var transport = new Mock<IMyTransport>();
-    //     var exception = new Exception();
-    //     transport.Setup(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream, Task>>(), Token)).ThrowsAsync(exception);
-    //     var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
-    //
-    //     Exception? ex = null;
-    //
-    //     try {
-    //         await dev.GetTime(Token);
-    //     } catch (Exception e) {
-    //         ex = e;
-    //     }
-    //
-    //     Assert.Equal(exception, ex);
-    // }
-    //
-    // [Fact]
-    // public async Task ShouldExecute() {
-    //     var transport = new Mock<IMyTransport>();
-    //     var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
-    //
-    //     await dev.GetTime(Token);
-    //
-    //     transport.Verify(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream, Task>>(), Token));
-    // }
-    
-
-    // [Fact]
-    // public async Task ShouldReadInfo() {
-    //     var transport = new Mock<IMyTransport>();
-    //     var client = new Mock<IClient<IMyDeviceStream>>();
-    //     var stream = new Mock<IMyDeviceStream>();
-    //     client.Setup(e => e.GetStream()).Returns(stream.Object);
-    //     transport.Setup(e => e.Client).Returns(client.Object);
-    //
-    //     var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
-    //
-    //     Assert.Null(dev.DeviceInfo);
-    //
-    //     await dev.ReadDeviceInfo(CancellationToken.None);
-    //
-    //     Assert.NotNull(dev.DeviceInfo);
-    //     stream.Verify(e => e.Read(Token));
-    //     // transport.Verify(e => e.Read(It.IsAny<CancellationToken>()));
-    // }
-
-    // [Fact]
-    // public async Task ShouldReadSettings() {
-    //     var transport = new Mock<IMyTransport>();
-    //     var client = new Mock<IClient<IMyDeviceStream>>();
-    //     var stream = new Mock<IMyDeviceStream>();
-    //     client.Setup(e => e.GetStream()).Returns(stream.Object);
-    //     transport.Setup(e => e.Client).Returns(client.Object);
-    //
-    //     var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
-    //
-    //     const ushort v = 10;
-    //     stream.Setup(e => e.Read(Token)).Returns(Task.FromResult(BitConverter.GetBytes(v)));
-    //     // transport.Setup(e => e.ReadAsync(Token)).Returns(Task.FromResult(BitConverter.GetBytes(v)));
-    //
-    //     await dev.HistoryInterval.Read(Token);
-    //     stream.Verify(e => e.Read(Token), Times.Exactly(1));
-    //     // transport.Verify(e => e.ReadAsync(Token), Times.Exactly(1));
-    //
-    //     // should not call Read if setting IsSynchronized
-    //     await dev.HistoryInterval.Read(Token);
-    //     // transport.Verify(e => e.ReadAsync(Token), Times.Exactly(1));
-    //     stream.Verify(e => e.Read(Token), Times.Exactly(1));
-    // }
-
-
-    
 }
