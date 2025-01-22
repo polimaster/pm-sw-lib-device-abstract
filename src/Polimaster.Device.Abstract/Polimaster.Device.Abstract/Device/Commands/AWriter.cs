@@ -7,13 +7,25 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Device.Commands;
 
+
+/// <summary>
+/// Device data writer
+/// </summary>
+/// <typeparam name="TValue">Type of data to write</typeparam>
+/// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
+public abstract class AWriter<TValue, TStream>(ITransport<TStream> transport, ILoggerFactory? loggerFactory)
+    : CommandBase<TStream>(transport, loggerFactory), IDataWriter<TValue> {
+    /// <inheritdoc />
+    public abstract Task Write(TValue data, CancellationToken cancellationToken);
+}
+
 /// <summary>
 /// Device data writer
 /// </summary>
 /// <typeparam name="TValue">Type of data to write</typeparam>
 /// <typeparam name="TData">Type of data to read/write from <typeparamref name="TStream"/></typeparam>
 /// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
-public abstract class ADataWriter<TValue, TData, TStream> : CommandBase<TStream>, IDataWriter<TValue> {
+public abstract class AWriter<TValue, TData, TStream> : AWriter<TValue, TStream> {
     /// <summary>
     /// Compile <paramref name="value"/> to <typeparamref name="TData"/> type before send to <typeparamref name="TStream"/>
     /// </summary>
@@ -23,7 +35,7 @@ public abstract class ADataWriter<TValue, TData, TStream> : CommandBase<TStream>
     protected abstract TData Compile(TValue value);
 
     /// <inheritdoc />
-    public virtual async Task Write(TValue data, CancellationToken cancellationToken) {
+    public override async Task Write(TValue data, CancellationToken cancellationToken) {
         LogDebug(nameof(Write));
         try {
             // await Transport.WriteAsync(Compile(data), cancellationToken);
@@ -44,6 +56,6 @@ public abstract class ADataWriter<TValue, TData, TStream> : CommandBase<TStream>
     protected abstract Task Execute(TStream stream, TData compiled, CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    protected ADataWriter(ITransport<TStream> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    protected AWriter(ITransport<TStream> transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
     }
 }

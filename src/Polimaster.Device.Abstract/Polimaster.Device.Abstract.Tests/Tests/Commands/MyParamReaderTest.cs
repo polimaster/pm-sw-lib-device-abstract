@@ -6,7 +6,7 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Commands; 
 
-public class ADataReaderTest : Mocks {
+public class AReaderTest : Mocks {
     
     [Fact]
     public async Task ShouldRead() {

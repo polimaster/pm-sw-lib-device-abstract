@@ -8,7 +8,7 @@ using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Tests.Commands;
 
-public class ADataWriterTest : Mocks {
+public class AWriterTest : Mocks {
     private readonly MyParam _param = new() { CommandPid = 1, Value = "VALUE" };
 
     [Fact]
