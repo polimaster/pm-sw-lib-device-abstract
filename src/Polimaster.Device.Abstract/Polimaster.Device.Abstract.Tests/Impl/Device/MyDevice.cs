@@ -19,7 +19,7 @@ public interface IMyDevice : IDevice<IMyTransport, IMyDeviceStream>, IHasBattery
 }
 
 public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
-    public IDeviceSetting<ushort> HistoryInterval { get; }
+    public IDeviceSetting<TimeSpan> HistoryInterval { get; }
     public IHistoryManager<HistoryRecord> HistoryManager { get; }
     public BatteryStatus? BatteryStatus { get; private set; }
 

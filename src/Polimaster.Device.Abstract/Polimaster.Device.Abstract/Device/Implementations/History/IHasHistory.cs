@@ -1,4 +1,5 @@
-﻿using Polimaster.Device.Abstract.Device.Settings;
+﻿using System;
+using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
@@ -16,5 +17,5 @@ public interface IHasHistory<THistory> : IHasClock {
     /// <summary>
     /// Interval between history entries
     /// </summary>
-    IDeviceSetting<ushort> HistoryInterval { get; }
+    IDeviceSetting<TimeSpan> HistoryInterval { get; }
 }
