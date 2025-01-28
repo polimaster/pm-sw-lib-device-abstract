@@ -115,7 +115,7 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
         void Removed(TDevice dev) {
             Logger?.LogDebug("Device lost: {D}", dev.Id);
             this.Removed?.Invoke(dev);
-            // dev.Dispose();
+            dev.Dispose();
         }
     }
 
