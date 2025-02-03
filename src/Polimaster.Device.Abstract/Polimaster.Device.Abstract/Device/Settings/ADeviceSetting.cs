@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <see cref="IDeviceSetting{T}"/> abstract implementation
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
-public abstract class ADeviceSetting<T> : IDeviceSetting<T> where T : notnull {
+public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// <summary>
     /// Constructor
     /// </summary>
@@ -35,13 +35,13 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T> where T : notnull {
     public abstract bool IsSynchronized { get; protected set; }
 
     /// <inheritdoc />
-    public bool IsValid => !ValidationErrors.Any();
+    public bool IsValid => ValidationErrors == null || !ValidationErrors.Any();
 
     /// <inheritdoc />
     public bool IsError => Exception != null;
 
     /// <inheritdoc />
-    public List<ValidationResult> ValidationErrors { get; protected set; } = [];
+    public IEnumerable<ValidationResult>? ValidationErrors { get; protected set; }
 
     /// <inheritdoc />
     public Exception? Exception { get; protected set; }
@@ -60,13 +60,7 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T> where T : notnull {
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     protected virtual void Validate(T? value) {
-        ValidationErrors = [];
-        if (value == null) {
-            ValidationErrors = [
-                new ValidationResult("Value is null",
-                    new ArgumentNullException(nameof(value), $"{nameof(value)} cannot be null."))
-            ];
-        }
+        ValidationErrors = null;
     }
 
     /// <inheritdoc />

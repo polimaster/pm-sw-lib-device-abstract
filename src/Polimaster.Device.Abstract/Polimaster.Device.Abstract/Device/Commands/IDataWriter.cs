@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// Device data writer
 /// </summary>
 /// <typeparam name="T">Type of data to write</typeparam>
-public interface IDataWriter<in T> where T : notnull {
+public interface IDataWriter<in T> {
     /// <summary>
     /// Write data
     /// </summary>

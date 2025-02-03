@@ -10,11 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Proxied device setting. Converts underlying <see cref="IDeviceSetting{T}"/> value to its own.
 /// Usually, its required when device returns structured value like byte masks or complex strings.
 /// </summary>
-/// <typeparam name="T">Setting data type</typeparam>
-/// <typeparam name="TProxied">Data type of proxied setting</typeparam>
-public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T>
-    where T : notnull
-    where TProxied : notnull {
+public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T> {
     /// <summary>
     /// Constructor
     /// </summary>
@@ -41,22 +37,19 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T>
     /// See <see cref="Value"/>
     /// </summary>
     private T? _internalValue;
-
+    
     /// <inheritdoc />
     public virtual T? Value {
         get => _internalValue ?? GetProxied();
         set {
-            if (!IsSynchronized)
-                throw new Exception($"{nameof(ProxiedSetting)} should be read from device before assigning value");
-
-            // does not allow to change proxied value until is valid
+            if (!IsSynchronized) throw new Exception($"{nameof(ProxiedSetting)} should be read from device before assigning value");
             Validate(value);
-            if (!ValidationErrors.Any()) {
-                SetProxied(value!);
+            // does not allow to change proxied value until is valid
+            if (ValidationErrors == null || !ValidationErrors.Any()) {
+                SetProxied(value);
                 _internalValue = default;
                 return;
             }
-
             _internalValue = value;
         }
     }
@@ -68,13 +61,13 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T>
     public bool IsSynchronized => ProxiedSetting.IsSynchronized;
 
     /// <inheritdoc />
-    public bool IsValid => !ValidationErrors.Any() && ProxiedSetting.IsValid;
+    public bool IsValid => (ValidationErrors == null || !ValidationErrors.Any()) && ProxiedSetting.IsValid;
 
     /// <inheritdoc />
     public bool IsError => ProxiedSetting.IsError;
 
     /// <inheritdoc />
-    public List<ValidationResult> ValidationErrors { get; protected set; } = [];
+    public IEnumerable<ValidationResult>? ValidationErrors { get; protected set; }
 
     /// <inheritdoc />
     public Exception? Exception => ProxiedSetting.Exception;
@@ -90,22 +83,16 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T>
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     /// <returns>Result of conversion</returns>
-    protected abstract void SetProxied(T value);
-
+    protected abstract void SetProxied(T? value);
+    
     /// <summary>
     /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     protected virtual void Validate(T? value) {
-        ValidationErrors = [];
-        if (value == null) {
-            ValidationErrors = [
-                new ValidationResult("Value is null",
-                    new ArgumentNullException(nameof(value), $"{nameof(value)} cannot be null."))
-            ];
-        }
+        ValidationErrors = null;
     }
-
+    
     /// <inheritdoc />
     public override string? ToString() {
         return Value != null ? Value.ToString() : null;
@@ -118,7 +105,8 @@ public abstract class ADeviceSettingProxy<T, TProxied> : IDeviceSetting<T>
 
     /// <inheritdoc />
     public virtual Task CommitChanges(CancellationToken cancellationToken) {
-        return ValidationErrors.Any() ? Task.CompletedTask : ProxiedSetting.CommitChanges(cancellationToken);
+        if (ValidationErrors != null && ValidationErrors.Any()) return Task.CompletedTask;
+        return ProxiedSetting.CommitChanges(cancellationToken);
     }
 
     /// <inheritdoc />
