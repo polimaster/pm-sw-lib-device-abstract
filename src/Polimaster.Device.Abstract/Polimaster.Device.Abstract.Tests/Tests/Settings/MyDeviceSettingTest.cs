@@ -87,7 +87,7 @@ public class DeviceSettingTest : Mocks {
     public async Task ShouldRead() {
         var reader = new Mock<IDataReader<MyParam>>();
         var p = new MyParam();
-        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p)!);
+        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p));
         
         var setting = new MyParamSetting(reader.Object);
 

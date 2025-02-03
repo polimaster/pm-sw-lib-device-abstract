@@ -7,7 +7,7 @@ using Polimaster.Device.Abstract.Tests.Impl.Transport;
 namespace Polimaster.Device.Abstract.Tests.Impl.Commands;
 
 public abstract class MyDeviceStreamWriter<T>(IMyTransport transport, ILoggerFactory? loggerFactory)
-    : AWriter<T, byte[], IMyDeviceStream>(transport, loggerFactory) {
+    : AWriter<T, byte[], IMyDeviceStream>(transport, loggerFactory) where T : notnull {
 
     protected override async Task Execute(IMyDeviceStream stream, byte[] compiled, CancellationToken cancellationToken) {
         await stream.Write(compiled, cancellationToken);

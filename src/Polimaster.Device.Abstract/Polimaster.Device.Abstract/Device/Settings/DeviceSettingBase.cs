@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device setting base class
 /// </summary>
 /// <inheritdoc cref="IDeviceSetting{T}"/>
-public class DeviceSettingBase<T> : ADeviceSetting<T> {
+public class DeviceSettingBase<T> : ADeviceSetting<T> where T : notnull {
     /// <summary>
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// </summary>

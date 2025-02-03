@@ -14,7 +14,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <typeparam name="TValue">Type of data to write</typeparam>
 /// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
 public abstract class AWriter<TValue, TStream>(ITransport<TStream> transport, ILoggerFactory? loggerFactory)
-    : CommandBase<TStream>(transport, loggerFactory), IDataWriter<TValue> {
+    : CommandBase<TStream>(transport, loggerFactory), IDataWriter<TValue> where TValue : notnull {
     /// <inheritdoc />
     public abstract Task Write(TValue data, CancellationToken cancellationToken);
 }
@@ -25,7 +25,9 @@ public abstract class AWriter<TValue, TStream>(ITransport<TStream> transport, IL
 /// <typeparam name="TValue">Type of data to write</typeparam>
 /// <typeparam name="TData">Type of data to read/write from <typeparamref name="TStream"/></typeparam>
 /// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
-public abstract class AWriter<TValue, TData, TStream> : AWriter<TValue, TStream> {
+public abstract class AWriter<TValue, TData, TStream> : AWriter<TValue, TStream>
+    where TData : notnull
+    where TValue : notnull {
     /// <summary>
     /// Compile <paramref name="value"/> to <typeparamref name="TData"/> type before send to <typeparamref name="TStream"/>
     /// </summary>

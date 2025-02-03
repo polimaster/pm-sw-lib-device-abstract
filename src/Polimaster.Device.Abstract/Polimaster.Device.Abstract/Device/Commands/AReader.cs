@@ -13,7 +13,9 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <typeparam name="TValue">Type of value to read</typeparam>
 /// <typeparam name="TData">Type of data to read/write from <typeparamref name="TStream"/></typeparam>
 /// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
-public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, IDataReader<TValue> {
+public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, IDataReader<TValue>
+    where TData : notnull
+    where TValue : notnull {
 
     /// <summary>
     /// Parse data received from device
@@ -21,10 +23,10 @@ public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, ID
     /// <param name="res"></param>
     /// <returns></returns>
     /// <exception cref="CommandResultParsingException"></exception>
-    protected abstract TValue? Parse(TData? res);
+    protected abstract TValue Parse(TData? res);
 
     /// <inheritdoc />
-    public virtual async Task<TValue?> Read(CancellationToken cancellationToken) {
+    public virtual async Task<TValue> Read(CancellationToken cancellationToken) {
         LogDebug(nameof(Read));
         try {
             // await Transport.WriteAsync(Compile(), cancellationToken);
