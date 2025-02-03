@@ -11,19 +11,14 @@ public class MyParamSetting(IDataReader<MyParam> reader, IDataWriter<MyParam>? w
     : DeviceSettingBase<MyParam>(reader, writer, settingBehaviour) {
     protected override void Validate(MyParam? value) {
         base.Validate(value);
-        
-        if (value == null) {
-            ValidationErrors = [new ValidationResult("Value is null")];
-            return;
-        }
-        
+
+        if (value == null) return;
         var vc = new ValidationContext(value);
         var results = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
         var isValid = Validator.TryValidateObject(value, vc, results, true);
 
         if (!isValid) {
-            ValidationErrors = results.Select(e => new ValidationResult(e.ErrorMessage ?? "Unknown error"));
+            ValidationErrors.AddRange(results.Select(e => new ValidationResult(e.ErrorMessage ?? "Unknown error")));
         }
-        
     }
 }

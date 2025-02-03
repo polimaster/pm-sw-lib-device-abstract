@@ -13,5 +13,5 @@ public interface IDataReader<T> {
     /// </summary>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>Data from stream</returns>
-    Task<T?> Read(CancellationToken cancellationToken);
+    Task<T> Read(CancellationToken cancellationToken);
 }

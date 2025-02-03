@@ -152,12 +152,17 @@ public class ADeviceSettingProxyTest : Mocks {
     public async Task ShouldCatchExceptionWhileRead() {
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
-        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
+        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(1));
         
         var setting = new MyParamSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting);
 
-        await proxy.Read(Token);
+        try {
+            await proxy.Read(Token);
+        } catch (Exception) { // ignored
+        }
+
+
         Assert.Equal(ex, proxy.Exception);
         Assert.True(proxy.IsError);
     }

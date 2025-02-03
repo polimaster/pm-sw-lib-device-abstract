@@ -13,10 +13,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// <typeparam name="TValue">Type of value to read</typeparam>
 /// <typeparam name="TData">Type of data to read/write from <typeparamref name="TStream"/></typeparam>
 /// <typeparam name="TStream">See <see cref="ITransport{TStream}"/></typeparam>
-public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, IDataReader<TValue>
-    where TData : notnull
-    where TValue : notnull {
-
+public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, IDataReader<TValue> {
     /// <summary>
     /// Parse data received from device
     /// </summary>

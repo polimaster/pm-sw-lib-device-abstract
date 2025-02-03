@@ -12,23 +12,17 @@ public class MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting, ISettin
     }
 
     protected override void SetProxied(string? value) {
-        if (ProxiedSetting.Value == null) {
+        if (!ProxiedSetting.HasValue) {
             ProxiedSetting.Value = new MyParam { Value = value };
         } else {
-            ProxiedSetting.Value.Value = value;
+            ProxiedSetting.Value!.Value = value;
         }
     }
 
     protected override void Validate(string? value) {
         base.Validate(value);
-        
-        if (value == null) {
-            ValidationErrors = [new ValidationResult("Value is null")];
-            return;
-        }
 
-        if (FORBIDDEN_VALUES.Contains(value)) {
-            ValidationErrors = [new ValidationResult($"{value} cant be set as value")];
-        }
+        if (FORBIDDEN_VALUES.Contains(value))
+            ValidationErrors.Add(new ValidationResult($"{value} cant be set as value"));
     }
 }

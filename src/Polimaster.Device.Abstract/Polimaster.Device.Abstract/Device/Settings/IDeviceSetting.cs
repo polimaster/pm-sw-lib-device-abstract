@@ -25,6 +25,11 @@ public interface IDeviceSetting<T> {
     /// Setting value
     /// </summary>
     T? Value { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the current <see cref="Value"/> object has a valid value of its underlying type
+    /// </summary>
+    bool HasValue { get; }
     
     /// <summary>
     /// Indicates if setting changed via setting <see cref="Value"/> and ready to <see cref="CommitChanges"/>
@@ -49,10 +54,10 @@ public interface IDeviceSetting<T> {
     /// <summary>
     /// <see cref="Value"/> validation errors
     /// </summary>
-    IEnumerable<ValidationResult>? ValidationErrors { get; }
+    List<ValidationResult> ValidationErrors { get; }
 
     /// <summary>
-    /// Error while <see cref="Read"/> or <see cref="CommitChanges"/> operations
+    /// Error occured while performing <see cref="Read"/> or <see cref="CommitChanges"/> operations
     /// </summary>
     Exception? Exception { get; }
 

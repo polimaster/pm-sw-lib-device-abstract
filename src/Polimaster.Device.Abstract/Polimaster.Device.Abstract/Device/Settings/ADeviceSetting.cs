@@ -11,12 +11,20 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
+
+    /// <summary>
+    /// Stores type nullability for <see cref="T"/>
+    /// </summary>
+    private readonly bool _isNullableType;
+
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
     protected ADeviceSetting(ISettingBehaviour? settingBehaviour = null) {
+        _isNullableType = Nullable.GetUnderlyingType(typeof(T)) != null || !typeof(T).IsValueType;
         Behaviour = settingBehaviour ?? new SettingBehaviourBase();
+        ValidationErrors = [];
     }
 
     /// <inheritdoc />
@@ -29,19 +37,22 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     public abstract T? Value { get; set; }
 
     /// <inheritdoc />
-    public bool IsDirty { get; protected set; }
+    public bool HasValue => CheckIfNull(Value);
 
     /// <inheritdoc />
-    public abstract bool IsSynchronized { get; protected set; }
+    public virtual bool IsDirty { get; protected set; }
 
     /// <inheritdoc />
-    public bool IsValid => ValidationErrors == null || !ValidationErrors.Any();
+    public abstract bool IsSynchronized { get; }
 
     /// <inheritdoc />
-    public bool IsError => Exception != null;
+    public virtual bool IsValid => !ValidationErrors.Any();
 
     /// <inheritdoc />
-    public IEnumerable<ValidationResult>? ValidationErrors { get; protected set; }
+    public virtual bool IsError => Exception != null;
+
+    /// <inheritdoc />
+    public List<ValidationResult> ValidationErrors { get; }
 
     /// <inheritdoc />
     public Exception? Exception { get; protected set; }
@@ -60,7 +71,18 @@ public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     protected virtual void Validate(T? value) {
-        ValidationErrors = null;
+        ValidationErrors.Clear();
+        var isNull = CheckIfNull(value);
+        if (!isNull) ValidationErrors.Add(new ValidationResult("Value can't be null"));
+    }
+
+    /// <summary>
+    /// Check if value is null (for nullable types) or default for value type
+    /// </summary>
+    /// <param name="value">Value to check</param>
+    /// <returns></returns>
+    protected bool CheckIfNull(T? value) {
+        return _isNullableType ? value is not null : !EqualityComparer<T>.Default.Equals(value!, default!);
     }
 
     /// <inheritdoc />

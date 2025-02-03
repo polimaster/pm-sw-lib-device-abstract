@@ -46,7 +46,7 @@ public class DeviceSettingTest : Mocks {
         Assert.Equal(myParamBehaviour.AccessLevel, setting.Behaviour?.AccessLevel);
     }
 
-    
+
     [Fact]
     public void ShouldSetProperty() {
         var reader = new Mock<IDataReader<MyParam>>();
@@ -59,7 +59,7 @@ public class DeviceSettingTest : Mocks {
         Assert.True(setting.IsDirty);
         Assert.Null(setting.Exception);
     }
-    
+
     [Fact]
     public void ShouldValidateValue() {
         var reader = new Mock<IDataReader<MyParam>>();
@@ -87,12 +87,12 @@ public class DeviceSettingTest : Mocks {
     public async Task ShouldRead() {
         var reader = new Mock<IDataReader<MyParam>>();
         var p = new MyParam();
-        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p)!);
-        
+        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p));
+
         var setting = new MyParamSetting(reader.Object);
 
         await setting.Read(Token);
-        
+
         reader.Verify(e => e.Read(Token));
         Assert.Equal(p, setting.Value);
     }
@@ -108,7 +108,7 @@ public class DeviceSettingTest : Mocks {
         };
 
         await setting.CommitChanges(Token);
-        
+
         writer.Verify(e => e.Write(p, Token));
     }
 
@@ -123,11 +123,11 @@ public class DeviceSettingTest : Mocks {
         };
 
         await setting.CommitChanges(Token);
-        
+
         Assert.True(setting.IsError);
         Assert.True(setting.IsDirty);
         Assert.NotNull(setting.Exception);
-        
+
         writer.Verify(e => e.Write(p, Token), Times.Never);
     }
 
@@ -155,7 +155,7 @@ public class DeviceSettingTest : Mocks {
     public async Task ShouldCatchExceptionWhileWrite() {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
-        
+
         var p = new MyParam { Value = "test" };
         var setting = new MyParamSetting(reader.Object, writer.Object) {
             Value = p
@@ -163,21 +163,21 @@ public class DeviceSettingTest : Mocks {
 
         var ex = new Exception();
         writer.Setup(e => e.Write(It.IsAny<MyParam>(), Token)).ThrowsAsync(ex);
-        
+
         await setting.CommitChanges(Token);
-        
+
         Assert.Equal(ex, setting.Exception);
         Assert.True(setting.IsError);
     }
-    
+
 
     [Fact]
     public async Task ShouldCatchExceptionWhileRead() {
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
-        
-        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
-        
+
+        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(1));
+
         var setting = new MyParamSetting(reader.Object);
 
         await setting.Read(Token);
@@ -185,5 +185,5 @@ public class DeviceSettingTest : Mocks {
         Assert.Null(setting.Value);
         Assert.True(setting.IsError);
     }
-    
+
 }
