@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 /// Device data reader
 /// </summary>
 /// <typeparam name="T">Type of data to read</typeparam>
-public interface IDataReader<T> where T: notnull {
+public interface IDataReader<T> {
     /// <summary>
     /// Read data
     /// </summary>

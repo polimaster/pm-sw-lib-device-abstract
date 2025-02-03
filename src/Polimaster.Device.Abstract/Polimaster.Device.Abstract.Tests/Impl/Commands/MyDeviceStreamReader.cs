@@ -7,7 +7,7 @@ using Polimaster.Device.Abstract.Tests.Impl.Transport;
 namespace Polimaster.Device.Abstract.Tests.Impl.Commands;
 
 public abstract class MyDeviceStreamReader<T>(IMyTransport transport, ILoggerFactory? loggerFactory)
-    : AReader<T, byte[], IMyDeviceStream>(transport, loggerFactory) where T : notnull {
+    : AReader<T, byte[], IMyDeviceStream>(transport, loggerFactory) {
 
     protected abstract byte[] Compile();
 

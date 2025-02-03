@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device setting base class
 /// </summary>
 /// <inheritdoc cref="IDeviceSetting{T}"/>
-public class DeviceSettingBase<T> : ADeviceSetting<T> where T : notnull {
+public class DeviceSettingBase<T> : ADeviceSetting<T> {
     /// <summary>
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// </summary>
@@ -56,7 +56,12 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> where T : notnull {
     public override bool ReadOnly => Writer == null;
 
     /// <inheritdoc />
-    public override bool IsSynchronized { get; protected set; }
+    public override bool IsSynchronized => _isSynchronized;
+
+    /// <summary>
+    ///
+    /// </summary>
+    private bool _isSynchronized;
 
     /// <summary>
     /// Set value from internal Read/Write commands
@@ -79,9 +84,9 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> where T : notnull {
         try {
             var v = await Reader.Read(cancellationToken);
             SetValue(v);
-            IsSynchronized = true;
+            _isSynchronized = true;
         } catch (Exception e) {
-            IsSynchronized = false;
+            _isSynchronized = false;
             SetValue(default);
             Exception = e;
         } finally {
@@ -96,13 +101,13 @@ public class DeviceSettingBase<T> : ADeviceSetting<T> where T : notnull {
             return;
         }
         
-        if (Writer == null || !IsDirty || Value == null) return;
+        if (Writer == null || !IsDirty || !HasValue) return;
         await Semaphore.WaitAsync(cancellationToken);
         try {
-            await Writer.Write(Value, cancellationToken);
+            await Writer.Write(Value!, cancellationToken);
             IsDirty = false;
             Exception = null;
-            IsSynchronized = true;
+            _isSynchronized = true;
         } catch (Exception e) {
             Exception = e;
         } finally {
