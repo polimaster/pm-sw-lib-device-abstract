@@ -22,7 +22,7 @@ public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, ID
     /// </summary>
     /// <param name="res"></param>
     /// <returns></returns>
-    /// <exception cref="CommandResultParsingException"></exception>
+    /// <exception cref="CommandResultParsingException">Should fail if it can't parse command result</exception>
     protected abstract TValue Parse(TData? res);
 
     /// <inheritdoc />
