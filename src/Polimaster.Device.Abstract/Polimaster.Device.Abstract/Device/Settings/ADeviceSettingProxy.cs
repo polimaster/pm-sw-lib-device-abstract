@@ -37,7 +37,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
             base.Value = value;
             // does not allow to change proxied value until is valid
             if (!ValidationErrors.Any()){
-                ProxiedSetting.Value = SetProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
+                ProxiedSetting.Value = ModifyProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
                     value ?? throw new ArgumentNullException(nameof(value)));
             }
         }
@@ -68,18 +68,18 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     }
 
     /// <summary>
-    /// Converts <see cref="ProxiedSetting"/> value to <see cref="IDeviceSetting{T}.Value"/>
+    /// Converts <see cref="ProxiedSetting"/> value to <see cref="Value"/>
     /// </summary>
     /// <returns>Result of conversion</returns>
     protected abstract T? GetProxied();
 
     /// <summary>
-    /// Apply <see cref="IDeviceSetting{T}.Value"/> to <see cref="ProxiedSetting"/> value
+    /// Apply changes to <see cref="ProxiedSetting"/>.<see cref="IDeviceSetting{T}.Value"/>
     /// </summary>
     /// <param name="proxied">Current proxied value to modify</param>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
-    /// <returns>Result of conversion</returns>
-    protected abstract TProxied SetProxied(TProxied proxied, T value);
+    /// <returns>Result of modification</returns>
+    protected abstract TProxied ModifyProxied(TProxied proxied, T value);
 
     /// <inheritdoc />
     public override Task Reset(CancellationToken cancellationToken) {
