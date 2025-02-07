@@ -74,7 +74,7 @@ public class MyTransportTest : Mocks {
         client.Setup(e => e.GetStream()).Returns(stream.Object);
 
         var ex = new Exception("FAIL");
-        stream.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(2));
+        stream.Setup(e => e.Read(Token)).ThrowsAsync(ex);
         
         var tr = new MyTransport(client.Object, LOGGER_FACTORY);
         

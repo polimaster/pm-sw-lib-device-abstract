@@ -176,7 +176,7 @@ public class DeviceSettingTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
 
-        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(1));
+        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex);
 
         var setting = new MyParamSetting(reader.Object);
 

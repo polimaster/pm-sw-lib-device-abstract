@@ -9,13 +9,14 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Proxied device setting. Converts underlying <see cref="IDeviceSetting{T}"/> value to its own.
 /// Usually, its required when device returns structured value like byte masks or complex strings.
 /// </summary>
-public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDeviceSetting<T> {
+public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> where T : notnull where TProxied : notnull {
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="proxiedSetting">Setting to proxy</param>
     /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
-    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingBehaviour? settingBehaviour = null): base(settingBehaviour) {
+    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingBehaviour? settingBehaviour = null) :
+        base(settingBehaviour) {
         ProxiedSetting = proxiedSetting;
     }
 
@@ -27,30 +28,29 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDev
     /// <inheritdoc />
     public override bool ReadOnly => ProxiedSetting.ReadOnly;
 
-    /// <summary>
-    /// Stores value while validation does not pass
-    /// See <see cref="Value"/>
-    /// </summary>
-    private T? _internalValue;
-    
     /// <inheritdoc />
     public override T? Value {
-        get => _internalValue ?? GetProxied();
+        get => base.HasValue ? base.Value : GetProxied();
         set {
-            if (!IsSynchronized) throw new Exception($"{nameof(ProxiedSetting)} should be read from device before assigning value");
-            Validate(value);
+            if (!ProxiedSetting.HasValue)
+                throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
+            base.Value = value;
             // does not allow to change proxied value until is valid
-            if (!ValidationErrors.Any()) {
-                SetProxied(value);
-                _internalValue = default;
-                return;
+            if (!ValidationErrors.Any()){
+                ProxiedSetting.Value = SetProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
+                    value ?? throw new ArgumentNullException(nameof(value)));
             }
-            _internalValue = value;
         }
     }
 
     /// <inheritdoc />
-    public override bool IsDirty => _internalValue != null || ProxiedSetting.IsDirty;
+    public override bool HasValue {
+        get => base.HasValue || ProxiedSetting.HasValue;
+        protected set => base.HasValue = value;
+    }
+
+    /// <inheritdoc />
+    public override bool IsDirty => base.HasValue || ProxiedSetting.IsDirty;
 
     /// <inheritdoc />
     public override bool IsSynchronized => ProxiedSetting.IsSynchronized;
@@ -61,6 +61,12 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDev
     /// <inheritdoc />
     public override bool IsError => ProxiedSetting.IsError;
 
+    /// <inheritdoc />
+    public override Exception? Exception {
+        get => ProxiedSetting.Exception;
+        protected set { }
+    }
+
     /// <summary>
     /// Converts <see cref="ProxiedSetting"/> value to <see cref="IDeviceSetting{T}.Value"/>
     /// </summary>
@@ -68,14 +74,16 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDev
     protected abstract T? GetProxied();
 
     /// <summary>
-    /// Converts <see cref="IDeviceSetting{T}.Value"/> to <see cref="ProxiedSetting"/> value
+    /// Apply <see cref="IDeviceSetting{T}.Value"/> to <see cref="ProxiedSetting"/> value
     /// </summary>
+    /// <param name="proxied">Current proxied value to modify</param>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     /// <returns>Result of conversion</returns>
-    protected abstract void SetProxied(T? value);
+    protected abstract TProxied SetProxied(TProxied proxied, T value);
 
     /// <inheritdoc />
     public override Task Reset(CancellationToken cancellationToken) {
+        HasValue = false;
         return ProxiedSetting.Reset(cancellationToken);
     }
 
@@ -83,7 +91,6 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDev
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!ValidationErrors.Any()) {
             await ProxiedSetting.CommitChanges(cancellationToken);
-            Exception = ProxiedSetting.Exception;
             return;
         }
 
@@ -92,7 +99,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSetting<T>, IDev
 
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
+        HasValue = false;
         await ProxiedSetting.Read(cancellationToken);
-        Exception = ProxiedSetting.Exception;
     }
 }
