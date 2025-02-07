@@ -1,92 +1,94 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Device.Commands;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
-/// <see cref="IDeviceSetting{T}"/> abstract implementation
+/// Device setting base class
 /// </summary>
-/// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
-public abstract class ADeviceSetting<T> : IDeviceSetting<T>{
-
+/// <inheritdoc cref="IDeviceSetting{T}"/>
+public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
     /// <summary>
-    /// Stores type nullability for <see cref="T"/>
+    /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// </summary>
-    private readonly bool _isNullableType;
-
+    protected SemaphoreSlim Semaphore { get; } = new(1, 1);
+    
     /// <summary>
     /// Constructor
     /// </summary>
+    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
+    /// <param name="reader">Command for read data</param>
     /// <param name="settingBehaviour">See <see cref="ISettingBehaviour"/></param>
-    protected ADeviceSetting(ISettingBehaviour? settingBehaviour = null) {
-        _isNullableType = Nullable.GetUnderlyingType(typeof(T)) != null || !typeof(T).IsValueType;
-        Behaviour = settingBehaviour ?? new SettingBehaviourBase();
-        ValidationErrors = [];
-    }
-
-    /// <inheritdoc />
-    public ISettingBehaviour? Behaviour { get; }
-
-    /// <inheritdoc />
-    public abstract bool ReadOnly { get; }
-
-    /// <inheritdoc />
-    public abstract T? Value { get; set; }
-
-    /// <inheritdoc />
-    public bool HasValue => CheckIfNull(Value);
-
-    /// <inheritdoc />
-    public virtual bool IsDirty { get; protected set; }
-
-    /// <inheritdoc />
-    public abstract bool IsSynchronized { get; }
-
-    /// <inheritdoc />
-    public virtual bool IsValid => !ValidationErrors.Any();
-
-    /// <inheritdoc />
-    public virtual bool IsError => Exception != null;
-
-    /// <inheritdoc />
-    public List<ValidationResult> ValidationErrors { get; }
-
-    /// <inheritdoc />
-    public Exception? Exception { get; protected set; }
-
-    /// <inheritdoc />
-    public abstract Task Read(CancellationToken cancellationToken);
-
-    /// <inheritdoc />
-    public abstract Task Reset(CancellationToken cancellationToken);
-
-    /// <inheritdoc />
-    public abstract Task CommitChanges(CancellationToken cancellationToken);
-    
-    /// <summary>
-    /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.
-    /// </summary>
-    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
-    protected virtual void Validate(T? value) {
-        ValidationErrors.Clear();
-        var isNull = CheckIfNull(value);
-        if (!isNull) ValidationErrors.Add(new ValidationResult("Value can't be null"));
+    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingBehaviour? settingBehaviour = null)
+        : base(settingBehaviour) {
+        Reader = reader;
+        Writer = writer;
     }
 
     /// <summary>
-    /// Check if value is null (for nullable types) or default for value type
+    /// Command for read data
     /// </summary>
-    /// <param name="value">Value to check</param>
-    /// <returns></returns>
-    protected bool CheckIfNull(T? value) {
-        return _isNullableType ? value is not null : !EqualityComparer<T>.Default.Equals(value!, default!);
+    protected IDataReader<T> Reader { get; }
+
+    /// <summary>
+    /// Command for write data
+    /// </summary>
+    protected IDataWriter<T>? Writer { get; }
+
+    /// <inheritdoc />
+    public override bool ReadOnly => Writer == null;
+
+    /// <inheritdoc />
+    public override bool IsSynchronized => _isSynchronized;
+
+    /// <summary>
+    ///
+    /// </summary>
+    private bool _isSynchronized;
+
+    /// <inheritdoc />
+    public override Task Read(CancellationToken cancellationToken) {
+        return IsSynchronized ? Task.CompletedTask : Reset(cancellationToken);
     }
 
     /// <inheritdoc />
-    public override string? ToString() {
-        return Value != null ? Value.ToString() : null;
+    public override async Task Reset(CancellationToken cancellationToken) {
+        await Semaphore.WaitAsync(cancellationToken);
+        try {
+            var v = await Reader.Read(cancellationToken);
+            SetValue(v);
+            _isSynchronized = true;
+        } catch (Exception e) {
+            _isSynchronized = false;
+            SetValue(default);
+            HasValue = false;
+            Exception = e;
+        } finally {
+            Semaphore.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public override async Task CommitChanges(CancellationToken cancellationToken) {
+        if (!IsValid) {
+            Exception = new Exception($"Value of {GetType().Name} is not valid");
+            return;
+        }
+        
+        if (Writer == null || !IsDirty) return;
+
+        await Semaphore.WaitAsync(cancellationToken);
+        try {
+            if (Value != null) await Writer.Write(Value, cancellationToken);
+            IsDirty = false;
+            Exception = null;
+            _isSynchronized = true;
+        } catch (Exception e) {
+            Exception = e;
+        } finally {
+            Semaphore.Release();
+        }
     }
 }

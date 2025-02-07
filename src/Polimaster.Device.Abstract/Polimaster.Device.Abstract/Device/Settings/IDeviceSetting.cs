@@ -9,7 +9,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Device setting
 /// </summary>
 /// <typeparam name="T">Data type of <see cref="Value"/></typeparam>
-public interface IDeviceSetting<T> {
+public interface IDeviceSetting<T> where T : notnull {
 
     /// <summary>
     /// See <see cref="ISettingBehaviour"/>
@@ -27,7 +27,8 @@ public interface IDeviceSetting<T> {
     T? Value { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether the current <see cref="Value"/> object has a valid value of its underlying type
+    /// Gets a value indicating whether the current <see cref="Value"/> is set via
+    /// assigning to <see cref="Value"/> itself either with <see cref="Read"/> or <see cref="Reset"/> metods.
     /// </summary>
     bool HasValue { get; }
     

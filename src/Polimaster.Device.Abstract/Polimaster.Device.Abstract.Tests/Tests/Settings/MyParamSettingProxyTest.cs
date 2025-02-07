@@ -42,7 +42,8 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public async Task ShouldSetProperty() {
         var reader = new Mock<IDataReader<MyParam>>();
-        
+        reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam());
+
         var setting = new MyParamSetting(reader.Object);
         await setting.Read(Token);
 
@@ -72,7 +73,7 @@ public class ADeviceSettingProxyTest : Mocks {
             Value = null
         };
         
-        Assert.False(proxy.IsDirty);
+        Assert.True(proxy.IsDirty);
         Assert.False(proxy.IsValid);
     }
     
@@ -88,6 +89,7 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public async Task ShouldWrite() {
         var reader = new Mock<IDataReader<MyParam>>();
+        reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam());
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var setting = new MyParamSetting(reader.Object, writer.Object);
@@ -130,6 +132,7 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public async Task ShouldCatchExceptionWhileWrite() {
         var reader = new Mock<IDataReader<MyParam>>();
+        reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam {Value = "value from device"});
         var writer = new Mock<IDataWriter<MyParam>>();
         
         var setting = new MyParamSetting(reader.Object, writer.Object);
@@ -152,7 +155,7 @@ public class ADeviceSettingProxyTest : Mocks {
     public async Task ShouldCatchExceptionWhileRead() {
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
-        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex, TimeSpan.FromSeconds(1));
+        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex);
         
         var setting = new MyParamSetting(reader.Object);
         var proxy = new MyParamSettingProxy(setting);
