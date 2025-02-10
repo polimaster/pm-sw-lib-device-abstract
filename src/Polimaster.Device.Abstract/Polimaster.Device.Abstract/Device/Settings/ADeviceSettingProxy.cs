@@ -36,9 +36,12 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                 throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
             base.Value = value;
             // does not allow to change proxied value until is valid
-            if (!ValidationErrors.Any()){
-                ProxiedSetting.Value = ModifyProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
-                    value ?? throw new ArgumentNullException(nameof(value)));
+            if (ValidationErrors.Any()) return;
+
+            ProxiedSetting.Value = ModifyProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
+                value ?? throw new ArgumentNullException(nameof(value)));
+            if (ProxiedSetting.ValidationErrors.Any()) {
+                ValidationErrors.Add(new ValidationResult("Underlying proxied setting value is invalid."));
             }
         }
     }
