@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
@@ -10,23 +11,26 @@ public struct HistoryChunk<THistory> {
     /// <summary>
     /// History records available in device
     /// </summary>
-    public int? Remaining;
+    public int? Remaining = null;
 
     /// <summary>
     /// Indicates if reading process completed
     /// </summary>
-    public bool Completed;
+    public bool Completed = false;
 
     /// <summary>
     /// Retrieved history records
     /// </summary>
-    public IEnumerable<THistory>? Records;
+    public IEnumerable<THistory>? Records = null;
 
     /// <summary>
-    /// 
+    /// Stores <see cref="Exception"/> occured while reading history data from device.
+    /// </summary>
+    public Exception? Exception = null;
+
+    /// <summary>
+    ///
     /// </summary>
     public HistoryChunk() {
-        Remaining = null;
-        Completed = false;
     }
 }

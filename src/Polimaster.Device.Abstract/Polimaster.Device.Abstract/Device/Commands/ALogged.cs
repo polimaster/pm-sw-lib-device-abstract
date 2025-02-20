@@ -24,12 +24,12 @@ public abstract class ALogged {
     /// Log current command
     /// </summary>
     /// <param name="methodName"></param>
-    protected void LogDebug(string methodName) => Logger?.LogDebug("Call {N} with command {C}", methodName, GetType().Name);
+    protected void LogDebug(string methodName) => Logger?.LogDebug("Execute {C}", methodName);
 
     /// <summary>
     /// Log error
     /// </summary>
     /// <param name="e"></param>
     /// <param name="methodName"></param>
-    protected void LogError(Exception e, string methodName) => Logger?.LogError(e, "Error while sending {N} command {C}",methodName, GetType().Name);
+    protected void LogError(Exception e, string methodName) => Logger?.LogError(e, "Error while executing {C}", methodName);
 }
