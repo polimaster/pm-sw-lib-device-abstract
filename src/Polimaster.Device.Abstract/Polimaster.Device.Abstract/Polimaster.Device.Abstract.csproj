@@ -16,6 +16,7 @@
         <RepositoryUrl>https://github.com/polimaster/pm-sw-lib-device-abstract</RepositoryUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <AssemblyVersion>1.0.1</AssemblyVersion>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
         
     </PropertyGroup>
     <ItemGroup>
