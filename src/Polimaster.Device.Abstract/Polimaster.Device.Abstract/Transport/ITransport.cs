@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
-/// Device transport layer (USB, Tcp, Bluetooth etc.)
+/// Device transport layer (USB, Tcp, Bluetooth, etc.)
 /// </summary>
 /// <typeparam name="TStream">Stream type</typeparam>
 public interface ITransport<TStream> : IDisposable {

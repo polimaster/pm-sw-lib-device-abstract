@@ -5,7 +5,7 @@ using System.Threading;
 namespace Polimaster.Device.Abstract;
 
 /// <summary>
-/// Transport discovery searches for devices on particular interface (like IrDA or Bluetooth).
+/// Transport discovery searches for devices on a particular interface (like IrDA or Bluetooth).
 /// </summary>
 /// <typeparam name="TConnectionParams">Connection parameters</typeparam>
 public interface ITransportDiscovery<out TConnectionParams> : IDisposable {
@@ -13,7 +13,7 @@ public interface ITransportDiscovery<out TConnectionParams> : IDisposable {
     /// <summary>
     /// Start search for available devices
     /// </summary>
-    /// <returns>List of devices transport</returns>
+    /// <returns>List of device's transport</returns>
     void Start(CancellationToken token);
 
     /// <summary>
@@ -28,7 +28,7 @@ public interface ITransportDiscovery<out TConnectionParams> : IDisposable {
     public event Action<IEnumerable<TConnectionParams>>? Found;
 
     /// <summary>
-    /// Occurs when device detached from interface
+    /// Occurs when the device detached from the interface
     /// </summary>
     public event Action<IEnumerable<TConnectionParams>>? Lost;
 }

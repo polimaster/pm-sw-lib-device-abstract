@@ -15,7 +15,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     public IClient<TStream> Client { get; }
 
     /// <summary>
-    /// Set limit of threads to 1, witch can access to read/write operations at a time. 
+    /// Set the limit of threads to 1, which can access to read/write operations at a time.
     /// See <see cref="SyncStreamAccess"/>
     /// </summary>
     protected virtual SemaphoreSlim Semaphore { get; } = new(1, 1);
@@ -26,12 +26,12 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     protected virtual bool SyncStreamAccess => true;
 
     /// <summary>
-    /// Amount of milliseconds to sleep after command execution
+    /// Number of milliseconds to sleep after command execution
     /// </summary>
     protected virtual ushort Sleep => 1;
 
     /// <summary>
-    /// Keep connection open until it's disposed
+    /// Keep the connection open until it's disposed
     /// </summary>
     protected virtual bool KeepOpen => false;
 

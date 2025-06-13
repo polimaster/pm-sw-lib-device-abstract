@@ -17,7 +17,7 @@ public interface IDeviceSetting<T> where T : notnull {
     ISettingBehaviour? Behaviour { get; }
     
     /// <summary>
-    /// Indicates if setting is readonly
+    /// Indicates if the setting is readonly
     /// </summary>
     bool ReadOnly { get; }
 
@@ -38,7 +38,7 @@ public interface IDeviceSetting<T> where T : notnull {
     bool IsDirty { get; }
     
     /// <summary>
-    /// Indicates if setting read from device.
+    /// Indicates if setting read from the device.
     /// </summary>
     bool IsSynchronized { get; }
     
@@ -63,21 +63,21 @@ public interface IDeviceSetting<T> where T : notnull {
     Exception? Exception { get; }
 
     /// <summary>
-    /// Reads setting from device
+    /// Reads setting from the device
     /// </summary>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task Read(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Force to read setting from device
+    /// Force to read setting from the device
     /// </summary>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task Reset(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Writes <see cref="Value"/> to device if it <see cref="IsDirty"/>
+    /// Writes <see cref="Value"/> to the device if it <see cref="IsDirty"/>
     /// </summary>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>

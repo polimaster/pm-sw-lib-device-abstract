@@ -10,10 +10,9 @@ namespace Polimaster.Device.Abstract.Device;
 
 
 /// <summary>
-/// Device with identifier
+/// Device interface
 /// </summary>
-public interface IDevice<TTransport, TStream> : IDisposable, IEquatable<IDevice<TTransport, TStream>> where TTransport : ITransport<TStream> {
-    
+public interface IDevice {
     /// <summary>
     /// Unique identifier of device
     /// </summary>
@@ -35,7 +34,7 @@ public interface IDevice<TTransport, TStream> : IDisposable, IEquatable<IDevice<
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns></returns>
     Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken);
-    
+
     /// <summary>
     ///  Reads device settings.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
@@ -59,9 +58,14 @@ public interface IDevice<TTransport, TStream> : IDisposable, IEquatable<IDevice<
     /// </summary>
     /// <returns></returns>
     IEnumerable<PropertyInfo> GetSettings();
+}
 
+/// <summary>
+/// Device with identifier
+/// </summary>
+public interface IDevice<TTransport, TStream> : IDevice, IDisposable, IEquatable<IDevice<TTransport, TStream>> where TTransport : ITransport<TStream> {
     /// <summary>
-    /// Check if device has the same <typeparamref name="TTransport"/>
+    /// Check if the device has the same <typeparamref name="TTransport"/>
     /// </summary>
     /// <param name="transport"></param>
     /// <returns></returns>

@@ -6,7 +6,7 @@ namespace Polimaster.Device.Abstract.Transport;
 
 
 /// <summary>
-/// Client which make connection to device
+/// Client that makes connection to the device
 /// </summary>
 /// <typeparam name="TStream">Stream type</typeparam>
 public interface IClient<TStream> : IDisposable, IEquatable<IClient<TStream>> {
@@ -22,7 +22,7 @@ public interface IClient<TStream> : IDisposable, IEquatable<IClient<TStream>> {
     string ConnectionId { get; }
 
     /// <summary>
-    /// Returns true if client connected
+    /// Returns true if the client connected
     /// </summary>
     bool Connected { get; }
 
