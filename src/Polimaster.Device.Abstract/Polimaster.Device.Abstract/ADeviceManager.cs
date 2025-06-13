@@ -8,7 +8,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract;
 
 /// <inheritdoc />
-public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposable {
+public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposable, IDevice {
     /// <summary>
     /// 
     /// </summary>
@@ -86,14 +86,14 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     protected abstract TDevice CreateDevice(TTransport transport);
 
     /// <summary>
-    /// Create new transport connection
+    /// Create a new transport connection
     /// </summary>
     /// <param name="client"></param>
     /// <returns><see cref="ITransport{TStream}"/></returns>
     protected abstract TTransport CreateTransport(IClient<TStream> client);
 
     /// <summary>
-    /// Create new client from parameters
+    /// Create a new client from parameters
     /// </summary>
     /// <param name="connectionParams">Client connection parameters</param>
     /// <returns><see cref="IClient{TStream}"/></returns>

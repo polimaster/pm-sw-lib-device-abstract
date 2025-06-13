@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Polimaster.Device.Abstract.Transport;
 
 /// <summary>
-/// Stream for reading/writing data to device.
+/// Stream for reading/writing data to the device.
 /// Provide base <see cref="Read"/> and <see cref="Write"/> methods.
 /// </summary>
 public interface IDeviceStream<T> {
