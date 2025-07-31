@@ -7,7 +7,7 @@ using Polimaster.Device.Abstract.Transport;
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
 /// <inheritdoc />
-public abstract class AHistoryManager<THistory, TStream> : IHistoryManager<THistory> {
+public abstract class AHistoryManager<THistory, TStream> : IHistoryManager<THistory> where THistory : AHistoryRecord {
     /// <summary>
     ///
     /// </summary>
