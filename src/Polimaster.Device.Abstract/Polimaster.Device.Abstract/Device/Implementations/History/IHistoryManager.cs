@@ -8,7 +8,7 @@ namespace Polimaster.Device.Abstract.Device.Implementations.History;
 /// Device history reader
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
-public interface IHistoryManager<THistory> {
+public interface IHistoryManager<THistory> where THistory : AHistoryRecord {
 
     /// <summary>
     /// Occurs when new data got from device

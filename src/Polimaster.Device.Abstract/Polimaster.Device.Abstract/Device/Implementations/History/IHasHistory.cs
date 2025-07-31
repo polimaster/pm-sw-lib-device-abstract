@@ -7,7 +7,7 @@ namespace Polimaster.Device.Abstract.Device.Implementations.History;
 /// Identifies a device can return history
 /// </summary>
 /// <typeparam name="THistory">Type of history record</typeparam>
-public interface IHasHistory<THistory> : IHasClock {
+public interface IHasHistory<THistory> : IHasClock where THistory : AHistoryRecord {
     
     /// <summary>
     /// <see cref="IHistoryManager{THistory}"/>
