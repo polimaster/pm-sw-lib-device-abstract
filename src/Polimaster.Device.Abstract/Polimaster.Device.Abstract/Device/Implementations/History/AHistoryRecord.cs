@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Polimaster.Device.Abstract.Device.Implementations.History;
 
@@ -9,5 +10,5 @@ public abstract class AHistoryRecord {
     /// <summary>
     /// Record date/time
     /// </summary>
-    public DateTimeOffset Time { get; set; }
+    [Description("Date & Time")] public DateTimeOffset Time { get; set; }
 }
