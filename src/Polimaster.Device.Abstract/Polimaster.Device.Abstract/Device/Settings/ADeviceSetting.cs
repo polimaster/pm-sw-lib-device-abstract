@@ -20,9 +20,9 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
     /// </summary>
     /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
     /// <param name="reader">Command for read data</param>
-    /// <param name="settingBehaviour">See <see cref="ISettingDescriptor"/></param>
-    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingDescriptor? settingBehaviour = null)
-        : base(settingBehaviour) {
+    /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
+    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingDescriptor? settingDescriptor = null)
+        : base(settingDescriptor) {
         Reader = reader;
         Writer = writer;
     }

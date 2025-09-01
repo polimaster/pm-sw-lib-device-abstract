@@ -20,10 +20,10 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="settingBehaviour">See <see cref="ISettingDescriptor"/></param>
-    protected ADeviceSettingBase(ISettingDescriptor? settingBehaviour = null) {
+    /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
+    protected ADeviceSettingBase(ISettingDescriptor? settingDescriptor = null) {
         _isNullableValueType = Nullable.GetUnderlyingType(typeof(T)) != null || !typeof(T).IsValueType;
-        Descriptor = settingBehaviour ?? new SettingDescriptorBase();
+        Descriptor = settingDescriptor;
         ValidationErrors = [];
     }
 

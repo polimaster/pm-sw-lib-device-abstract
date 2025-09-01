@@ -1,22 +1,22 @@
 ﻿namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc />
-public class SettingDescriptorBase : ISettingDescriptor {
+public class SettingDescriptorBase(string name, SettingAccessLevel accessLevel = SettingAccessLevel.BASE, string? groupName = null, string? description = null) : ISettingDescriptor {
     /// <inheritdoc />
-    public SettingAccessLevel AccessLevel { get; set; }
+    public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
     /// <inheritdoc />
-    public string? Name { get; init; }
+    public string Name { get; init; } = name;
 
     /// <inheritdoc />
-    public string? Description { get; init; }
+    public string? Description { get; init; } = description;
 
     /// <inheritdoc />
-    public string? GroupName { get; init; }
+    public string? GroupName { get; init; } = groupName;
 
     /// <inheritdoc />
     public override int GetHashCode() {
-        unchecked { return ((Name != null ? Name.GetHashCode() : 0) * 397) ^ (GroupName != null ? GroupName.GetHashCode() : 0); }
+        unchecked { return (Name.GetHashCode() * 397) ^ (GroupName != null ? GroupName.GetHashCode() : 0); }
     }
 
     /// <summary>

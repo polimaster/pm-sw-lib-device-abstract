@@ -12,7 +12,7 @@ public interface ISettingDescriptor {
     /// <summary>
     /// Setting name
     /// </summary>
-    string? Name { get; init; }
+    string Name { get; init; }
 
     /// <summary>
     /// Setting description
@@ -20,7 +20,7 @@ public interface ISettingDescriptor {
     string? Description { get; init; }
 
     /// <summary>
-    /// Setting group name. On example, "Sound", "Behaviour", "Gamma" etc.
+    /// Setting group name. On example, "Sound", "Gamma" etc.
     /// </summary>
     string? GroupName { get; init; }
 }

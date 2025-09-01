@@ -41,10 +41,7 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         _timeReader = new TimeReader(Transport, loggerFactory);
         _timeWriter = new TimeWriter(Transport, loggerFactory);
 
-        var myParamBehaviour = new SettingDescriptorBase {
-            AccessLevel = SettingAccessLevel.BASE,
-            GroupName = "MyParamSettingGroup"
-        };
+        var myParamBehaviour = new SettingDescriptorBase("test", SettingAccessLevel.BASE, "MyParamSettingGroup");
 
         // building device commands and settings
         var paramReader = new MyParamReader(Transport, loggerFactory);
@@ -52,18 +49,12 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         MyParamSetting = new MyParamSetting(paramReader, paramWriter, myParamBehaviour);
 
 
-        var stringSettingBehaviour = new SettingDescriptorBase {
-            AccessLevel = SettingAccessLevel.EXTENDED,
-            GroupName = "StringSettingGroup"
-        };
+        var stringSettingBehaviour = new SettingDescriptorBase("test1", SettingAccessLevel.EXTENDED, "StringSettingGroup");
         var plainReader = new PlainReader(Transport, loggerFactory);
         var plainWriter = new PlainWriter(Transport, loggerFactory);
         StringSetting = new StringSetting(plainReader, plainWriter, stringSettingBehaviour);
 
-        var historyIntervalBehaviour = new SettingDescriptorBase {
-            AccessLevel = SettingAccessLevel.ADVANCED,
-            GroupName = "Behaviour"
-        };
+        var historyIntervalBehaviour = new SettingDescriptorBase("test2", SettingAccessLevel.ADVANCED, "Behaviour");
         var intervalReader = new HistoryIntervalReader(Transport, loggerFactory);
         var intervalWriter = new HistoryIntervalWriter(Transport, loggerFactory);
         HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter, historyIntervalBehaviour);
