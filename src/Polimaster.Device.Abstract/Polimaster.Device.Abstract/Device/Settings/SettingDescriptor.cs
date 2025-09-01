@@ -1,18 +1,27 @@
-﻿namespace Polimaster.Device.Abstract.Device.Settings;
+﻿using System;
+
+namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc />
-public class SettingDescriptorBase(string name, SettingAccessLevel accessLevel = SettingAccessLevel.BASE, string? groupName = null, string? description = null) : ISettingDescriptor {
+public class SettingDescriptor<T>(
+    string name,
+    SettingAccessLevel accessLevel = SettingAccessLevel.BASE,
+    string? groupName = null,
+    string? description = null) : ISettingDescriptor {
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
     /// <inheritdoc />
-    public string Name { get; init; } = name;
+    public Type ValueType => typeof(T);
 
     /// <inheritdoc />
-    public string? Description { get; init; } = description;
+    public string Name { get; } = name;
 
     /// <inheritdoc />
-    public string? GroupName { get; init; } = groupName;
+    public string? Description { get; } = description;
+
+    /// <inheritdoc />
+    public string? GroupName { get; } = groupName;
 
     /// <inheritdoc />
     public override int GetHashCode() {
@@ -22,7 +31,7 @@ public class SettingDescriptorBase(string name, SettingAccessLevel accessLevel =
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
-    private bool Equals(SettingDescriptorBase other) {
+    private bool Equals(SettingDescriptor<T> other) {
         return Name == other.Name && GroupName == other.GroupName;
     }
 
@@ -30,20 +39,20 @@ public class SettingDescriptorBase(string name, SettingAccessLevel accessLevel =
     public override bool Equals(object? obj) {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
-        return obj.GetType() == GetType() && Equals((SettingDescriptorBase)obj);
+        return obj.GetType() == GetType() && Equals((SettingDescriptor<T>)obj);
     }
 
     /// <summary>
     /// == operator
     /// </summary>
-    public static bool operator ==(SettingDescriptorBase? left, SettingDescriptorBase? right) {
+    public static bool operator ==(SettingDescriptor<T>? left, SettingDescriptor<T>? right) {
         return Equals(left, right);
     }
 
     /// <summary>
     /// != operator
     /// </summary>
-    public static bool operator !=(SettingDescriptorBase? left, SettingDescriptorBase? right) {
+    public static bool operator !=(SettingDescriptor<T>? left, SettingDescriptor<T>? right) {
         return !Equals(left, right);
     }
 }

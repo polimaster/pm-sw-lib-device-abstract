@@ -14,17 +14,27 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// </summary>
     protected SemaphoreSlim Semaphore { get; } = new(1, 1);
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
     /// <param name="reader">Command for read data</param>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
-    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingDescriptor? settingDescriptor = null)
-        : base(settingDescriptor) {
-        Reader = reader;
-        Writer = writer;
+    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
+    // [Obsolete($"Use constructor with {nameof(SettingDefinition<T>)} parameter instead")]
+    // protected ADeviceSetting(IDataReader<T> reader, ISettingDescriptor settingDescriptor, IDataWriter<T>? writer = null)
+    //     : base(settingDescriptor) {
+    //     Reader = reader;
+    //     Writer = writer;
+    // }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="settingDefinition"></param>
+    protected ADeviceSetting(SettingDefinition<T> settingDefinition) : base(settingDefinition.Descriptor) {
+        Reader = settingDefinition.Reader;
+        Writer = settingDefinition.Writer;
     }
 
     /// <summary>
@@ -65,9 +75,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
             SetValue(default);
             HasValue = false;
             Exception = e;
-        } finally {
-            Semaphore.Release();
-        }
+        } finally { Semaphore.Release(); }
     }
 
     /// <inheritdoc />
@@ -76,7 +84,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
             Exception = new Exception($"Value of {GetType().Name} is not valid");
             return;
         }
-        
+
         if (Writer == null || !IsDirty) return;
 
         await Semaphore.WaitAsync(cancellationToken);
@@ -85,10 +93,6 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
             IsDirty = false;
             Exception = null;
             _isSynchronized = true;
-        } catch (Exception e) {
-            Exception = e;
-        } finally {
-            Semaphore.Release();
-        }
+        } catch (Exception e) { Exception = e; } finally { Semaphore.Release(); }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Polimaster.Device.Abstract.Device.Settings;
+﻿using System;
+
+namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
 /// Description of device setting
@@ -10,17 +12,22 @@ public interface ISettingDescriptor {
     SettingAccessLevel AccessLevel { get; set; }
 
     /// <summary>
+    /// Type of underlying setting value
+    /// </summary>
+    Type ValueType { get; }
+
+    /// <summary>
     /// Setting name
     /// </summary>
-    string Name { get; init; }
+    string Name { get; }
 
     /// <summary>
     /// Setting description
     /// </summary>
-    string? Description { get; init; }
+    string? Description { get; }
 
     /// <summary>
     /// Setting group name. On example, "Sound", "Gamma" etc.
     /// </summary>
-    string? GroupName { get; init; }
+    string? GroupName { get; }
 }

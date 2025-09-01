@@ -14,7 +14,7 @@ public interface IDeviceSetting<T> where T : notnull {
     /// <summary>
     /// See <see cref="ISettingDescriptor"/>
     /// </summary>
-    ISettingDescriptor? Descriptor { get; }
+    ISettingDescriptor Descriptor { get; }
     
     /// <summary>
     /// Indicates if the setting is readonly

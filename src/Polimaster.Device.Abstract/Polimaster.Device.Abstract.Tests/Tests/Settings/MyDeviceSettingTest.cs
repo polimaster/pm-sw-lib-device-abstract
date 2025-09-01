@@ -30,16 +30,16 @@ public class DeviceSettingTest : Mocks {
     public void ShouldHaveValidDescriptor() {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
-        var settingDescriptor = new SettingDescriptorBase("MyParam", SettingAccessLevel.BASE, "MyParamSettingGroup");
+        var settingDescriptor = new SettingDescriptor<MyParam>("MyParam", SettingAccessLevel.BASE, "MyParamSettingGroup");
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyParamSetting(reader.Object, writer.Object, settingDescriptor) {
+        var setting = new MyParamSetting(reader.Object, settingDescriptor, writer.Object) {
             Value = p
         };
 
-        Assert.Equal(settingDescriptor.Name, setting.Descriptor?.Name);
-        Assert.Equal(settingDescriptor.GroupName, setting.Descriptor?.GroupName);
-        Assert.Equal(settingDescriptor.AccessLevel, setting.Descriptor?.AccessLevel);
+        Assert.Equal(settingDescriptor.Name, setting.Descriptor.Name);
+        Assert.Equal(settingDescriptor.GroupName, setting.Descriptor.GroupName);
+        Assert.Equal(settingDescriptor.AccessLevel, setting.Descriptor.AccessLevel);
     }
 
 
@@ -48,7 +48,8 @@ public class DeviceSettingTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
 
         var p = new MyParam();
-        var setting = new MyParamSetting(reader.Object) {
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor) {
             Value = p
         };
 
@@ -60,19 +61,20 @@ public class DeviceSettingTest : Mocks {
     public void ShouldValidateValue() {
         var reader = new Mock<IDataReader<MyParam>>();
 
-        var setting = new MyParamSetting(reader.Object) {
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor) {
             Value = null
         };
         Assert.True(setting.IsDirty);
         Assert.False(setting.IsValid);
 
-        setting = new MyParamSetting(reader.Object) {
+        setting = new MyParamSetting(reader.Object, descriptor) {
             Value = new MyParam { Value = "Very long string that does not pass validation" }
         };
         Assert.True(setting.IsDirty);
         Assert.False(setting.IsValid);
 
-        setting = new MyParamSetting(reader.Object) {
+        setting = new MyParamSetting(reader.Object, descriptor) {
             Value = new MyParam { Value = "Valid" }
         };
         Assert.True(setting.IsDirty);
@@ -85,7 +87,8 @@ public class DeviceSettingTest : Mocks {
         var p = new MyParam();
         reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p));
 
-        var setting = new MyParamSetting(reader.Object);
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
 
         await setting.Read(Token);
 
@@ -99,7 +102,8 @@ public class DeviceSettingTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyParamSetting(reader.Object, writer.Object) {
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor, writer.Object) {
             Value = p
         };
 
@@ -114,7 +118,8 @@ public class DeviceSettingTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "ve__________________________ery long string" };
-        var setting = new MyParamSetting(reader.Object, writer.Object) {
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor, writer.Object) {
             Value = p
         };
 
@@ -138,7 +143,8 @@ public class DeviceSettingTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyParamSetting(reader.Object) {
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor) {
             Value = p
         };
 
@@ -153,7 +159,8 @@ public class DeviceSettingTest : Mocks {
         var writer = new Mock<IDataWriter<MyParam>>();
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyParamSetting(reader.Object, writer.Object) {
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor, writer.Object) {
             Value = p
         };
 
@@ -174,7 +181,8 @@ public class DeviceSettingTest : Mocks {
 
         reader.Setup(e => e.Read(Token)).ThrowsAsync(ex);
 
-        var setting = new MyParamSetting(reader.Object);
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
 
         await setting.Read(Token);
         Assert.Equal(ex, setting.Exception);

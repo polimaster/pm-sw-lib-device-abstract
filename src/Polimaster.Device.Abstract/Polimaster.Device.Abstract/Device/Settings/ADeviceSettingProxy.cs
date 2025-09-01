@@ -15,7 +15,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     /// </summary>
     /// <param name="proxiedSetting">Setting to proxy</param>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
-    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingDescriptor? settingDescriptor = null) :
+    protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingDescriptor settingDescriptor) :
         base(settingDescriptor) {
         ProxiedSetting = proxiedSetting;
     }
