@@ -21,19 +21,18 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
     /// <param name="reader">Command for read data</param>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
     /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
-    [Obsolete($"Use constructor with {nameof(SettingDefinition<T>)} parameter instead")]
-    protected ADeviceSetting(IDataReader<T> reader, ISettingDescriptor settingDescriptor, IDataWriter<T>? writer = null)
-        : base(settingDescriptor) {
-        Reader = reader;
-        Writer = writer;
-    }
+    // [Obsolete($"Use constructor with {nameof(SettingDefinition<T>)} parameter instead")]
+    // protected ADeviceSetting(IDataReader<T> reader, ISettingDescriptor settingDescriptor, IDataWriter<T>? writer = null)
+    //     : base(settingDescriptor) {
+    //     Reader = reader;
+    //     Writer = writer;
+    // }
 
     /// <summary>
     ///
     /// </summary>
     /// <param name="settingDefinition"></param>
-    protected ADeviceSetting(SettingDefinition<T> settingDefinition) : this(settingDefinition.Reader,
-        settingDefinition.Descriptor, settingDefinition.Writer) {
+    protected ADeviceSetting(SettingDefinition<T> settingDefinition) : base(settingDefinition.Descriptor) {
         Reader = settingDefinition.Reader;
         Writer = settingDefinition.Writer;
     }
