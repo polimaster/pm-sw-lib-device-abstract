@@ -3,7 +3,11 @@
 namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <inheritdoc />
-public class SettingDescriptor<T>(string name, SettingAccessLevel accessLevel = SettingAccessLevel.BASE, string? groupName = null, string? description = null) : ISettingDescriptor {
+public class SettingDescriptor<T>(
+    string name,
+    SettingAccessLevel accessLevel = SettingAccessLevel.BASE,
+    string? groupName = null,
+    string? description = null) : ISettingDescriptor {
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
@@ -11,13 +15,13 @@ public class SettingDescriptor<T>(string name, SettingAccessLevel accessLevel = 
     public Type ValueType => typeof(T);
 
     /// <inheritdoc />
-    public string Name { get; init; } = name;
+    public string Name { get; } = name;
 
     /// <inheritdoc />
-    public string? Description { get; init; } = description;
+    public string? Description { get; } = description;
 
     /// <inheritdoc />
-    public string? GroupName { get; init; } = groupName;
+    public string? GroupName { get; } = groupName;
 
     /// <inheritdoc />
     public override int GetHashCode() {

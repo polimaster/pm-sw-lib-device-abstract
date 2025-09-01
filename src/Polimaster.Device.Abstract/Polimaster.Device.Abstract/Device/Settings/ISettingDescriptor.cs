@@ -19,15 +19,15 @@ public interface ISettingDescriptor {
     /// <summary>
     /// Setting name
     /// </summary>
-    string Name { get; init; }
+    string Name { get; }
 
     /// <summary>
     /// Setting description
     /// </summary>
-    string? Description { get; init; }
+    string? Description { get; }
 
     /// <summary>
     /// Setting group name. On example, "Sound", "Gamma" etc.
     /// </summary>
-    string? GroupName { get; init; }
+    string? GroupName { get; }
 }
