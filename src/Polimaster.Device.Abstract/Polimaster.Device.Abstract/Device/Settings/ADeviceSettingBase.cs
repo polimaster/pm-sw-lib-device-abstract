@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
+
 /// <summary>
 /// <see cref="IDeviceSetting{T}"/> abstract implementation
 /// </summary>
