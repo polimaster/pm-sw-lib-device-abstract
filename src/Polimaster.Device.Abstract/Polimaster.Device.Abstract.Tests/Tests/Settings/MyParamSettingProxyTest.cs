@@ -9,33 +9,29 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 
 public class ADeviceSettingProxyTest : Mocks {
 
+    // [Fact]
+    // public void ShouldHaveDefaultDescriptor() {
+    //     var reader = new Mock<IDataReader<MyParam>>();
+    //     var setting = new MyParamSetting(reader.Object);
+    //
+    //     var proxy = new MyParamSettingProxy(setting);
+    //
+    //     Assert.Null(proxy.Descriptor?.Name);
+    //     Assert.Null(proxy.Descriptor?.GroupName);
+    //     Assert.Equal(SettingAccessLevel.BASE, proxy.Descriptor?.AccessLevel);
+    // }
+
     [Fact]
-    public void ShouldHaveDefaultBehaviour() {
+    public void ShouldHaveValidDescriptor() {
         var reader = new Mock<IDataReader<MyParam>>();
         var setting = new MyParamSetting(reader.Object);
+        var settingDescriptor = new SettingDescriptorBase("MyParamSettingProxyTest", SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
 
-        var proxy = new MyParamSettingProxy(setting);
+        var proxy = new MyParamSettingProxy(setting, settingDescriptor);
 
-        Assert.Null(proxy.Behaviour?.Name);
-        Assert.Null(proxy.Behaviour?.GroupName);
-        Assert.Equal(SettingAccessLevel.BASE, proxy.Behaviour?.AccessLevel);
-    }
-
-    [Fact]
-    public void ShouldHaveValidBehaviour() {
-        var reader = new Mock<IDataReader<MyParam>>();
-        var setting = new MyParamSetting(reader.Object);
-        var myParamBehaviour = new SettingBehaviourBase {
-            AccessLevel = SettingAccessLevel.EXTENDED,
-            Name = "MyParamSettingProxyTest",
-            GroupName = "MyParamSettingGroup"
-        };
-
-        var proxy = new MyParamSettingProxy(setting, myParamBehaviour);
-
-        Assert.Equal(myParamBehaviour.Name, proxy.Behaviour?.Name);
-        Assert.Equal(myParamBehaviour.GroupName, proxy.Behaviour?.GroupName);
-        Assert.Equal(myParamBehaviour.AccessLevel, proxy.Behaviour?.AccessLevel);
+        Assert.Equal(settingDescriptor.Name, proxy.Descriptor?.Name);
+        Assert.Equal(settingDescriptor.GroupName, proxy.Descriptor?.GroupName);
+        Assert.Equal(settingDescriptor.AccessLevel, proxy.Descriptor?.AccessLevel);
     }
 
 

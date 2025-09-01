@@ -12,9 +12,9 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 public interface IDeviceSetting<T> where T : notnull {
 
     /// <summary>
-    /// See <see cref="ISettingBehaviour"/>
+    /// See <see cref="ISettingDescriptor"/>
     /// </summary>
-    ISettingBehaviour? Behaviour { get; }
+    ISettingDescriptor? Descriptor { get; }
     
     /// <summary>
     /// Indicates if the setting is readonly

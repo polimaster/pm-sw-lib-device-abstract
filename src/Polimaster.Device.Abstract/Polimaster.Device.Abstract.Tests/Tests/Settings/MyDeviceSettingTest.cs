@@ -11,39 +11,35 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 
 public class DeviceSettingTest : Mocks {
 
+    // [Fact]
+    // public void ShouldHaveDefaultDescriptor() {
+    //     var reader = new Mock<IDataReader<MyParam>>();
+    //     var writer = new Mock<IDataWriter<MyParam>>();
+    //
+    //     var p = new MyParam { Value = "test" };
+    //     var setting = new MyParamSetting(reader.Object, writer.Object) {
+    //         Value = p
+    //     };
+    //
+    //     Assert.Null(setting.Descriptor?.Name);
+    //     Assert.Null(setting.Descriptor?.GroupName);
+    //     Assert.Equal(SettingAccessLevel.BASE, setting.Descriptor?.AccessLevel);
+    // }
+
     [Fact]
-    public void ShouldHaveDefaultBehaviour() {
+    public void ShouldHaveValidDescriptor() {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
+        var settingDescriptor = new SettingDescriptorBase("MyParam", SettingAccessLevel.BASE, "MyParamSettingGroup");
 
         var p = new MyParam { Value = "test" };
-        var setting = new MyParamSetting(reader.Object, writer.Object) {
+        var setting = new MyParamSetting(reader.Object, writer.Object, settingDescriptor) {
             Value = p
         };
 
-        Assert.Null(setting.Behaviour?.Name);
-        Assert.Null(setting.Behaviour?.GroupName);
-        Assert.Equal(SettingAccessLevel.BASE, setting.Behaviour?.AccessLevel);
-    }
-
-    [Fact]
-    public void ShouldHaveValidBehaviour() {
-        var reader = new Mock<IDataReader<MyParam>>();
-        var writer = new Mock<IDataWriter<MyParam>>();
-        var myParamBehaviour = new SettingBehaviourBase {
-            AccessLevel = SettingAccessLevel.BASE,
-            Name = "MyParam",
-            GroupName = "MyParamSettingGroup"
-        };
-
-        var p = new MyParam { Value = "test" };
-        var setting = new MyParamSetting(reader.Object, writer.Object, myParamBehaviour) {
-            Value = p
-        };
-
-        Assert.Equal(myParamBehaviour.Name, setting.Behaviour?.Name);
-        Assert.Equal(myParamBehaviour.GroupName, setting.Behaviour?.GroupName);
-        Assert.Equal(myParamBehaviour.AccessLevel, setting.Behaviour?.AccessLevel);
+        Assert.Equal(settingDescriptor.Name, setting.Descriptor?.Name);
+        Assert.Equal(settingDescriptor.GroupName, setting.Descriptor?.GroupName);
+        Assert.Equal(settingDescriptor.AccessLevel, setting.Descriptor?.AccessLevel);
     }
 
 

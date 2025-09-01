@@ -1,9 +1,9 @@
 ﻿namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
-/// Define behaviour of device setting
+/// Description of device setting
 /// </summary>
-public interface ISettingBehaviour {
+public interface ISettingDescriptor {
     /// <summary>
     /// Access level for setting. See <see cref="SettingAccessLevel"/>.
     /// </summary>
@@ -12,7 +12,7 @@ public interface ISettingBehaviour {
     /// <summary>
     /// Setting name
     /// </summary>
-    string? Name { get; init; }
+    string Name { get; init; }
 
     /// <summary>
     /// Setting description
@@ -20,7 +20,7 @@ public interface ISettingBehaviour {
     string? Description { get; init; }
 
     /// <summary>
-    /// Setting group name. On example, "Sound", "Behaviour", "Gamma" etc.
+    /// Setting group name. On example, "Sound", "Gamma" etc.
     /// </summary>
     string? GroupName { get; init; }
 }
