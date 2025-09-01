@@ -41,23 +41,23 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         _timeReader = new TimeReader(Transport, loggerFactory);
         _timeWriter = new TimeWriter(Transport, loggerFactory);
 
-        var myParamBehaviour = new SettingDescriptorBase("test", SettingAccessLevel.BASE, "MyParamSettingGroup");
+        var settingDescriptor = new SettingDescriptor<MyParam>("test", SettingAccessLevel.BASE, "MyParamSettingGroup");
 
         // building device commands and settings
         var paramReader = new MyParamReader(Transport, loggerFactory);
         var paramWriter = new MyParamWriter(Transport, loggerFactory);
-        MyParamSetting = new MyParamSetting(paramReader, paramWriter, myParamBehaviour);
+        MyParamSetting = new MyParamSetting(paramReader, settingDescriptor, paramWriter);
 
 
-        var stringSettingBehaviour = new SettingDescriptorBase("test1", SettingAccessLevel.EXTENDED, "StringSettingGroup");
+        var descriptor = new SettingDescriptor<string>("test1", SettingAccessLevel.EXTENDED, "StringSettingGroup");
         var plainReader = new PlainReader(Transport, loggerFactory);
         var plainWriter = new PlainWriter(Transport, loggerFactory);
-        StringSetting = new StringSetting(plainReader, plainWriter, stringSettingBehaviour);
+        StringSetting = new StringSetting(plainReader, descriptor, plainWriter);
 
-        var historyIntervalBehaviour = new SettingDescriptorBase("test2", SettingAccessLevel.ADVANCED, "Behaviour");
+        var historyIntervalBehaviour = new SettingDescriptor<TimeSpan>("test2", SettingAccessLevel.ADVANCED, "Behaviour");
         var intervalReader = new HistoryIntervalReader(Transport, loggerFactory);
         var intervalWriter = new HistoryIntervalWriter(Transport, loggerFactory);
-        HistoryInterval = new HistoryIntervalSetting(intervalReader, intervalWriter, historyIntervalBehaviour);
+        HistoryInterval = new HistoryIntervalSetting(intervalReader, historyIntervalBehaviour, intervalWriter);
 
         HistoryManager = new HistoryManager(Transport, loggerFactory);
 

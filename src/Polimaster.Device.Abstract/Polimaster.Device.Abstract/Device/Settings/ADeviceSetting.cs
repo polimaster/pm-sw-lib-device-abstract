@@ -14,14 +14,14 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// </summary>
     protected SemaphoreSlim Semaphore { get; } = new(1, 1);
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
     /// <param name="reader">Command for read data</param>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
-    protected ADeviceSetting(IDataReader<T> reader, IDataWriter<T>? writer = null, ISettingDescriptor? settingDescriptor = null)
+    /// <param name="writer">Command for write data. If null it creates readonly setting.</param>
+    protected ADeviceSetting(IDataReader<T> reader, ISettingDescriptor settingDescriptor, IDataWriter<T>? writer = null)
         : base(settingDescriptor) {
         Reader = reader;
         Writer = writer;

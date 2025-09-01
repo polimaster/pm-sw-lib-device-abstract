@@ -9,29 +9,32 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 
 public class ADeviceSettingProxyTest : Mocks {
 
-    // [Fact]
-    // public void ShouldHaveDefaultDescriptor() {
-    //     var reader = new Mock<IDataReader<MyParam>>();
-    //     var setting = new MyParamSetting(reader.Object);
-    //
-    //     var proxy = new MyParamSettingProxy(setting);
-    //
-    //     Assert.Null(proxy.Descriptor?.Name);
-    //     Assert.Null(proxy.Descriptor?.GroupName);
-    //     Assert.Equal(SettingAccessLevel.BASE, proxy.Descriptor?.AccessLevel);
-    // }
+    [Fact]
+    public void ShouldHaveDefaultDescriptor() {
+        var reader = new Mock<IDataReader<MyParam>>();
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
+
+        var proxyDescriptor = new SettingDescriptor<string>("MyParamSettingProxyTest", SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor);
+
+        Assert.NotNull(proxy.Descriptor.Name);
+        Assert.NotNull(proxy.Descriptor.GroupName);
+        Assert.Equal(SettingAccessLevel.EXTENDED, proxy.Descriptor.AccessLevel);
+    }
 
     [Fact]
     public void ShouldHaveValidDescriptor() {
         var reader = new Mock<IDataReader<MyParam>>();
-        var setting = new MyParamSetting(reader.Object);
-        var settingDescriptor = new SettingDescriptorBase("MyParamSettingProxyTest", SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
 
-        var proxy = new MyParamSettingProxy(setting, settingDescriptor);
+        var proxyDescriptor = new SettingDescriptor<string>("MyParamSettingProxyTest", SettingAccessLevel.EXTENDED, "MyParamSettingGroup");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor);
 
-        Assert.Equal(settingDescriptor.Name, proxy.Descriptor?.Name);
-        Assert.Equal(settingDescriptor.GroupName, proxy.Descriptor?.GroupName);
-        Assert.Equal(settingDescriptor.AccessLevel, proxy.Descriptor?.AccessLevel);
+        Assert.Equal(proxyDescriptor.Name, proxy.Descriptor.Name);
+        Assert.Equal(proxyDescriptor.GroupName, proxy.Descriptor.GroupName);
+        Assert.Equal(proxyDescriptor.AccessLevel, proxy.Descriptor.AccessLevel);
     }
 
 
@@ -40,10 +43,12 @@ public class ADeviceSettingProxyTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam());
 
-        var setting = new MyParamSetting(reader.Object);
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
         await setting.Read(Token);
 
-        var proxy = new MyParamSettingProxy(setting) {
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor) {
             Value = "test"
         };
 
@@ -55,17 +60,19 @@ public class ADeviceSettingProxyTest : Mocks {
     public async Task ShouldValidateValue() {
         var reader = new Mock<IDataReader<MyParam>>();
 
-        var setting = new MyParamSetting(reader.Object);
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
         await setting.Read(Token);
-        
-        var proxy = new MyParamSettingProxy(setting) {
+
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor) {
             Value = MyParamSettingProxy.FORBIDDEN_VALUES[0]
         };
         
         Assert.True(proxy.IsDirty);
         Assert.False(proxy.IsValid);
         
-        proxy = new MyParamSettingProxy(setting) {
+        proxy = new MyParamSettingProxy(setting, proxyDescriptor) {
             Value = null
         };
         
@@ -76,7 +83,8 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public async Task ShouldRead() {
         var setting = new Mock<IDeviceSetting<MyParam>>();
-        var proxy = new MyParamSettingProxy(setting.Object);
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting.Object, proxyDescriptor);
 
         await proxy.Read(Token);
         setting.Verify(e => e.Read(Token));
@@ -88,9 +96,12 @@ public class ADeviceSettingProxyTest : Mocks {
         reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam());
         var writer = new Mock<IDataWriter<MyParam>>();
 
-        var setting = new MyParamSetting(reader.Object, writer.Object);
+        var descriptor = new SettingDescriptor<MyParam>("test1");
+        var setting = new MyParamSetting(reader.Object, descriptor, writer.Object);
         await setting.Read(Token);
-        var proxy = new MyParamSettingProxy(setting) { Value = "value" };
+
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor) { Value = "value" };
 
         await proxy.CommitChanges(Token);
         writer.Verify(e => e.Write(It.IsAny<MyParam>(), Token));
@@ -101,10 +112,12 @@ public class ADeviceSettingProxyTest : Mocks {
     public async Task ShouldNotWriteValue() {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
-        
-        var setting = new MyParamSetting(reader.Object, writer.Object);
+
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor, writer.Object);
         await setting.Read(Token);
-        var proxy = new MyParamSettingProxy(setting) { Value = MyParamSettingProxy.FORBIDDEN_VALUES[0] };
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor) { Value = MyParamSettingProxy.FORBIDDEN_VALUES[0] };
 
         await proxy.CommitChanges(Token);
         
@@ -117,9 +130,12 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public void ShouldCheckReadOnly() {
         var reader = new Mock<IDataReader<MyParam>>();
-        
-        var setting = new MyParamSetting(reader.Object);
-        var proxy = new MyParamSettingProxy(setting);
+
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
+
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor);
         
         Assert.True(proxy.ReadOnly);
     }
@@ -130,10 +146,13 @@ public class ADeviceSettingProxyTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam {Value = "value from device"});
         var writer = new Mock<IDataWriter<MyParam>>();
-        
-        var setting = new MyParamSetting(reader.Object, writer.Object);
+
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor, writer.Object);
         await setting.Read(Token);
-        var proxy = new MyParamSettingProxy(setting) {
+
+        var proxyDescriptor = new SettingDescriptor<string>("test");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor) {
             Value = "test"
         };
 
@@ -152,9 +171,12 @@ public class ADeviceSettingProxyTest : Mocks {
         var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
         reader.Setup(e => e.Read(Token)).ThrowsAsync(ex);
-        
-        var setting = new MyParamSetting(reader.Object);
-        var proxy = new MyParamSettingProxy(setting);
+
+        var descriptor = new SettingDescriptor<MyParam>("test");
+        var setting = new MyParamSetting(reader.Object, descriptor);
+
+        var proxyDescriptor = new SettingDescriptor<string>("test1");
+        var proxy = new MyParamSettingProxy(setting, proxyDescriptor);
 
         try {
             await proxy.Read(Token);

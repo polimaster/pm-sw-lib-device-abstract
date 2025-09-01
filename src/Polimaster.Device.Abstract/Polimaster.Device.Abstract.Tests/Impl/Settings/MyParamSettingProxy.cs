@@ -3,7 +3,7 @@ using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Settings;
 
-public class MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting, ISettingDescriptor? settingDescriptor = null)
+public class MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting, ISettingDescriptor settingDescriptor)
     : ADeviceSettingProxy<string, MyParam>(proxiedSetting, settingDescriptor) {
     public static readonly string[] FORBIDDEN_VALUES = ["string1", "string2"];
 

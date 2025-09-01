@@ -1,4 +1,6 @@
-﻿namespace Polimaster.Device.Abstract.Device.Settings;
+﻿using System;
+
+namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
 /// Description of device setting
@@ -8,6 +10,11 @@ public interface ISettingDescriptor {
     /// Access level for setting. See <see cref="SettingAccessLevel"/>.
     /// </summary>
     SettingAccessLevel AccessLevel { get; set; }
+
+    /// <summary>
+    /// Type of underlying setting value
+    /// </summary>
+    Type ValueType { get; }
 
     /// <summary>
     /// Setting name

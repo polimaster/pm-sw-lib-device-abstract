@@ -11,7 +11,6 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnull {
-
     /// <summary>
     /// Stores type nullability for <see cref="T"/>
     /// </summary>
@@ -21,14 +20,17 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// Constructor
     /// </summary>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
-    protected ADeviceSettingBase(ISettingDescriptor? settingDescriptor = null) {
+    protected ADeviceSettingBase(ISettingDescriptor settingDescriptor) {
         _isNullableValueType = Nullable.GetUnderlyingType(typeof(T)) != null || !typeof(T).IsValueType;
+        if (settingDescriptor.ValueType != typeof(T))
+            throw new Exception($"{nameof(settingDescriptor)} parameter should match type of {typeof(T)}, current is {settingDescriptor.ValueType}");
+
         Descriptor = settingDescriptor;
         ValidationErrors = [];
     }
 
     /// <inheritdoc />
-    public ISettingDescriptor? Descriptor { get; }
+    public ISettingDescriptor Descriptor { get; }
 
     /// <inheritdoc />
     public abstract bool ReadOnly { get; }
@@ -91,7 +93,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
 
     /// <inheritdoc />
     public abstract Task CommitChanges(CancellationToken cancellationToken);
-    
+
     /// <summary>
     /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.
     /// </summary>
@@ -108,7 +110,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// <param name="value">Value to check</param>
     /// <returns></returns>
     private bool ValueIsNotNull(T? value) {
-        if(_isNullableValueType) return value is not null;
+        if (_isNullableValueType) return value is not null;
         return true;
     }
 
