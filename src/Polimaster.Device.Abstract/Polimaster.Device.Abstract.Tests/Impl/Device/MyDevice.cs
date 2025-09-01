@@ -41,7 +41,7 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         _timeReader = new TimeReader(Transport, loggerFactory);
         _timeWriter = new TimeWriter(Transport, loggerFactory);
 
-        var myParamBehaviour = new SettingBehaviourBase {
+        var myParamBehaviour = new SettingDescriptorBase {
             AccessLevel = SettingAccessLevel.BASE,
             GroupName = "MyParamSettingGroup"
         };
@@ -52,7 +52,7 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         MyParamSetting = new MyParamSetting(paramReader, paramWriter, myParamBehaviour);
 
 
-        var stringSettingBehaviour = new SettingBehaviourBase {
+        var stringSettingBehaviour = new SettingDescriptorBase {
             AccessLevel = SettingAccessLevel.EXTENDED,
             GroupName = "StringSettingGroup"
         };
@@ -60,7 +60,7 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         var plainWriter = new PlainWriter(Transport, loggerFactory);
         StringSetting = new StringSetting(plainReader, plainWriter, stringSettingBehaviour);
 
-        var historyIntervalBehaviour = new SettingBehaviourBase {
+        var historyIntervalBehaviour = new SettingDescriptorBase {
             AccessLevel = SettingAccessLevel.ADVANCED,
             GroupName = "Behaviour"
         };

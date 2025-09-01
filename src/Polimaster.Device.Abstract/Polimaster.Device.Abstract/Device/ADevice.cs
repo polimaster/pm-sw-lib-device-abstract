@@ -69,6 +69,19 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
         }
     }
 
+    /// <inheritdoc />
+    public void SetSetting<T>(ISettingDescriptor descriptor, T value) {
+        var ds = GetSettings();
+        foreach (var info in ds) {
+            if (info.GetValue(this) is not IDeviceSetting<object> settingInstance) continue;
+            if (settingInstance.Descriptor == null || !settingInstance.Descriptor.Equals(descriptor)) continue;
+
+            settingInstance.Value = value;
+            return;
+        }
+        throw new Exception($"Setting {descriptor.Name} does not exist");
+    }
+
     /// <summary>
     /// Execute method on device setting <see cref="IDeviceSetting{T}"/>
     /// </summary>

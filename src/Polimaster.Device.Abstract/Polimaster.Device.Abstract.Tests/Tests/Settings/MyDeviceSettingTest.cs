@@ -21,16 +21,16 @@ public class DeviceSettingTest : Mocks {
             Value = p
         };
 
-        Assert.Null(setting.Behaviour?.Name);
-        Assert.Null(setting.Behaviour?.GroupName);
-        Assert.Equal(SettingAccessLevel.BASE, setting.Behaviour?.AccessLevel);
+        Assert.Null(setting.Descriptor?.Name);
+        Assert.Null(setting.Descriptor?.GroupName);
+        Assert.Equal(SettingAccessLevel.BASE, setting.Descriptor?.AccessLevel);
     }
 
     [Fact]
     public void ShouldHaveValidBehaviour() {
         var reader = new Mock<IDataReader<MyParam>>();
         var writer = new Mock<IDataWriter<MyParam>>();
-        var myParamBehaviour = new SettingBehaviourBase {
+        var myParamBehaviour = new SettingDescriptorBase {
             AccessLevel = SettingAccessLevel.BASE,
             Name = "MyParam",
             GroupName = "MyParamSettingGroup"
@@ -41,9 +41,9 @@ public class DeviceSettingTest : Mocks {
             Value = p
         };
 
-        Assert.Equal(myParamBehaviour.Name, setting.Behaviour?.Name);
-        Assert.Equal(myParamBehaviour.GroupName, setting.Behaviour?.GroupName);
-        Assert.Equal(myParamBehaviour.AccessLevel, setting.Behaviour?.AccessLevel);
+        Assert.Equal(myParamBehaviour.Name, setting.Descriptor?.Name);
+        Assert.Equal(myParamBehaviour.GroupName, setting.Descriptor?.GroupName);
+        Assert.Equal(myParamBehaviour.AccessLevel, setting.Descriptor?.AccessLevel);
     }
 
 

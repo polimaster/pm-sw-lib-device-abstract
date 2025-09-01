@@ -7,7 +7,7 @@ using ValidationResult = Polimaster.Device.Abstract.Device.Settings.ValidationRe
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Settings; 
 
-public class MyParamSetting(IDataReader<MyParam> reader, IDataWriter<MyParam>? writer = null, ISettingBehaviour? settingBehaviour = null)
+public class MyParamSetting(IDataReader<MyParam> reader, IDataWriter<MyParam>? writer = null, ISettingDescriptor? settingBehaviour = null)
     : ADeviceSetting<MyParam>(reader, writer, settingBehaviour) {
     protected override void Validate(MyParam? value) {
         base.Validate(value);

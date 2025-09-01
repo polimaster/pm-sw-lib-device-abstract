@@ -1,9 +1,9 @@
 ﻿namespace Polimaster.Device.Abstract.Device.Settings;
 
 /// <summary>
-/// Define behaviour of device setting
+/// Description of device setting
 /// </summary>
-public interface ISettingBehaviour {
+public interface ISettingDescriptor {
     /// <summary>
     /// Access level for setting. See <see cref="SettingAccessLevel"/>.
     /// </summary>

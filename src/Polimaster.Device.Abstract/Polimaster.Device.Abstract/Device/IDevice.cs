@@ -36,7 +36,7 @@ public interface IDevice {
     Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken);
 
     /// <summary>
-    ///  Reads device settings.
+    /// Reads device settings.
     /// Successor class should have properties of type <see cref="IDeviceSetting{T}"/> interface.
     /// Method iterates properties and call <see cref="IDeviceSetting{T}.Read"/> on target property.
     /// </summary>
@@ -52,6 +52,14 @@ public interface IDevice {
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task WriteAllSettings(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Set setting by its <see cref="ISettingDescriptor"/>
+    /// </summary>
+    /// <param name="descriptor">Setting descriptor</param>
+    /// <param name="value">Setting value</param>
+    /// <typeparam name="T">Type of setting value</typeparam>
+    void SetSetting<T>(ISettingDescriptor descriptor, T value);
 
     /// <summary>
     /// Returns device settings
