@@ -17,8 +17,8 @@ public class MyDeviceTest : Mocks {
         client.Setup(e => e.ConnectionId).Returns(guid);
 
         var transport = new Mock<IMyTransport>();
-        var dev1 = new MyDevice(transport.Object, LOGGER_FACTORY);
-        var dev2 = new MyDevice(transport.Object, LOGGER_FACTORY);
+        var dev1 = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+        var dev2 = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
 
         transport.Setup(e => e.Client).Returns(client.Object);
         
@@ -30,7 +30,7 @@ public class MyDeviceTest : Mocks {
     public void ShouldDispose() {
         var transport = new Mock<IMyTransport>();
         transport.Setup(e => e.Client).Returns(new Mock<IClient<IMyDeviceStream>>().Object);
-        var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
+        var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
 
         var check = false;
         dev.IsDisposing += () => check = true;
@@ -47,7 +47,7 @@ public class MyDeviceTest : Mocks {
         var client = new Mock<IClient<IMyDeviceStream>>();
         transport.Setup(e => e.Client).Returns(client.Object);
 
-        var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
+        var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
         var settingsCount = dev.GetSettings().Count();
 
         await dev.ReadAllSettings(Token);
@@ -61,7 +61,7 @@ public class MyDeviceTest : Mocks {
         var client = new Mock<IClient<IMyDeviceStream>>();
         transport.Setup(e => e.Client).Returns(client.Object);
 
-        var dev = new MyDevice(transport.Object, LOGGER_FACTORY);
+        var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
 
         var v = TimeSpan.FromSeconds(10);
         dev.HistoryInterval.Value = v;

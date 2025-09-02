@@ -13,8 +13,8 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device abstract implementation
 /// </summary>
-public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream> where TTransport : ITransport<TStream> {
-
+public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream>
+    where TTransport : ITransport<TStream> {
     /// <summary>
     /// Transport layer
     /// </summary>
@@ -70,17 +70,27 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     }
 
     /// <inheritdoc />
-    public void SetSetting<T>(ISettingDescriptor descriptor, T value) {
+    public IDeviceSetting<T> SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull {
+        if (descriptor.ValueType != typeof(T))
+            throw new ArgumentException($"Type of {nameof(value)} must be of type {descriptor.ValueType}");
+
+        var setting = GetSetting<T>(descriptor);
+        setting.Value = value;
+        return setting;
+    }
+
+    /// <inheritdoc />
+    public IDeviceSetting<T> GetSetting<T>(ISettingDescriptor descriptor) where T : notnull {
         var ds = GetSettings();
         foreach (var info in ds) {
-            if (info.GetValue(this) is not IDeviceSetting<object> settingInstance) continue;
-            if (settingInstance.Descriptor == null || !settingInstance.Descriptor.Equals(descriptor)) continue;
+            if (info.GetValue(this) is not IDeviceSetting<T> settingInstance) continue;
+            if (!settingInstance.Descriptor.Equals(descriptor)) continue;
 
-            settingInstance.Value = value;
-            return;
+            return settingInstance;
         }
-        throw new Exception($"Setting {descriptor.Name} does not exist");
+        throw new Exception($"Setting {descriptor.Name} does not found");
     }
+
 
     /// <summary>
     /// Execute method on device setting <see cref="IDeviceSetting{T}"/>
@@ -116,7 +126,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     public bool Equals(IDevice<TTransport, TStream>? other) {
         return Id.Equals(other?.Id);
     }
-    
+
     /// <inheritdoc />
     public void Dispose() {
         Logger?.LogDebug("Disposing device {D}", Id);

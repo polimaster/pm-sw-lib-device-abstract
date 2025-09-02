@@ -33,7 +33,7 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
     private readonly TimeReader _timeReader;
     private readonly TimeWriter _timeWriter;
 
-    public MyDevice(IMyTransport transport, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    public MyDevice(IMyTransport transport, IMySettingDescriptors settingsDescriptors, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
         _infoReader = new DeviceInfoReader(Transport, loggerFactory);
         _batteryStatusReader = new BatteryStatusReader(Transport, loggerFactory);
         _resetDose = new ResetDose(Transport, loggerFactory);
@@ -41,23 +41,14 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         _timeReader = new TimeReader(Transport, loggerFactory);
         _timeWriter = new TimeWriter(Transport, loggerFactory);
 
-        var settingDescriptor = new SettingDescriptor<MyParam>("test", SettingAccessLevel.BASE, "MyParamSettingGroup");
-
         // building device commands and settings
-        var paramReader = new MyParamReader(Transport, loggerFactory);
-        var paramWriter = new MyParamWriter(Transport, loggerFactory);
-        MyParamSetting = new MyParamSetting(paramReader, settingDescriptor, paramWriter);
+        MyParamSetting = new MyParamSetting(Transport, settingsDescriptors, loggerFactory);
+        StringSetting = new StringSetting(Transport, settingsDescriptors, loggerFactory);
 
-
-        var descriptor = new SettingDescriptor<string>("test1", SettingAccessLevel.EXTENDED, "StringSettingGroup");
-        var plainReader = new PlainReader(Transport, loggerFactory);
-        var plainWriter = new PlainWriter(Transport, loggerFactory);
-        StringSetting = new StringSetting(plainReader, descriptor, plainWriter);
-
-        var historyIntervalBehaviour = new SettingDescriptor<TimeSpan>("test2", SettingAccessLevel.ADVANCED, "Behaviour");
-        var intervalReader = new HistoryIntervalReader(Transport, loggerFactory);
-        var intervalWriter = new HistoryIntervalWriter(Transport, loggerFactory);
-        HistoryInterval = new HistoryIntervalSetting(intervalReader, historyIntervalBehaviour, intervalWriter);
+        // var historyIntervalBehaviour = new SettingDescriptor<TimeSpan>("test2", SettingAccessLevel.ADVANCED, "Behaviour");
+        // var intervalReader = new HistoryIntervalReader(Transport, loggerFactory);
+        // var intervalWriter = new HistoryIntervalWriter(Transport, loggerFactory);
+        HistoryInterval = new HistoryIntervalSetting(Transport, settingsDescriptors, loggerFactory);
 
         HistoryManager = new HistoryManager(Transport, loggerFactory);
 

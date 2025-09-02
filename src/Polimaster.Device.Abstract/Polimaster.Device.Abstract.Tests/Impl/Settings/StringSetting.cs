@@ -1,11 +1,16 @@
-﻿using Polimaster.Device.Abstract.Device.Commands;
+﻿using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Settings;
+using Polimaster.Device.Abstract.Tests.Impl.Commands;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Settings; 
 
-public class StringSetting(IDataReader<string> reader, ISettingDescriptor settingDescriptor, IDataWriter<string>? writer = null)
+public class StringSetting(
+    IMyTransport transport,
+    IMySettingDescriptors settingDescriptor,
+    ILoggerFactory? loggerFactory)
     : ADeviceSetting<string>(new SettingDefinition<string> {
-        Reader = reader,
-        Writer = writer,
-        Descriptor = settingDescriptor
+        Reader = new PlainReader(transport, loggerFactory),
+        Writer = new PlainWriter(transport, loggerFactory),
+        Descriptor = settingDescriptor.StringSettingDescriptor
     });
