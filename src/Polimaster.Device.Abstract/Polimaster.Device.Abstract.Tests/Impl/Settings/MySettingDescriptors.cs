@@ -4,7 +4,10 @@ using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Settings;
 
-public class MySettingDescriptors : IMySettingDescriptors {
+public readonly struct MySettingDescriptors : IMySettingDescriptors {
+    public MySettingDescriptors() {
+    }
+
     public IEnumerable<ISettingDescriptor> GetAll() {
         return [
             StringSettingDescriptor,

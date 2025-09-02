@@ -44,10 +44,6 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
         // building device commands and settings
         MyParamSetting = new MyParamSetting(Transport, settingsDescriptors, loggerFactory);
         StringSetting = new StringSetting(Transport, settingsDescriptors, loggerFactory);
-
-        // var historyIntervalBehaviour = new SettingDescriptor<TimeSpan>("test2", SettingAccessLevel.ADVANCED, "Behaviour");
-        // var intervalReader = new HistoryIntervalReader(Transport, loggerFactory);
-        // var intervalWriter = new HistoryIntervalWriter(Transport, loggerFactory);
         HistoryInterval = new HistoryIntervalSetting(Transport, settingsDescriptors, loggerFactory);
 
         HistoryManager = new HistoryManager(Transport, loggerFactory);
