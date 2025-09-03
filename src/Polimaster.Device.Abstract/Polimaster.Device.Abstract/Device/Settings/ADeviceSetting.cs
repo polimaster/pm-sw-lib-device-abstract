@@ -33,7 +33,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
     /// </summary>
     /// <param name="settingDefinition"></param>
     protected ADeviceSetting(SettingDefinition<T> settingDefinition) : base(settingDefinition.Descriptor) {
-        Reader = settingDefinition.Reader;
+        Reader = settingDefinition.Reader ?? throw new NullReferenceException($"{nameof(settingDefinition.Reader)} is null");
         Writer = settingDefinition.Writer;
     }
 
