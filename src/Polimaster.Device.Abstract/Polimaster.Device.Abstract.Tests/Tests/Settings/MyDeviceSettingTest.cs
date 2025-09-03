@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Moq;
+using Polimaster.Device.Abstract.Device.Commands;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Transport;
 using Polimaster.Device.Abstract.Transport;
@@ -78,37 +80,53 @@ public class DeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldRead() {
-        var transport = new Mock<IMyTransport>();
-        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+        var reader = new Mock<IDataReader<MyParam>>();
+        var p = new MyParam();
+        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p));
+        var setting = new MyParamSetting(new SettingDefinition<MyParam> {
+            Reader = reader.Object,
+            Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
+        });
 
         await setting.Read(Token);
 
-        transport.Verify(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token));
+        reader.Verify(e => e.Read(Token));
+        Assert.Equal(p, setting.Value);
     }
 
     [Fact]
     public async Task ShouldWrite() {
-        var transport = new Mock<IMyTransport>();
 
-        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
-            Value = new MyParam { Value = "test" }
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
+
+        var p = new MyParam { Value = "test" };
+        var setting = new MyParamSetting(new SettingDefinition<MyParam> {
+            Reader = reader.Object,
+            Writer = writer.Object,
+            Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
+        }) {
+            Value = p
         };
 
         await setting.CommitChanges(Token);
 
-        transport.Verify(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token));
+        writer.Verify(e => e.Write(p, Token));
     }
 
     [Fact]
     public async Task ShouldNotWriteValue() {
-        var transport = new Mock<IMyTransport>();
-        var client = new Mock<IClient<IMyDeviceStream>>();
-        var stream = new Mock<IMyDeviceStream>();
-        client.Setup(e => e.GetStream()).Returns(stream.Object);
-        transport.Setup(e => e.Client).Returns(client.Object);
 
-        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
-            Value = new MyParam { Value = "ve__________________________ery long string" }
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
+
+        var p = new MyParam { Value = "ve__________________________ery long string" };
+        var setting = new MyParamSetting(new SettingDefinition<MyParam> {
+            Reader = reader.Object,
+            Writer = writer.Object,
+            Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
+        }) {
+            Value = p
         };
 
         await setting.CommitChanges(Token);
@@ -117,7 +135,7 @@ public class DeviceSettingTest : Mocks {
         Assert.True(setting.IsDirty);
         Assert.NotNull(setting.Exception);
 
-        stream.Verify(e => e.Write(It.IsAny<byte[]>(), Token), Times.Never);
+        writer.Verify(e => e.Write(p, Token), Times.Never);
     }
 
     [Fact]
@@ -140,13 +158,21 @@ public class DeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldCatchExceptionWhileWrite() {
-        var transport = new Mock<IMyTransport>();
-        var ex = new Exception();
-        transport.Setup(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token)).Throws(ex);
 
-        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
-            Value = new MyParam { Value = "test" }
+        var reader = new Mock<IDataReader<MyParam>>();
+        var writer = new Mock<IDataWriter<MyParam>>();
+
+        var p = new MyParam { Value = "test" };
+        var setting = new MyParamSetting(new SettingDefinition<MyParam> {
+            Reader = reader.Object,
+            Writer = writer.Object,
+            Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
+        }) {
+            Value = p
         };
+
+        var ex = new Exception();
+        writer.Setup(e => e.Write(It.IsAny<MyParam>(), Token)).ThrowsAsync(ex);
 
         await setting.CommitChanges(Token);
 
@@ -157,12 +183,16 @@ public class DeviceSettingTest : Mocks {
 
     [Fact]
     public async Task ShouldCatchExceptionWhileRead() {
-        var transport = new Mock<IMyTransport>();
 
+        var reader = new Mock<IDataReader<MyParam>>();
         var ex = new Exception();
-        transport.Setup(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token)).Throws(ex);
 
-        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+        reader.Setup(e => e.Read(Token)).ThrowsAsync(ex);
+
+        var setting = new MyParamSetting(new SettingDefinition<MyParam> {
+            Reader = reader.Object,
+            Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
+        });
 
         await setting.Read(Token);
         Assert.Equal(ex, setting.Exception);
