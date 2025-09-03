@@ -1,12 +1,17 @@
 ﻿using System;
-using Polimaster.Device.Abstract.Device.Commands;
+using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Settings;
+using Polimaster.Device.Abstract.Tests.Impl.Commands;
+using Polimaster.Device.Abstract.Tests.Impl.Transport;
 
-namespace Polimaster.Device.Abstract.Tests.Impl.Settings; 
+namespace Polimaster.Device.Abstract.Tests.Impl.Settings;
 
-public class HistoryIntervalSetting(IDataReader<TimeSpan> reader, ISettingDescriptor settingDescriptor, IDataWriter<TimeSpan>? writer = null)
+public class HistoryIntervalSetting(
+    IMyTransport transport,
+    IMySettingDescriptors settingsDescriptors,
+    ILoggerFactory? loggerFactory)
     : ADeviceSetting<TimeSpan>(new SettingDefinition<TimeSpan> {
-        Reader = reader,
-        Descriptor = settingDescriptor,
-        Writer = writer
+        Reader = new HistoryIntervalReader(transport, loggerFactory),
+        Descriptor = settingsDescriptors.HistoryIntervalSettingDescriptor,
+        Writer = new HistoryIntervalWriter(transport, loggerFactory)
     });

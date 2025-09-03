@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Polimaster.Device.Abstract.Device;
+using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract;
 
@@ -24,4 +25,9 @@ public interface IDeviceManager<T> : IDisposable where T : IDevice {
     /// Current connected devices
     /// </summary>
     List<T> Devices { get; }
+
+    /// <summary>
+    /// Settings descriptors
+    /// </summary>
+    ISettingDescriptors SettingsDescriptors { get; }
 }

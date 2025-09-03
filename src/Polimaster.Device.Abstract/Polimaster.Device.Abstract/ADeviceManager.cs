@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device;
+using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Transport;
 
 namespace Polimaster.Device.Abstract;
@@ -27,6 +28,9 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
 
     /// <inheritdoc />
     public List<T> Devices { get; } = [];
+
+    /// <inheritdoc />
+    public abstract ISettingDescriptors SettingsDescriptors { get; }
 
     /// <summary>
     /// 
