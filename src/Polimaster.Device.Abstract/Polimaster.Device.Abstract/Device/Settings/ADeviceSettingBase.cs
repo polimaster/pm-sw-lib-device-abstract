@@ -31,6 +31,31 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     }
 
     /// <inheritdoc />
+    public Type ValueType => typeof(T);
+
+    /// <summary>
+    ///
+    /// </summary>
+    object? IDeviceSetting.UntypedValue {
+        get => Value;
+        set {
+            switch (value) {
+                case null:
+                    Value = default;
+                    return;
+                case T typed:
+                    Value = typed;
+                    return;
+                default:
+                    throw new ArgumentException(
+                        $"Invalid type '{value.GetType().Name}'. Expected '{typeof(T).Name}'.",
+                        nameof(value)
+                    );
+            }
+        }
+    }
+
+    /// <inheritdoc />
     public ISettingDescriptor Descriptor { get; }
 
     /// <inheritdoc />

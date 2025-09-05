@@ -24,7 +24,7 @@ public abstract class ALogged {
     /// Log current command
     /// </summary>
     /// <param name="methodName"></param>
-    protected void LogDebug(string methodName) => Logger?.LogDebug("Execute {C}", methodName);
+    // protected void LogDebug(string methodName) => Logger?.LogDebug("Execute {C}", methodName);
 
     /// <summary>
     /// Log error

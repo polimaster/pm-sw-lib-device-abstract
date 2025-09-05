@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Polimaster.Device.Abstract.Tests.Impl.Device;
@@ -45,21 +46,33 @@ public class MyDeviceTest : Mocks {
     public async Task ShouldReadAllSettings() {
         var transport = new Mock<IMyTransport>();
         var client = new Mock<IClient<IMyDeviceStream>>();
+        var stream = new Mock<IMyDeviceStream>();
+        client.Setup(e => e.GetStream()).Returns(stream.Object);
         transport.Setup(e => e.Client).Returns(client.Object);
+        transport.Setup(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream, Task>>(), Token))
+            .Returns<Func<IMyDeviceStream, Task>, CancellationToken>(async (func, _) => {
+                await func(stream.Object);
+            });
 
         var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
         var settingsCount = dev.GetSettings().Count();
 
         await dev.ReadAllSettings(Token);
 
-        transport.Verify(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token), Times.Exactly(settingsCount));
+        stream.Verify(s => s.Write(It.IsAny<byte[]>(), Token), Times.Exactly(settingsCount));
     }
 
     [Fact]
     public async Task ShouldWriteSettings() {
         var transport = new Mock<IMyTransport>();
         var client = new Mock<IClient<IMyDeviceStream>>();
+        var stream = new Mock<IMyDeviceStream>();
+        client.Setup(e => e.GetStream()).Returns(stream.Object);
         transport.Setup(e => e.Client).Returns(client.Object);
+        transport.Setup(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream, Task>>(), Token))
+            .Returns<Func<IMyDeviceStream, Task>, CancellationToken>(async (func, _) => {
+                await func(stream.Object);
+            });
 
         var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
 
@@ -69,7 +82,44 @@ public class MyDeviceTest : Mocks {
         await dev.WriteAllSettings(Token);
 
         // should write changed values: HistoryInterval and StringSetting
-        transport.Verify(e => e.ExecOnStream(It.IsAny<Func<IMyDeviceStream,Task>>(), Token), Times.Exactly(2));
+        stream.Verify(s => s.Write(It.IsAny<byte[]>(), Token), Times.Exactly(2));
+    }
+
+
+    [Fact]
+    public void ShouldGetSetting() {
+        var transport = new Mock<IMyTransport>();
+        var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+
+        var setting = dev.GetSetting(SETTING_DESCRIPTORS.HistoryIntervalSettingDescriptor);
+
+        Assert.NotNull(setting);
+        Assert.Equal(SETTING_DESCRIPTORS.HistoryIntervalSettingDescriptor, setting.Descriptor);
+    }
+
+    [Fact]
+    public void ShouldSetSetting() {
+        var transport = new Mock<IMyTransport>();
+        var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+
+        var setting = dev.SetSetting(SETTING_DESCRIPTORS.HistoryIntervalSettingDescriptor, new TimeSpan(0, 1, 0));
+        Assert.NotNull(setting);
+    }
+
+    [Fact]
+    public void ShouldThrowExceptionWhenSettingTypeMismatch() {
+        var transport = new Mock<IMyTransport>();
+        var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+
+        Exception? ex = null;
+
+        try {
+            dev.SetSetting(SETTING_DESCRIPTORS.HistoryIntervalSettingDescriptor, "this is a string but should be TimeSpan");
+        } catch (ArgumentException e) {
+            ex = e;
+        }
+
+        Assert.NotNull(ex);
     }
 
 }

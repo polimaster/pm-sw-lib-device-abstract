@@ -14,7 +14,7 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 public abstract class ACommand<TStream> : CommandBase<TStream>, ICommand {
     /// <inheritdoc />
     public virtual async Task Exec(CancellationToken cancellationToken) {
-        LogDebug(nameof(Exec));
+        // LogDebug(nameof(Exec));
         try {
             // await Transport.WriteAsync(Compile(), cancellationToken);
             await Transport.ExecOnStream(stream => Execute(stream, cancellationToken), cancellationToken);
