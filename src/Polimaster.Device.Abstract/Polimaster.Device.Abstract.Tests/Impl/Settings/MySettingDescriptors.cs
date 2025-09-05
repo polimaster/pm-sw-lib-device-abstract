@@ -21,11 +21,11 @@ public readonly struct MySettingDescriptors : IMySettingDescriptors {
     }
 
     public ISettingDescriptor StringSettingDescriptor { get; } =
-        new SettingDescriptor("test1", typeof(string), SettingAccessLevel.EXTENDED, STRING_SETTING_GROUP);
+        new SettingDescriptor("Test string", typeof(string), SettingAccessLevel.EXTENDED, STRING_SETTING_GROUP);
 
     public ISettingDescriptor MyParamSettingDescriptor { get; } =
-        new SettingDescriptor("test", typeof(MyParam), SettingAccessLevel.BASE, MY_PARAM_SETTING_GROUP);
+        new SettingDescriptor("My Parameter", typeof(MyParam), SettingAccessLevel.BASE, MY_PARAM_SETTING_GROUP);
 
     public ISettingDescriptor HistoryIntervalSettingDescriptor { get; } =
-        new SettingDescriptor("test2", typeof(TimeSpan), SettingAccessLevel.ADVANCED, BEHAVIOUR_SETTING_GROUP);
+        new SettingDescriptor("History Interval", typeof(TimeSpan), SettingAccessLevel.ADVANCED, BEHAVIOUR_SETTING_GROUP);
 }

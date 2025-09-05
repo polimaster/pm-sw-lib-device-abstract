@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Polimaster.Device.Abstract.Device.Settings;
@@ -59,20 +58,20 @@ public interface IDevice {
     /// <param name="descriptor">Setting descriptor</param>
     /// <param name="value">Setting value</param>
     /// <typeparam name="T">Type of setting value</typeparam>
-    IDeviceSetting<T> SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull;
+    IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull;
 
     /// <summary>
     /// Get setting by its <see cref="ISettingDescriptor"/>
     /// </summary>
     /// <param name="descriptor"></param>
     /// <returns></returns>
-    IDeviceSetting<T> GetSetting<T>(ISettingDescriptor descriptor) where T : notnull;
+    IDeviceSetting GetSetting(ISettingDescriptor descriptor);
 
     /// <summary>
-    /// Returns device settings
+    /// Get settings
     /// </summary>
     /// <returns></returns>
-    IEnumerable<PropertyInfo> GetSettings();
+    IEnumerable<IDeviceSetting> GetSettings();
 }
 
 /// <summary>

@@ -15,6 +15,12 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream>
     where TTransport : ITransport<TStream> {
+
+    /// <summary>
+    /// Settings properties cache
+    /// </summary>
+    private List<PropertyInfo>? _settingsProperties;
+
     /// <summary>
     /// Transport layer
     /// </summary>
@@ -52,43 +58,49 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     /// <inheritdoc />
     public async Task ReadAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
-        var ds = GetSettings();
+        var ds = GetSettingsProperties();
         foreach (var info in ds) {
             if (cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.Read), cancellationToken);
+            await InvokeSettingsMethod(info, nameof(IDeviceSetting.Read), cancellationToken);
         }
     }
 
     /// <inheritdoc />
     public async Task WriteAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
-        var ds = GetSettings();
+        var ds = GetSettingsProperties();
         foreach (var info in ds) {
             if (cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting<object>.CommitChanges), cancellationToken);
+            await InvokeSettingsMethod(info, nameof(IDeviceSetting.CommitChanges), cancellationToken);
         }
     }
 
     /// <inheritdoc />
-    public IDeviceSetting<T> SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull {
+    public IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull {
         if (descriptor.ValueType != typeof(T))
             throw new ArgumentException($"Type of {nameof(value)} must be of type {descriptor.ValueType}");
 
-        var setting = GetSetting<T>(descriptor);
-        setting.Value = value;
+        var setting = GetSetting(descriptor);
+        setting.UntypedValue = value;
         return setting;
     }
 
     /// <inheritdoc />
-    public IDeviceSetting<T> GetSetting<T>(ISettingDescriptor descriptor) where T : notnull {
-        var ds = GetSettings();
-        foreach (var info in ds) {
-            if (info.GetValue(this) is not IDeviceSetting<T> settingInstance) continue;
-            if (!settingInstance.Descriptor.Equals(descriptor)) continue;
+    public IDeviceSetting GetSetting(ISettingDescriptor descriptor) {
+        var settings = GetSettings();
+        return settings.FirstOrDefault(e => e.Descriptor.Equals(descriptor)) ??
+               throw new ArgumentException($"No settings found for '{descriptor.Name}'");
+    }
 
-            return settingInstance;
+    /// <inheritdoc />
+    public IEnumerable<IDeviceSetting> GetSettings() {
+        var ds = GetSettingsProperties();
+        var res =  new List<IDeviceSetting>();
+        foreach (var info in ds) {
+            if (info.GetValue(this) is not IDeviceSetting settingInstance) continue;
+            res.Add(settingInstance);
         }
-        throw new Exception($"Setting {descriptor.Name} does not found");
+        return res;
     }
 
 
@@ -99,24 +111,28 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     /// <param name="methodName">Method to execute</param>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
-        var method = info.PropertyType.GetMethod(methodName);
-        var setting = info.GetValue(this);
-        if (setting == null || method == null) return;
+        if (info.GetValue(this) is not IDeviceSetting setting) return;
 
-        // dynamic awaitable = m?.Invoke(setting, null) ?? throw new InvalidOperationException();
-        // if (awaitable != null) await awaitable;
-        var p = new object[1];
-        p[0] = cancellationToken;
-        var task = (Task)method.Invoke(setting, p);
+        var method = setting.GetType().GetMethod(methodName);
+        if (method == null) throw new MissingMethodException(info.Name, methodName);
+
+        var task = (Task)method.Invoke(setting, [cancellationToken]);
         if (task != null) await task;
     }
 
-    /// <inheritdoc />
-    public IEnumerable<PropertyInfo> GetSettings() {
+
+    /// <summary>
+    /// Get PropertyInfo's of all <see cref="IDeviceSetting{T}"/> instance properties.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerable<PropertyInfo> GetSettingsProperties() {
+        if (_settingsProperties != null) return _settingsProperties;
+
         var propertyInfos = GetType().GetProperties();
-        return propertyInfos.Where(info => info.PropertyType.IsGenericType)
+        _settingsProperties = propertyInfos.Where(info => info.PropertyType.IsGenericType)
             .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
             .ToList();
+        return _settingsProperties;
     }
 
     /// <inheritdoc />

@@ -24,7 +24,7 @@ public abstract class AReader<TValue, TData, TStream> : CommandBase<TStream>, ID
 
     /// <inheritdoc />
     public virtual async Task<TValue> Read(CancellationToken cancellationToken) {
-        LogDebug(nameof(Read));
+        // LogDebug(nameof(Read));
         try {
             // await Transport.WriteAsync(Compile(), cancellationToken);
             // var res = await Transport.ReadAsync(cancellationToken);
