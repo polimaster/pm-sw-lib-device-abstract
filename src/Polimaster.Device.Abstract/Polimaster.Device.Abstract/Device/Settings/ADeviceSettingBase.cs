@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +38,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// <summary>
     ///
     /// </summary>
-    object? IDeviceSetting.UntypedValue {
+    public object? UntypedValue {
         get => Value;
         set {
             switch (value) {
@@ -74,6 +76,8 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
                 Validate(value);
                 SetValue(value);
                 IsDirty = true;
+                OnPropertyChanged(nameof(UntypedValue));
+                OnPropertyChanged();
             }
         }
     }
@@ -90,11 +94,31 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
         HasValue = true;
     }
 
-    /// <inheritdoc />
-    public virtual bool HasValue { get; protected set; }
+    /// <inheritdoc cref="HasValue" />
+    private bool _hasValue;
 
     /// <inheritdoc />
-    public virtual bool IsDirty { get; protected set; }
+    public virtual bool HasValue {
+        get => _hasValue;
+        protected set {
+            if (value == _hasValue) return;
+            _hasValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc cref="IsDirty" />
+    private bool _isDirty;
+
+    /// <inheritdoc />
+    public virtual bool IsDirty {
+        get => _isDirty;
+        protected set {
+            if (value == _isDirty) return;
+            _isDirty = value;
+            OnPropertyChanged();
+        }
+    }
 
     /// <inheritdoc />
     public abstract bool IsSynchronized { get; }
@@ -108,8 +132,19 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// <inheritdoc />
     public List<ValidationResult> ValidationErrors { get; }
 
+    /// <inheritdoc cref="Exception" />
+    private Exception? _exception;
+
     /// <inheritdoc />
-    public virtual Exception? Exception { get; protected set; }
+    public virtual Exception? Exception {
+        get => _exception;
+        protected set {
+            if (Equals(value, _exception)) return;
+            _exception = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsError));
+        }
+    }
 
     /// <inheritdoc />
     public abstract Task Read(CancellationToken cancellationToken);
@@ -128,6 +163,8 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
         ValidationErrors.Clear();
         var notNull = ValueIsNotNull(value);
         if (!notNull) ValidationErrors.Add(new ValidationResult("Value can't be null"));
+        OnPropertyChanged(nameof(ValidationErrors));
+        OnPropertyChanged(nameof(IsValid));
     }
 
     /// <summary>
@@ -143,5 +180,16 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// <inheritdoc />
     public override string? ToString() {
         return Value != null ? Value.ToString() : null;
+    }
+
+    /// <inheritdoc />
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <summary>
+    /// Invoke <see cref="PropertyChanged"/>
+    /// </summary>
+    /// <param name="propertyName">name of property</param>
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

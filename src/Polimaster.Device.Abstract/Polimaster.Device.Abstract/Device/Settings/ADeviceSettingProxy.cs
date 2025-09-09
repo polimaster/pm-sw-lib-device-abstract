@@ -18,6 +18,28 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingDescriptor settingDescriptor) :
         base(settingDescriptor) {
         ProxiedSetting = proxiedSetting;
+        ProxiedSetting.PropertyChanged += (_, args) => {
+            switch (args.PropertyName) {
+                case nameof(ProxiedSetting.Value):
+                    OnPropertyChanged(nameof(Value));
+                    break;
+                case nameof(ProxiedSetting.HasValue):
+                    OnPropertyChanged(nameof(HasValue));
+                    break;
+                case nameof(ProxiedSetting.IsSynchronized):
+                    OnPropertyChanged(nameof(IsSynchronized));
+                    break;
+                case nameof(ProxiedSetting.IsError):
+                    OnPropertyChanged(nameof(IsError));
+                    break;
+                case nameof(ProxiedSetting.Exception):
+                    OnPropertyChanged(nameof(Exception));
+                    break;
+                case nameof(ProxiedSetting.IsValid):
+                    OnPropertyChanged(nameof(IsValid));
+                    break;
+            }
+        };
     }
 
     /// <summary>
@@ -42,6 +64,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                 value ?? throw new ArgumentNullException(nameof(value)));
             if (ProxiedSetting.ValidationErrors.Any()) {
                 ValidationErrors.Add(new ValidationResult("Underlying proxied setting value is invalid."));
+                OnPropertyChanged(nameof(ValidationErrors));
             }
         }
     }
@@ -66,8 +89,8 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
     /// <inheritdoc />
     public override Exception? Exception {
-        get => ProxiedSetting.Exception;
-        protected set { }
+        get => base.Exception ?? ProxiedSetting.Exception;
+        protected set => base.Exception = value;
     }
 
     /// <summary>
@@ -87,22 +110,26 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     /// <inheritdoc />
     public override Task Reset(CancellationToken cancellationToken) {
         HasValue = false;
+        Exception = null;
         return ProxiedSetting.Reset(cancellationToken);
     }
 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!ValidationErrors.Any()) {
+            Exception = null;
             await ProxiedSetting.CommitChanges(cancellationToken);
             return;
         }
 
-        Exception = new Exception($"Value of {GetType().Name} is not valid");
+        Exception = new Exception("Value is not valid");
+        OnPropertyChanged(nameof(Exception));
     }
 
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
         HasValue = false;
+        Exception = null;
         await ProxiedSetting.Read(cancellationToken);
     }
 }
