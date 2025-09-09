@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <summary>
 /// Device setting
 /// </summary>
-public interface IDeviceSetting {
+public interface IDeviceSetting : INotifyPropertyChanged {
 
     /// <summary>
     /// Value type

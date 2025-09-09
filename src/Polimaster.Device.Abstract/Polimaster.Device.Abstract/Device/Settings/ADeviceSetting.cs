@@ -62,13 +62,16 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
             SetValue(default);
             HasValue = false;
             Exception = e;
-        } finally { Semaphore.Release(); }
+        } finally {
+            OnPropertyChanged(nameof(IsSynchronized));
+            Semaphore.Release();
+        }
     }
 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsValid) {
-            Exception = new Exception($"Value of {GetType().Name} is not valid");
+            Exception = new Exception("Value is not valid");
             return;
         }
 
@@ -80,6 +83,9 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
             IsDirty = false;
             Exception = null;
             _isSynchronized = true;
-        } catch (Exception e) { Exception = e; } finally { Semaphore.Release(); }
+            OnPropertyChanged(nameof(IsSynchronized));
+        } catch (Exception e) {
+            Exception = e;
+        } finally { Semaphore.Release(); }
     }
 }
