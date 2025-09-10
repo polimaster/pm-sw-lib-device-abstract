@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,13 +59,13 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                 throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
             base.Value = value;
             // does not allow to change proxied value until is valid
-            if (ValidationErrors.Any()) return;
+            if (ValidationResults.Any()) return;
 
             ProxiedSetting.Value = ModifyProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
                 value ?? throw new ArgumentNullException(nameof(value)));
-            if (ProxiedSetting.ValidationErrors.Any()) {
-                ValidationErrors.Add(new ValidationResult("Underlying proxied setting value is invalid."));
-                OnPropertyChanged(nameof(ValidationErrors));
+            if (ProxiedSetting.ValidationResults.Any()) {
+                ValidationResults.Add(new ValidationResult("Underlying proxied setting value is invalid."));
+                OnPropertyChanged(nameof(ValidationResults));
             }
         }
     }
@@ -82,7 +83,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override bool IsSynchronized => ProxiedSetting.IsSynchronized;
 
     /// <inheritdoc />
-    public override bool IsValid => !ValidationErrors.Any() && ProxiedSetting.IsValid;
+    public override bool IsValid => !ValidationResults.Any() && ProxiedSetting.IsValid;
 
     /// <inheritdoc />
     public override bool IsError => ProxiedSetting.IsError;
@@ -116,7 +117,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
-        if (!ValidationErrors.Any()) {
+        if (!ValidationResults.Any()) {
             Exception = null;
             await ProxiedSetting.CommitChanges(cancellationToken);
             return;

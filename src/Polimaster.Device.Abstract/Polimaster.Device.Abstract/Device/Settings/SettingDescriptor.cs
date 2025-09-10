@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -8,7 +9,9 @@ public class SettingDescriptor(
     Type valueType,
     SettingAccessLevel accessLevel = SettingAccessLevel.BASE,
     string? groupName = null,
-    string? description = null) : ISettingDescriptor {
+    string? description = null,
+    string? unit = null,
+    IEnumerable<object>? allowedValues = null) : ISettingDescriptor {
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
@@ -23,6 +26,12 @@ public class SettingDescriptor(
 
     /// <inheritdoc />
     public string? GroupName { get; } = groupName;
+
+    /// <inheritdoc />
+    public string? Unit { get; } = unit;
+
+    /// <inheritdoc />
+    public IEnumerable<object>? Values { get; } = allowedValues;
 
     /// <inheritdoc />
     public override int GetHashCode() {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -27,7 +28,17 @@ public interface ISettingDescriptor {
     string? Description { get; }
 
     /// <summary>
-    /// Setting group name. On example, "Sound", "Gamma" etc.
+    /// Setting group name. On example, "Sound", "Display" etc.
     /// </summary>
     string? GroupName { get; }
+
+    /// <summary>
+    /// Units of measurement. Null if not applicable.
+    /// </summary>
+    string? Unit { get; }
+
+    /// <summary>
+    /// List of possible values
+    /// </summary>
+    IEnumerable<object>? Values { get; }
 }

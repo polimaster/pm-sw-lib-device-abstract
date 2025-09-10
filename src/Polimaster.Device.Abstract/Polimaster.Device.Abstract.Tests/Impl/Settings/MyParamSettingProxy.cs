@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Polimaster.Device.Abstract.Device.Settings;
 
 namespace Polimaster.Device.Abstract.Tests.Impl.Settings;
@@ -20,6 +21,6 @@ public class MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting, ISettin
         base.Validate(value);
 
         if (FORBIDDEN_VALUES.Contains(value))
-            ValidationErrors.Add(new ValidationResult($"{value} cant be set as value"));
+            ValidationResults.Add(new ValidationResult($"{value} cant be set as value"));
     }
 }

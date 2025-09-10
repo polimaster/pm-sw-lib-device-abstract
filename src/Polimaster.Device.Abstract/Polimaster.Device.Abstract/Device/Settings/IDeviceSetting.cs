@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -59,9 +60,9 @@ public interface IDeviceSetting : INotifyPropertyChanged {
     bool IsError { get; }
 
     /// <summary>
-    /// Value validation errors
+    /// Value validation results
     /// </summary>
-    List<ValidationResult> ValidationErrors { get; }
+    List<ValidationResult> ValidationResults { get; }
 
     /// <summary>
     /// Error occured while performing <see cref="Read"/> or <see cref="CommitChanges"/> operations
