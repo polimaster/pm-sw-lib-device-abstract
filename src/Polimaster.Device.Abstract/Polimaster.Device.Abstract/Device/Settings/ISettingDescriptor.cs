@@ -35,10 +35,10 @@ public interface ISettingDescriptor {
     /// <summary>
     /// Units of measurement. Null if not applicable.
     /// </summary>
-    string? Unit { get; }
+    object? Unit { get; }
 
     /// <summary>
     /// List of possible values
     /// </summary>
-    IEnumerable<object>? Values { get; }
+    IEnumerable<object>? ValueList { get; }
 }

@@ -10,8 +10,8 @@ public class SettingDescriptor(
     SettingAccessLevel accessLevel = SettingAccessLevel.BASE,
     string? groupName = null,
     string? description = null,
-    string? unit = null,
-    IEnumerable<object>? allowedValues = null) : ISettingDescriptor {
+    object? unit = null,
+    IEnumerable<object>? valueList = null) : ISettingDescriptor {
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
@@ -28,10 +28,10 @@ public class SettingDescriptor(
     public string? GroupName { get; } = groupName;
 
     /// <inheritdoc />
-    public string? Unit { get; } = unit;
+    public object? Unit { get; } = unit;
 
     /// <inheritdoc />
-    public IEnumerable<object>? Values { get; } = allowedValues;
+    public IEnumerable<object>? ValueList { get; } = valueList;
 
     /// <inheritdoc />
     public override int GetHashCode() {

@@ -59,7 +59,7 @@ public class DeviceSettingTest : Mocks {
         var isValidPropertyRaised = false;
         var validationErrorsPropertyRaised = false;
 
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.Value):
                     valuePropertyRaised = true;
@@ -101,7 +101,7 @@ public class DeviceSettingTest : Mocks {
 
         var isValidPropertyRaised = false;
         var validationErrorsPropertyRaised = false;
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.IsValid):
                     isValidPropertyRaised = true;
@@ -148,7 +148,7 @@ public class DeviceSettingTest : Mocks {
         var isSynchronizedPropertyRaised = false;
         var hasValuePropertyRaised = false;
 
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.Value):
                     valuePropertyRaised = true;
@@ -193,7 +193,7 @@ public class DeviceSettingTest : Mocks {
 
         var isSynchronizedPropertyRaised = false;
         var isDirtyPropertyRaised = false;
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.IsSynchronized):
                     isSynchronizedPropertyRaised = true;
@@ -229,7 +229,7 @@ public class DeviceSettingTest : Mocks {
 
         var isErrorPropertyRaised = false;
         var exceptionPropertyRaised = false;
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.IsError):
                     isErrorPropertyRaised = true;
@@ -287,7 +287,7 @@ public class DeviceSettingTest : Mocks {
 
         var isErrorPropertyRaised = false;
         var exceptionPropertyRaised = false;
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.Exception):
                     exceptionPropertyRaised = true;
@@ -327,7 +327,7 @@ public class DeviceSettingTest : Mocks {
 
         var isErrorPropertyRaised = false;
         var exceptionPropertyRaised = false;
-        setting.PropertyChanged += (sender, args) => {
+        setting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(setting.Exception):
                     exceptionPropertyRaised = true;

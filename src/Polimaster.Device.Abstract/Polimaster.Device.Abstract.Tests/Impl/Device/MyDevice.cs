@@ -33,7 +33,7 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
     private readonly TimeReader _timeReader;
     private readonly TimeWriter _timeWriter;
 
-    public MyDevice(IMyTransport transport, IMySettingDescriptors settingsDescriptors, ILoggerFactory? loggerFactory) : base(transport, loggerFactory) {
+    public MyDevice(IMyTransport transport, IMySettingDescriptors settingsDescriptors, ILoggerFactory? loggerFactory) : base(transport, settingsDescriptors, loggerFactory) {
         _infoReader = new DeviceInfoReader(Transport, loggerFactory);
         _batteryStatusReader = new BatteryStatusReader(Transport, loggerFactory);
         _resetDose = new ResetDose(Transport, loggerFactory);
