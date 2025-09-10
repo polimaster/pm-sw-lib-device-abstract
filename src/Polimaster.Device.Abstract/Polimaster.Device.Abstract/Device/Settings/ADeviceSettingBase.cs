@@ -74,10 +74,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
         set {
             lock (this) {
                 Validate(value);
-                SetValue(value);
-                IsDirty = true;
-                OnPropertyChanged(nameof(UntypedValue));
-                OnPropertyChanged();
+                SetValue(value, true);
             }
         }
     }
@@ -87,11 +84,14 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// Note it resets <see cref="IsDirty"/> and <see cref="Exception"/> fields.
     /// </summary>
     /// <param name="value"></param>
-    protected void SetValue(T? value) {
-        IsDirty = false;
+    /// <param name="isDirty"></param>
+    protected void SetValue(T? value, bool isDirty = false) {
+        IsDirty = isDirty;
         Exception = null;
         _internalValue = value;
         HasValue = true;
+        OnPropertyChanged(nameof(Value));
+        OnPropertyChanged(nameof(UntypedValue));
     }
 
     /// <inheritdoc cref="HasValue" />

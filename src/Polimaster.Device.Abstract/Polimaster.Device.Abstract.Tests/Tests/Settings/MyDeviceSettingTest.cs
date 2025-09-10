@@ -11,21 +11,6 @@ namespace Polimaster.Device.Abstract.Tests.Tests.Settings;
 
 public class DeviceSettingTest : Mocks {
 
-    // [Fact]
-    // public void ShouldHaveDefaultDescriptor() {
-    //     var reader = new Mock<IDataReader<MyParam>>();
-    //     var writer = new Mock<IDataWriter<MyParam>>();
-    //
-    //     var p = new MyParam { Value = "test" };
-    //     var setting = new MyParamSetting(reader.Object, writer.Object) {
-    //         Value = p
-    //     };
-    //
-    //     Assert.Null(setting.Descriptor?.Name);
-    //     Assert.Null(setting.Descriptor?.GroupName);
-    //     Assert.Equal(SettingAccessLevel.BASE, setting.Descriptor?.AccessLevel);
-    // }
-
     [Fact]
     public void ShouldHaveValidDescriptor() {
         var settingDescriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor;
@@ -46,24 +31,94 @@ public class DeviceSettingTest : Mocks {
     public void ShouldSetProperty() {
         var transport = new Mock<IMyTransport>();
 
-        var p = new MyParam();
+        var p = new MyParam { Value = "test" };
         var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
             Value = p
         };
 
         Assert.True(setting.IsDirty);
+        Assert.True(setting.HasValue);
+        Assert.False(setting.IsSynchronized);
+        Assert.False(setting.IsError);
+        Assert.Empty(setting.ValidationErrors);
         Assert.Null(setting.Exception);
+        Assert.NotNull(setting.UntypedValue);
+        Assert.NotNull(setting.Value);
     }
+
+    [Fact]
+    public void ShouldRaisePropertyChanged() {
+        var transport = new Mock<IMyTransport>();
+        var p = new MyParam { Value = "test" };
+        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+
+        var valuePropertyRaised = false;
+        var isDirtyPropertyRaised = false;
+        var untypedValuePropertyRaised = false;
+        var hasValuePropertyRaised = false;
+        var isValidPropertyRaised = false;
+        var validationErrorsPropertyRaised = false;
+
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.Value):
+                    valuePropertyRaised = true;
+                    break;
+                case nameof(setting.UntypedValue):
+                    untypedValuePropertyRaised = true;
+                    break;
+                case nameof(setting.IsDirty):
+                    isDirtyPropertyRaised = true;
+                    break;
+                case nameof(setting.HasValue):
+                    hasValuePropertyRaised = true;
+                    break;
+                case nameof(setting.IsValid):
+                    isValidPropertyRaised = true;
+                    break;
+                case nameof(setting.ValidationErrors):
+                    validationErrorsPropertyRaised = true;
+                    break;
+            }
+        };
+
+        setting.Value = p;
+
+        Assert.True(valuePropertyRaised);
+        Assert.True(untypedValuePropertyRaised);
+        Assert.True(isDirtyPropertyRaised);
+        Assert.True(hasValuePropertyRaised);
+        Assert.True(isValidPropertyRaised);
+        Assert.True(validationErrorsPropertyRaised);
+    }
+
 
     [Fact]
     public void ShouldValidateValue() {
         var transport = new Mock<IMyTransport>();
 
-        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
-            Value = null
+        var setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
+
+        var isValidPropertyRaised = false;
+        var validationErrorsPropertyRaised = false;
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.IsValid):
+                    isValidPropertyRaised = true;
+                    break;
+                case nameof(setting.ValidationErrors):
+                    validationErrorsPropertyRaised = true;
+                    break;
+            }
         };
+
+        setting.Value = null;
+
         Assert.True(setting.IsDirty);
         Assert.False(setting.IsValid);
+        Assert.True(isValidPropertyRaised);
+        Assert.True(validationErrorsPropertyRaised);
+
 
         setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
             Value = new MyParam { Value = "Very long string that does not pass validation" }
@@ -88,10 +143,37 @@ public class DeviceSettingTest : Mocks {
             Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
         });
 
+        var valuePropertyRaised = false;
+        var untypedValuePropertyRaised = false;
+        var isSynchronizedPropertyRaised = false;
+        var hasValuePropertyRaised = false;
+
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.Value):
+                    valuePropertyRaised = true;
+                    break;
+                case nameof(setting.UntypedValue):
+                    untypedValuePropertyRaised = true;
+                    break;
+                case nameof(setting.IsSynchronized):
+                    isSynchronizedPropertyRaised = true;
+                    break;
+                case nameof(setting.HasValue):
+                    hasValuePropertyRaised = true;
+                    break;
+            }
+        };
+
         await setting.Read(Token);
 
         reader.Verify(e => e.Read(Token));
         Assert.Equal(p, setting.Value);
+
+        Assert.True(valuePropertyRaised);
+        Assert.True(untypedValuePropertyRaised);
+        Assert.True(isSynchronizedPropertyRaised);
+        Assert.True(hasValuePropertyRaised);
     }
 
     [Fact]
@@ -109,9 +191,25 @@ public class DeviceSettingTest : Mocks {
             Value = p
         };
 
+        var isSynchronizedPropertyRaised = false;
+        var isDirtyPropertyRaised = false;
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.IsSynchronized):
+                    isSynchronizedPropertyRaised = true;
+                    break;
+                case nameof(setting.IsDirty):
+                    isDirtyPropertyRaised = true;
+                    break;
+            }
+        };
+
+
         await setting.CommitChanges(Token);
 
         writer.Verify(e => e.Write(p, Token));
+        Assert.True(isSynchronizedPropertyRaised);
+        Assert.True(isDirtyPropertyRaised);
     }
 
     [Fact]
@@ -129,6 +227,20 @@ public class DeviceSettingTest : Mocks {
             Value = p
         };
 
+        var isErrorPropertyRaised = false;
+        var exceptionPropertyRaised = false;
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.IsError):
+                    isErrorPropertyRaised = true;
+                    break;
+                case nameof(setting.Exception):
+                    exceptionPropertyRaised = true;
+                    break;
+            }
+        };
+
+
         await setting.CommitChanges(Token);
 
         Assert.True(setting.IsError);
@@ -136,6 +248,8 @@ public class DeviceSettingTest : Mocks {
         Assert.NotNull(setting.Exception);
 
         writer.Verify(e => e.Write(p, Token), Times.Never);
+        Assert.True(isErrorPropertyRaised);
+        Assert.True(exceptionPropertyRaised);
     }
 
     [Fact]
@@ -171,6 +285,20 @@ public class DeviceSettingTest : Mocks {
             Value = p
         };
 
+        var isErrorPropertyRaised = false;
+        var exceptionPropertyRaised = false;
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.Exception):
+                    exceptionPropertyRaised = true;
+                    break;
+                case nameof(setting.IsError):
+                    isErrorPropertyRaised = true;
+                    break;
+            }
+        };
+
+
         var ex = new Exception();
         writer.Setup(e => e.Write(It.IsAny<MyParam>(), Token)).ThrowsAsync(ex);
 
@@ -178,6 +306,9 @@ public class DeviceSettingTest : Mocks {
 
         Assert.Equal(ex, setting.Exception);
         Assert.True(setting.IsError);
+        Assert.True(isErrorPropertyRaised);
+        Assert.True(exceptionPropertyRaised);
+
     }
 
 
@@ -194,10 +325,26 @@ public class DeviceSettingTest : Mocks {
             Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
         });
 
+        var isErrorPropertyRaised = false;
+        var exceptionPropertyRaised = false;
+        setting.PropertyChanged += (sender, args) => {
+            switch (args.PropertyName) {
+                case nameof(setting.Exception):
+                    exceptionPropertyRaised = true;
+                    break;
+                case nameof(setting.IsError):
+                    isErrorPropertyRaised = true;
+                    break;
+            }
+        };
+
         await setting.Read(Token);
         Assert.Equal(ex, setting.Exception);
         Assert.Null(setting.Value);
         Assert.True(setting.IsError);
+
+        Assert.True(isErrorPropertyRaised);
+        Assert.True(exceptionPropertyRaised);
     }
 
 }
