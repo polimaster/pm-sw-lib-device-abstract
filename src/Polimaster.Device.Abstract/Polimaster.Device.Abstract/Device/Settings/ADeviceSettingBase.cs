@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -29,7 +30,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
             throw new Exception($"{nameof(settingDescriptor)} parameter should match type of {typeof(T)}, current is {settingDescriptor.ValueType}");
 
         Descriptor = settingDescriptor;
-        ValidationErrors = [];
+        ValidationResults = [];
     }
 
     /// <inheritdoc />
@@ -124,13 +125,13 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     public abstract bool IsSynchronized { get; }
 
     /// <inheritdoc />
-    public virtual bool IsValid => !ValidationErrors.Any();
+    public virtual bool IsValid => !ValidationResults.Any();
 
     /// <inheritdoc />
     public virtual bool IsError => Exception != null;
 
     /// <inheritdoc />
-    public List<ValidationResult> ValidationErrors { get; }
+    public List<ValidationResult> ValidationResults { get; }
 
     /// <inheritdoc cref="Exception" />
     private Exception? _exception;
@@ -156,14 +157,19 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     public abstract Task CommitChanges(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Validates value while assignment. See <see cref="ValidationErrors"/> for errors.
+    /// Validates value while assignment. See <see cref="ValidationResults"/> for errors.
     /// </summary>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
     protected virtual void Validate(T? value) {
-        ValidationErrors.Clear();
+        ValidationResults.Clear();
         var notNull = ValueIsNotNull(value);
-        if (!notNull) ValidationErrors.Add(new ValidationResult("Value can't be null"));
-        OnPropertyChanged(nameof(ValidationErrors));
+        if (!notNull) ValidationResults.Add(new ValidationResult("Value can't be null"));
+
+        var context = new ValidationContext(this) { MemberName = nameof(Value) };
+
+        Validator.TryValidateProperty(Value, context, ValidationResults);
+
+        OnPropertyChanged(nameof(ValidationResults));
         OnPropertyChanged(nameof(IsValid));
     }
 

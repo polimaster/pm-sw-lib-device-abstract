@@ -40,7 +40,7 @@ public class DeviceSettingTest : Mocks {
         Assert.True(setting.HasValue);
         Assert.False(setting.IsSynchronized);
         Assert.False(setting.IsError);
-        Assert.Empty(setting.ValidationErrors);
+        Assert.Empty(setting.ValidationResults);
         Assert.Null(setting.Exception);
         Assert.NotNull(setting.UntypedValue);
         Assert.NotNull(setting.Value);
@@ -76,7 +76,7 @@ public class DeviceSettingTest : Mocks {
                 case nameof(setting.IsValid):
                     isValidPropertyRaised = true;
                     break;
-                case nameof(setting.ValidationErrors):
+                case nameof(setting.ValidationResults):
                     validationErrorsPropertyRaised = true;
                     break;
             }
@@ -106,7 +106,7 @@ public class DeviceSettingTest : Mocks {
                 case nameof(setting.IsValid):
                     isValidPropertyRaised = true;
                     break;
-                case nameof(setting.ValidationErrors):
+                case nameof(setting.ValidationResults):
                     validationErrorsPropertyRaised = true;
                     break;
             }
