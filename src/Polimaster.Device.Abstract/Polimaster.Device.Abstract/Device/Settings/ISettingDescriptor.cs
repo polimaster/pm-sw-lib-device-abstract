@@ -35,7 +35,7 @@ public interface ISettingDescriptor {
     /// <summary>
     /// Units of measurement. Null if not applicable.
     /// </summary>
-    string? Unit { get; }
+    object? Unit { get; }
 
     /// <summary>
     /// List of possible values
