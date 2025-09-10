@@ -17,10 +17,10 @@ public class MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting, ISettin
         return proxied;
     }
 
-    protected override void Validate(string? value) {
-        base.Validate(value);
+    protected override void Validate() {
+        base.Validate();
 
-        if (FORBIDDEN_VALUES.Contains(value))
-            ValidationResults.Add(new ValidationResult($"{value} cant be set as value"));
+        if (FORBIDDEN_VALUES.Contains(Value))
+            ValidationResults.Add(new ValidationResult($"{Value} cant be set as value"));
     }
 }

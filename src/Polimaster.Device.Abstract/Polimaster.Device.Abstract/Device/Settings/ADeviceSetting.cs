@@ -79,7 +79,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> where T : notnull {
 
         await Semaphore.WaitAsync(cancellationToken);
         try {
-            if (Value != null) await Writer.Write(Value, cancellationToken);
+            if (Value is not null) await Writer.Write(Value, cancellationToken);
             IsDirty = false;
             Exception = null;
             _isSynchronized = true;
