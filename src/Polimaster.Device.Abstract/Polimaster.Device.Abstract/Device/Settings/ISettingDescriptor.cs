@@ -40,5 +40,5 @@ public interface ISettingDescriptor {
     /// <summary>
     /// List of possible values
     /// </summary>
-    IEnumerable<object>? Values { get; }
+    IEnumerable<object>? ValueList { get; }
 }

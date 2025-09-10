@@ -15,6 +15,10 @@ namespace Polimaster.Device.Abstract.Device;
 /// </summary>
 public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream>
     where TTransport : ITransport<TStream> {
+    /// <summary>
+    /// Settings descriptors for device type
+    /// </summary>
+    private readonly IEnumerable<ISettingDescriptor> _settingDescriptors;
 
     /// <summary>
     /// Settings properties cache
@@ -45,8 +49,10 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     /// Device constructor
     /// </summary>
     /// <param name="transport">Device transport layer</param>
+    /// <param name="settingDescriptors"></param>
     /// <param name="loggerFactory">Logger factory</param>
-    protected ADevice(TTransport transport, ILoggerFactory? loggerFactory = null) {
+    protected ADevice(TTransport transport, ISettingDescriptors settingDescriptors, ILoggerFactory? loggerFactory = null) {
+        _settingDescriptors = settingDescriptors.GetAll();
         Transport = transport;
         Logger = loggerFactory?.CreateLogger(GetType());
     }
@@ -98,7 +104,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
         var res =  new List<IDeviceSetting>();
         foreach (var info in ds) {
             if (info.GetValue(this) is not IDeviceSetting settingInstance) continue;
-            res.Add(settingInstance);
+            if(_settingDescriptors.Contains(settingInstance.Descriptor)) res.Add(settingInstance);
         }
         return res;
     }

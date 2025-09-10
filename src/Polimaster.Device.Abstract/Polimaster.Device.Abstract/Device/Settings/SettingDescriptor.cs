@@ -11,7 +11,7 @@ public class SettingDescriptor(
     string? groupName = null,
     string? description = null,
     string? unit = null,
-    IEnumerable<object>? allowedValues = null) : ISettingDescriptor {
+    IEnumerable<object>? valueList = null) : ISettingDescriptor {
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
@@ -31,7 +31,7 @@ public class SettingDescriptor(
     public string? Unit { get; } = unit;
 
     /// <inheritdoc />
-    public IEnumerable<object>? Values { get; } = allowedValues;
+    public IEnumerable<object>? ValueList { get; } = valueList;
 
     /// <inheritdoc />
     public override int GetHashCode() {
