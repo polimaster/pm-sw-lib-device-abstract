@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Commands;
@@ -19,11 +18,11 @@ public class MyParamSetting : ADeviceSetting<MyParam> {
     public MyParamSetting(SettingDefinition<MyParam> settingDefinition) : base(settingDefinition) {
     }
 
-    protected override void Validate(MyParam? value) {
-        base.Validate(value);
-
-        if (value == null) return;
-        var vc = new ValidationContext(value);
-        Validator.TryValidateObject(value, vc, ValidationResults, true);
-    }
+    // protected override void Validate() {
+    //     base.Validate();
+    //
+    //     if (Value == null) return;
+    //     var vc = new ValidationContext(Value);
+    //     Validator.TryValidateObject(value, vc, ValidationResults, true);
+    // }
 }

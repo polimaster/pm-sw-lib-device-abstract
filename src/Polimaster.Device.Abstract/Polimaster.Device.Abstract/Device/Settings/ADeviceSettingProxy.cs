@@ -52,6 +52,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override bool ReadOnly => ProxiedSetting.ReadOnly;
 
     /// <inheritdoc />
+    [Required]
     public override T? Value {
         get => base.HasValue ? base.Value : GetProxied();
         set {
@@ -63,10 +64,13 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
             ProxiedSetting.Value = ModifyProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
                 value ?? throw new ArgumentNullException(nameof(value)));
-            if (ProxiedSetting.ValidationResults.Any()) {
-                ValidationResults.Add(new ValidationResult("Underlying proxied setting value is invalid."));
-                OnPropertyChanged(nameof(ValidationResults));
-            }
+
+            if (!ProxiedSetting.ValidationResults.Any()) return;
+
+            ValidationResults.Clear();
+            ValidationResults.AddRange(ProxiedSetting.ValidationResults);
+            OnPropertyChanged(nameof(ValidationResults));
+            OnPropertyChanged(nameof(IsValid));
         }
     }
 

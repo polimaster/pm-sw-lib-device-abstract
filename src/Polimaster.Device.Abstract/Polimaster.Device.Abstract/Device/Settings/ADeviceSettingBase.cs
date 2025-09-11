@@ -6,9 +6,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Polimaster.Device.Abstract.Helpers;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
-
 
 /// <summary>
 /// <see cref="IDeviceSetting{T}"/> abstract implementation
@@ -16,18 +16,13 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnull {
     /// <summary>
-    /// Stores type nullability for <see cref="T"/>
-    /// </summary>
-    private readonly bool _isNullableValueType;
-
-    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
     protected ADeviceSettingBase(ISettingDescriptor settingDescriptor) {
-        _isNullableValueType = Nullable.GetUnderlyingType(typeof(T)) != null || !typeof(T).IsValueType;
         if (settingDescriptor.ValueType != typeof(T))
-            throw new Exception($"{nameof(settingDescriptor)} parameter should match type of {typeof(T)}, current is {settingDescriptor.ValueType}");
+            throw new Exception(
+                $"{nameof(settingDescriptor)} parameter should match type of {typeof(T)}, current is {settingDescriptor.ValueType}");
 
         Descriptor = settingDescriptor;
         ValidationResults = [];
@@ -70,12 +65,13 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     private T? _internalValue;
 
     /// <inheritdoc />
+    [Required]
     public virtual T? Value {
         get => _internalValue;
         set {
             lock (this) {
-                Validate(value);
                 SetValue(value, true);
+                Validate();
             }
         }
     }
@@ -159,33 +155,27 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// <summary>
     /// Validates value while assignment. See <see cref="ValidationResults"/> for errors.
     /// </summary>
-    /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
-    protected virtual void Validate(T? value) {
+    protected virtual void Validate() {
         ValidationResults.Clear();
-        var notNull = ValueIsNotNull(value);
-        if (!notNull) ValidationResults.Add(new ValidationResult("Value can't be null"));
 
-        var context = new ValidationContext(this) { MemberName = nameof(Value) };
+        var memberContext = new ValidationContext(this) { MemberName = nameof(Value) };
+        Validator.TryValidateProperty(Value, memberContext, ValidationResults);
 
-        Validator.TryValidateProperty(Value, context, ValidationResults);
+        if (Value is not null) {
+            var type = Value.GetType();
+            if (!type.IsSimpleType()) { // if value is complex object
+                var valueContext = new ValidationContext(Value);
+                Validator.TryValidateObject(Value, valueContext, ValidationResults, validateAllProperties: true);
+            }
+        }
 
         OnPropertyChanged(nameof(ValidationResults));
         OnPropertyChanged(nameof(IsValid));
     }
 
-    /// <summary>
-    /// Check if value is not null (for nullable and reference types)
-    /// </summary>
-    /// <param name="value">Value to check</param>
-    /// <returns></returns>
-    private bool ValueIsNotNull(T? value) {
-        if (_isNullableValueType) return value is not null;
-        return true;
-    }
-
     /// <inheritdoc />
     public override string? ToString() {
-        return Value != null ? Value.ToString() : null;
+        return Value is not null ? Value.ToString() : null;
     }
 
     /// <inheritdoc />
