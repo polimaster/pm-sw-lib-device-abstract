@@ -41,4 +41,9 @@ public interface ISettingDescriptor {
     /// List of possible values
     /// </summary>
     IEnumerable<object>? ValueList { get; }
+
+    /// <summary>
+    /// Numeric value range
+    /// </summary>
+    ValueRange? Range { get; }
 }
