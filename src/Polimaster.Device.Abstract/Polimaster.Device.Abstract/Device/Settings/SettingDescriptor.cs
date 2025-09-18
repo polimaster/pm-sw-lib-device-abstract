@@ -8,7 +8,7 @@ public class SettingDescriptor(
     string name,
     Type valueType,
     SettingAccessLevel accessLevel = SettingAccessLevel.BASE,
-    string? groupName = null,
+    string groupName = "Assorted",
     string? description = null,
     object? unit = null,
     IEnumerable<object>? valueList = null,
@@ -26,7 +26,7 @@ public class SettingDescriptor(
     public string? Description { get; } = description;
 
     /// <inheritdoc />
-    public string? GroupName { get; } = groupName;
+    public string GroupName { get; } = groupName;
 
     /// <inheritdoc />
     public object? Unit { get; } = unit;
@@ -42,7 +42,7 @@ public class SettingDescriptor(
         unchecked {
             var hash = 17;
             hash = hash * 23 + Name.GetHashCode();
-            hash = hash * 23 + (GroupName?.GetHashCode() ?? 0);
+            hash = hash * 23 + GroupName.GetHashCode();
             hash = hash * 23 + ValueType.GetHashCode();
             return hash;
         }

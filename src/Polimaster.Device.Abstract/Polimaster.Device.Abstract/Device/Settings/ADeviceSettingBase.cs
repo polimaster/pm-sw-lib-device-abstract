@@ -20,9 +20,12 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : notnul
     /// </summary>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
     protected ADeviceSettingBase(ISettingDescriptor settingDescriptor) {
-        if (settingDescriptor.ValueType != typeof(T))
+
+        if (!settingDescriptor.ValueType.IsAssignableFrom(typeof(T))) {
             throw new Exception(
-                $"{nameof(settingDescriptor)} parameter should match type of {typeof(T)}, current is {settingDescriptor.ValueType}");
+                $"{nameof(settingDescriptor.ValueType)} of {nameof(settingDescriptor)} parameter should be assignable from {typeof(T)}, " +
+                $"current is {settingDescriptor.ValueType}");
+        }
 
         Descriptor = settingDescriptor;
         ValidationResults = [];
