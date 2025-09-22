@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Proxied device setting. Converts underlying <see cref="IDeviceSetting{T}"/> value to its own.
 /// Usually, its required when device returns structured value like byte masks or complex strings.
 /// </summary>
-public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> where T : IEquatable<T> where TProxied : IEquatable<TProxied> {
+public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> {
     /// <summary>
     /// Constructor
     /// </summary>
