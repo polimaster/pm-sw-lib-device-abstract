@@ -96,7 +96,7 @@ public interface IDeviceSetting : INotifyPropertyChanged {
 /// Device setting
 /// </summary>
 /// <typeparam name="T">Data type of <see cref="Value"/></typeparam>
-public interface IDeviceSetting<T> : IDeviceSetting where T : notnull {
+public interface IDeviceSetting<T> : IDeviceSetting {
     /// <summary>
     /// Setting value
     /// </summary>

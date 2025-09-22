@@ -82,7 +82,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     }
 
     /// <inheritdoc />
-    public IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull {
+    public IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) {
         if (descriptor.ValueType != typeof(T))
             throw new ArgumentException($"Type of {nameof(value)} must be of type {descriptor.ValueType}");
 
