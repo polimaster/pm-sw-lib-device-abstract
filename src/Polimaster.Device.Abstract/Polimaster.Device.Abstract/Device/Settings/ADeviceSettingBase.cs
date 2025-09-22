@@ -14,7 +14,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <see cref="IDeviceSetting{T}"/> abstract implementation
 /// </summary>
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
-public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : IEquatable<T> {
+public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <summary>
     /// Constructor
     /// </summary>
@@ -86,7 +86,8 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> where T : IEquat
     /// <param name="value"></param>
     /// <param name="isDirty"></param>
     protected void SetValue(T? value, bool isDirty = false) {
-        if (value is { } val && Value is not null && val.Equals(Value)) return;
+        if (value is { } val && Value is not null && EqualityComparer<T>.Default.Equals(val, Value))
+            return;
 
         IsDirty = isDirty;
         Exception = null;

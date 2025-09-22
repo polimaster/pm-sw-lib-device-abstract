@@ -58,7 +58,7 @@ public interface IDevice {
     /// <param name="descriptor">Setting descriptor</param>
     /// <param name="value">Setting value</param>
     /// <typeparam name="T">Type of setting value</typeparam>
-    IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) where T : notnull;
+    IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value);
 
     /// <summary>
     /// Get setting by its <see cref="ISettingDescriptor"/>
