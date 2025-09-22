@@ -10,7 +10,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// Proxied device setting. Converts underlying <see cref="IDeviceSetting{T}"/> value to its own.
 /// Usually, its required when device returns structured value like byte masks or complex strings.
 /// </summary>
-public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> where T : notnull where TProxied : notnull {
+public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> where T : IEquatable<T> where TProxied : IEquatable<TProxied> {
     /// <summary>
     /// Constructor
     /// </summary>
@@ -22,6 +22,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
         ProxiedSetting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(ProxiedSetting.Value):
+                    base.Value = GetProxied();
                     OnPropertyChanged(nameof(Value));
                     break;
                 case nameof(ProxiedSetting.HasValue):
@@ -62,8 +63,10 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
             // does not allow to change proxied value until is valid
             if (ValidationResults.Any()) return;
 
-            ProxiedSetting.Value = ModifyProxied(ProxiedSetting.Value ?? throw new InvalidOperationException(),
+            var newProxied = CreateNewProxiedValue(ProxiedSetting.Value ?? throw new InvalidOperationException(),
                 value ?? throw new ArgumentNullException(nameof(value)));
+            if (ReferenceEquals(newProxied, ProxiedSetting.Value)) throw new ApplicationException($"{nameof(CreateNewProxiedValue)} should not return the same object");
+            ProxiedSetting.Value = newProxied;
 
             if (!ProxiedSetting.ValidationResults.Any()) return;
 
@@ -105,12 +108,13 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     protected abstract T? GetProxied();
 
     /// <summary>
-    /// Apply changes to <see cref="ProxiedSetting"/>.<see cref="IDeviceSetting{T}.Value"/>
+    /// Create new <see cref="ProxiedSetting"/>.<see cref="IDeviceSetting{T}.Value"/>
+    /// based on old <paramref name="proxied"/> value with new <paramref name="value"/>.
     /// </summary>
-    /// <param name="proxied">Current proxied value to modify</param>
+    /// <param name="proxied">Current proxied value</param>
     /// <param name="value"><see cref="IDeviceSetting{T}.Value"/></param>
-    /// <returns>Result of modification</returns>
-    protected abstract TProxied ModifyProxied(TProxied proxied, T value);
+    /// <returns>new <see cref="ProxiedSetting"/>.<see cref="IDeviceSetting{T}.Value"/></returns>
+    protected abstract TProxied CreateNewProxiedValue(TProxied proxied, T value);
 
     /// <inheritdoc />
     public override Task Reset(CancellationToken cancellationToken) {

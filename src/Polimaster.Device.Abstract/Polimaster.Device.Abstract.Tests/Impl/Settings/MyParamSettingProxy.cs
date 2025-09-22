@@ -12,9 +12,8 @@ public class MyParamSettingProxy(IDeviceSetting<MyParam> proxiedSetting, ISettin
         return ProxiedSetting.Value?.Value;
     }
 
-    protected override MyParam ModifyProxied(MyParam proxied, string value) {
-        proxied.Value = value;
-        return proxied;
+    protected override MyParam CreateNewProxiedValue(MyParam proxied, string value) {
+        return proxied with { Value = value };
     }
 
     protected override void Validate() {
