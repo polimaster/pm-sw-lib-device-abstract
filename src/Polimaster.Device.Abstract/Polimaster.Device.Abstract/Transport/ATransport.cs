@@ -56,12 +56,12 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     /// <inheritdoc />
     public virtual async Task Open(CancellationToken cancellationToken) {
         if (Client.Connected) return;
-        if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+        if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         try {
             Logger?.LogDebug("Open transport connection (async)");
             await Client.Open(cancellationToken);
         } finally {
-            if (SyncStreamAccess) Semaphore.Release();
+            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
         }
     }
 
@@ -73,7 +73,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
             Closing?.Invoke();
             Client.Close();
         } finally {
-            if (SyncStreamAccess) Semaphore.Release();
+            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
 
         try {
             await Open(cancellationToken);
-            if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+            if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             await Exec();
         } catch {
             Client.Reset();
@@ -91,7 +91,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
             await Exec();
             Close();
         } finally {
-            if (SyncStreamAccess) Semaphore.Release();
+            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
         }
 
         return;
@@ -112,7 +112,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
             Closing?.Invoke();
             Client.Close();
         } finally {
-            if (SyncStreamAccess) Semaphore.Release();
+            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
             Client.Dispose();
         }
     }
