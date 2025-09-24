@@ -13,7 +13,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
     /// <summary>
     /// Set limit of threads to 1, witch can access to read/write operations at a time. 
     /// </summary>
-    protected SemaphoreSlim Semaphore { get; } = new(1, 1);
+    // protected SemaphoreSlim Semaphore { get; } = new(1, 1);
 
     /// <summary>
     /// Constructor
@@ -52,7 +52,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
 
     /// <inheritdoc />
     public override async Task Reset(CancellationToken cancellationToken) {
-        await Semaphore.WaitAsync(cancellationToken);
+        // await Semaphore.WaitAsync(cancellationToken);
         try {
             var v = await Reader.Read(cancellationToken);
             SetValue(v);
@@ -64,7 +64,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
             Exception = e;
         } finally {
             OnPropertyChanged(nameof(IsSynchronized));
-            if (Semaphore.CurrentCount < 1) Semaphore.Release();
+            // if (Semaphore.CurrentCount < 1) Semaphore.Release();
         }
     }
 
@@ -78,7 +78,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
         if (Writer == null || !IsDirty) return;
 
         try {
-            await Semaphore.WaitAsync(cancellationToken);
+            // await Semaphore.WaitAsync(cancellationToken);
             if (Value is not null) await Writer.Write(Value, cancellationToken);
             IsDirty = false;
             Exception = null;
@@ -86,6 +86,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
             OnPropertyChanged(nameof(IsSynchronized));
         } catch (Exception e) {
             Exception = e;
-        } finally { if (Semaphore.CurrentCount < 1) Semaphore.Release(); }
+        }
+        // finally { if (Semaphore.CurrentCount < 1) Semaphore.Release(); }
     }
 }
