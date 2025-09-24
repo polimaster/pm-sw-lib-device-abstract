@@ -56,24 +56,32 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     /// <inheritdoc />
     public virtual async Task Open(CancellationToken cancellationToken) {
         if (Client.Connected) return;
-        if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+        var locked = false;
         try {
+            if (SyncStreamAccess) {
+                await Semaphore.WaitAsync(cancellationToken);
+                locked = true;
+            }
             Logger?.LogDebug("Open transport connection (async)");
             await Client.Open(cancellationToken);
         } finally {
-            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
+            if (SyncStreamAccess && locked) Semaphore.Release();
         }
     }
 
     /// <inheritdoc />
     public virtual void Close() {
         if (KeepOpen) return;
-        if (SyncStreamAccess) Semaphore.Wait();
+        var locked = false;
         try {
+            if (SyncStreamAccess) {
+                Semaphore.Wait();
+                locked = true;
+            }
             Closing?.Invoke();
             Client.Close();
         } finally {
-            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
+            if (SyncStreamAccess && locked) Semaphore.Release();
         }
     }
 
@@ -81,9 +89,13 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     public virtual async Task ExecOnStream(Func<TStream, Task> action, CancellationToken cancellationToken = new()) {
         Logger?.LogDebug("Executing {Name}", nameof(ExecOnStream));
 
+        var locked = false;
         try {
             await Open(cancellationToken);
-            if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+            if (SyncStreamAccess) {
+                await Semaphore.WaitAsync(cancellationToken);
+                locked = true;
+            }
             await Exec();
         } catch {
             Client.Reset();
@@ -91,7 +103,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
             await Exec();
             Close();
         } finally {
-            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
+            if (SyncStreamAccess && locked) Semaphore.Release();
         }
 
         return;
@@ -107,12 +119,17 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     /// <inheritdoc />
     public virtual void Dispose() {
         Logger?.LogDebug("Disposing transport connection");
-        if (SyncStreamAccess) Semaphore.Wait();
+        var locked = false;
+
         try {
+            if (SyncStreamAccess) {
+                Semaphore.Wait();
+                locked = true;
+            }
             Closing?.Invoke();
             Client.Close();
         } finally {
-            if (SyncStreamAccess && Semaphore.CurrentCount < 1) Semaphore.Release();
+            if (SyncStreamAccess && locked) Semaphore.Release();
             Client.Dispose();
         }
     }
