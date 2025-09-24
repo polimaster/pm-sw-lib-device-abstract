@@ -56,7 +56,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     /// <inheritdoc />
     public virtual async Task Open(CancellationToken cancellationToken) {
         if (Client.Connected) return;
-        if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
         try {
             Logger?.LogDebug("Open transport connection (async)");
             await Client.Open(cancellationToken);
@@ -83,7 +83,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
 
         try {
             await Open(cancellationToken);
-            if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
             await Exec();
         } catch {
             Client.Reset();

@@ -52,7 +52,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
 
     /// <inheritdoc />
     public override async Task Reset(CancellationToken cancellationToken) {
-        await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await Semaphore.WaitAsync(cancellationToken);
         try {
             var v = await Reader.Read(cancellationToken);
             SetValue(v);
@@ -78,7 +78,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
         if (Writer == null || !IsDirty) return;
 
         try {
-            await Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await Semaphore.WaitAsync(cancellationToken);
             if (Value is not null) await Writer.Write(Value, cancellationToken);
             IsDirty = false;
             Exception = null;
