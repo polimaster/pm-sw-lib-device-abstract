@@ -40,7 +40,7 @@ public class MyClient(ClientParams @params, ILoggerFactory? loggerFactory)
         if (_wrapped is { Connected: true }) return;
         Reset();
         if (_wrapped != null) {
-            await _wrapped.ConnectAsync(Params.Address, Params.Port);
+            await _wrapped.ConnectAsync(Params.Address, Params.Port, token);
         }
     }
 

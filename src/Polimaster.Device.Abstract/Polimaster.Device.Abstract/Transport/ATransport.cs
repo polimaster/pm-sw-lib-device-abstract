@@ -91,16 +91,11 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
 
         var locked = false;
         try {
-            await Open(cancellationToken);
-            if (SyncStreamAccess) {
-                await Semaphore.WaitAsync(cancellationToken);
-                locked = true;
-            }
             await Exec();
         } catch {
             Client.Reset();
-            await Open(cancellationToken);
-            await Exec();
+            if (SyncStreamAccess && locked) Semaphore.Release();
+            await Exec(); // retrying....
             Close();
         } finally {
             if (SyncStreamAccess && locked) Semaphore.Release();
@@ -109,8 +104,15 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
         return;
 
         async Task Exec() {
+            await Open(cancellationToken);
+            if (SyncStreamAccess) {
+                await Semaphore.WaitAsync(cancellationToken);
+                locked = true;
+            }
             var stream = Client.GetStream();
             await action.Invoke(stream);
+            if (SyncStreamAccess && locked) Semaphore.Release();
+            locked = false;
             Thread.Sleep(Sleep);
         }
 
