@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
@@ -23,9 +22,10 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
         ProxiedSetting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(ProxiedSetting.Value):
-                    base.Value = GetProxied();
-                    base.IsDirty = ProxiedSetting.IsDirty;
+                    SetValue(GetProxied());
                     OnPropertyChanged(nameof(Value));
+                    break;
+                case nameof(ProxiedSetting.IsDirty):
                     OnPropertyChanged(nameof(IsDirty));
                     break;
                 case nameof(ProxiedSetting.HasValue):
@@ -60,11 +60,12 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override T? Value {
         get => IsDirty ? base.Value : GetProxied();
         set {
-            if (value is not null && Value is not null && EqualityComparer<T>.Default.Equals(value, Value))
-                return;
+            // if (value is not null && Value is not null && EqualityComparer<T>.Default.Equals(value, Value))
+            //     return;
 
             if (!ProxiedSetting.HasValue)
                 throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
+
             base.Value = value;
             // does not allow to change proxied value until is valid
             if (ValidationResults.Any()) return;
@@ -137,7 +138,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
-        HasValue = false;
+        // HasValue = false;
         // Exception = null;
         await ProxiedSetting.Read(cancellationToken);
     }
