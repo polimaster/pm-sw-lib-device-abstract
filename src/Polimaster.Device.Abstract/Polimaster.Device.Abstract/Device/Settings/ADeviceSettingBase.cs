@@ -86,7 +86,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <param name="value"></param>
     /// <param name="isDirty"></param>
     protected void SetValue(T? value, bool isDirty = false) {
-        if (value is { } val && Value is not null && EqualityComparer<T>.Default.Equals(val, Value))
+        if (value is not null && Value is not null && EqualityComparer<T>.Default.Equals(value, Value))
             return;
 
         IsDirty = isDirty;
