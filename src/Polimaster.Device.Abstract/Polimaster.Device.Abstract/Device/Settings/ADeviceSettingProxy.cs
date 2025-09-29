@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
@@ -59,6 +60,9 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override T? Value {
         get => IsDirty ? base.Value : GetProxied();
         set {
+            if (value is not null && Value is not null && EqualityComparer<T>.Default.Equals(value, Value))
+                return;
+
             if (!ProxiedSetting.HasValue)
                 throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
             base.Value = value;
