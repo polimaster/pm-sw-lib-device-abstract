@@ -23,7 +23,9 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
             switch (args.PropertyName) {
                 case nameof(ProxiedSetting.Value):
                     base.Value = GetProxied();
+                    base.IsDirty = ProxiedSetting.IsDirty;
                     OnPropertyChanged(nameof(Value));
+                    OnPropertyChanged(nameof(IsDirty));
                     break;
                 case nameof(ProxiedSetting.HasValue):
                     OnPropertyChanged(nameof(HasValue));
@@ -37,9 +39,9 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                 case nameof(ProxiedSetting.Exception):
                     OnPropertyChanged(nameof(Exception));
                     break;
-                case nameof(ProxiedSetting.IsValid):
-                    OnPropertyChanged(nameof(IsValid));
-                    break;
+                // case nameof(ProxiedSetting.IsValid):
+                //     OnPropertyChanged(nameof(IsValid));
+                //     break;
             }
         };
     }
@@ -55,7 +57,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     /// <inheritdoc />
     [Required]
     public override T? Value {
-        get => base.HasValue ? base.Value : GetProxied();
+        get => IsDirty ? base.Value : GetProxied();
         set {
             if (!ProxiedSetting.HasValue)
                 throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
@@ -78,29 +80,24 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     }
 
     /// <inheritdoc />
-    public override bool HasValue {
-        get => base.HasValue || ProxiedSetting.HasValue;
-        protected set => base.HasValue = value;
-    }
-
+    public override bool HasValue => ProxiedSetting.HasValue;
+    // protected set => base.HasValue = value;
     /// <inheritdoc />
-    public override bool IsDirty => base.HasValue || ProxiedSetting.IsDirty;
+    // public override bool IsDirty => base.IsDirty;
 
     /// <inheritdoc />
     public override bool IsSynchronized => ProxiedSetting.IsSynchronized;
 
     /// <inheritdoc />
-    public override bool IsValid => !ValidationResults.Any() && ProxiedSetting.IsValid;
+    // public override bool IsValid => !ValidationResults.Any() && ProxiedSetting.IsValid;
 
     /// <inheritdoc />
     public override bool IsError => ProxiedSetting.IsError;
 
     /// <inheritdoc />
-    public override Exception? Exception {
-        get => base.Exception ?? ProxiedSetting.Exception;
-        protected set => base.Exception = value;
-    }
+    public override Exception? Exception => ProxiedSetting.Exception;
 
+    // protected set => base.Exception = value;
     /// <summary>
     /// Converts <see cref="ProxiedSetting"/> value to <see cref="Value"/>
     /// </summary>
@@ -118,27 +115,26 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
     /// <inheritdoc />
     public override Task Reset(CancellationToken cancellationToken) {
-        HasValue = false;
-        Exception = null;
+        // HasValue = false;
+        // Exception = null;
         return ProxiedSetting.Reset(cancellationToken);
     }
 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!ValidationResults.Any()) {
-            Exception = null;
+            // Exception = null;
             await ProxiedSetting.CommitChanges(cancellationToken);
-            return;
         }
 
-        Exception = new Exception("Value is not valid");
-        OnPropertyChanged(nameof(Exception));
+        // Exception = new Exception("Value is not valid");
+        // OnPropertyChanged(nameof(Exception));
     }
 
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
         HasValue = false;
-        Exception = null;
+        // Exception = null;
         await ProxiedSetting.Read(cancellationToken);
     }
 }
