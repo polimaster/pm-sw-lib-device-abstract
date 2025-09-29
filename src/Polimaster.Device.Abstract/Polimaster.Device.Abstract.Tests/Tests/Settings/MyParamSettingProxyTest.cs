@@ -54,12 +54,18 @@ public class ADeviceSettingProxyTest : Mocks {
             Writer = writer.Object,
             Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
         });
+
+        var proxy = new MyParamSettingProxy(setting, SETTING_DESCRIPTORS.StringSettingDescriptor);
         await setting.Read(Token);
 
-        var proxy = new MyParamSettingProxy(setting, SETTING_DESCRIPTORS.StringSettingDescriptor) {
-            Value = "test"
-        };
+        Assert.False(setting.IsDirty);
+        Assert.False(proxy.IsDirty);
+        Assert.True(setting.IsSynchronized);
+        Assert.True(proxy.IsSynchronized);
 
+        proxy.Value = "test";
+
+        Assert.True(setting.IsDirty);
         Assert.True(proxy.IsDirty);
         Assert.Null(proxy.Exception);
     }
