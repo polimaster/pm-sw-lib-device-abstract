@@ -142,7 +142,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     }
 
     /// <inheritdoc />
-    public bool HasSame(TTransport transport) => transport.Client.Equals(Transport.Client);
+    public virtual bool HasSame(TTransport transport) => transport.Client.Equals(Transport.Client);
 
     /// <inheritdoc />
     public bool Equals(IDevice<TTransport, TStream>? other) {
