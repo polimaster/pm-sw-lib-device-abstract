@@ -181,7 +181,15 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
 
     /// <inheritdoc />
     public override string? ToString() {
-        return Value is not null ? Value.ToString() : null;
+        if (ValueType == typeof(bool)) {
+            return Value is true ? OnOff.ON.GetDescription() : OnOff.OFF.GetDescription();
+        }
+        if (ValueType.IsEnum) {
+            var v =  Value as Enum;
+            return v?.GetDescription();
+        }
+
+        return Value?.ToString();
     }
 
     /// <inheritdoc />

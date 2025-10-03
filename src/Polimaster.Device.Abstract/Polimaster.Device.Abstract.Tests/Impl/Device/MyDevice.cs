@@ -16,6 +16,8 @@ namespace Polimaster.Device.Abstract.Tests.Impl.Device;
 public interface IMyDevice : IDevice<IMyTransport, IMyDeviceStream>, IHasBattery, IHasDose, IHasTemperatureSensor, IHasHistory<HistoryRecord> {
     IDeviceSetting<MyParam> MyParamSetting { get; }
     IDeviceSetting<string> StringSetting { get; }
+    IDeviceSetting<bool> BoolSetting { get; }
+    IDeviceSetting<OnOff> EnumSetting { get; }
 }
 
 public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
@@ -25,6 +27,10 @@ public class MyDevice : ADevice<IMyTransport, IMyDeviceStream>, IMyDevice {
 
     public IDeviceSetting<MyParam> MyParamSetting { get; }
     public IDeviceSetting<string> StringSetting { get; }
+
+    public IDeviceSetting<bool> BoolSetting { get; }
+
+    public IDeviceSetting<OnOff> EnumSetting { get; }
 
     private readonly DeviceInfoReader _infoReader;
     private readonly BatteryStatusReader _batteryStatusReader;

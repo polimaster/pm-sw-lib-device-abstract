@@ -28,4 +28,10 @@ public readonly struct MySettingDescriptors : IMySettingDescriptors {
 
     public ISettingDescriptor HistoryIntervalSettingDescriptor { get; } =
         new SettingDescriptor("History Interval", typeof(TimeSpan), SettingAccessLevel.ADVANCED, BEHAVIOUR_SETTING_GROUP);
+
+    public ISettingDescriptor BoolSettingDescriptor { get; } =
+        new SettingDescriptor("Bool setting", typeof(bool), SettingAccessLevel.BASE, BEHAVIOUR_SETTING_GROUP);
+
+    public ISettingDescriptor OnOffSettingDescriptor { get; } =
+        new SettingDescriptor("OnOff setting", typeof(OnOff), SettingAccessLevel.BASE, BEHAVIOUR_SETTING_GROUP);
 }
