@@ -11,7 +11,7 @@ namespace Polimaster.Device.Abstract.Device;
 /// <summary>
 /// Device interface
 /// </summary>
-public interface IDevice {
+public interface IDevice : IEquatable<IDevice>{
     /// <summary>
     /// Unique identifier of device
     /// </summary>
