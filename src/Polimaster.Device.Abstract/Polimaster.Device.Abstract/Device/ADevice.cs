@@ -145,14 +145,21 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     public virtual bool HasSame(TTransport transport) => transport.Client.Equals(Transport.Client);
 
     /// <inheritdoc />
-    public bool Equals(IDevice<TTransport, TStream>? other) {
+    public virtual bool Equals(IDevice<TTransport, TStream>? other) {
         return Id.Equals(other?.Id);
     }
 
     /// <inheritdoc />
-    public void Dispose() {
+    public virtual bool Equals(IDevice other) {
+        return Id.Equals(other.Id);
+    }
+
+    /// <inheritdoc />
+    public virtual void Dispose() {
         Logger?.LogDebug("Disposing device {D}", Id);
         IsDisposing?.Invoke();
         Transport.Dispose();
     }
+
+
 }
