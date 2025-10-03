@@ -110,15 +110,15 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     protected virtual void OnLost(IEnumerable<TConnectionParams> parameters) {
         var toRemove = Devices.Where(x =>
             parameters.Any(p => x.HasSame(CreateTransport(CreateClient(p))))).ToArray();
-        foreach (var dev in toRemove) Removed(dev);
+        foreach (var dev in toRemove) DeviceRemoved(dev);
 
         Devices.RemoveAll(x => toRemove.Any(y => y.Equals(x)));
 
         return;
 
-        void Removed(TDevice dev) {
+        void DeviceRemoved(TDevice dev) {
             Logger?.LogDebug("Device lost: {D}", dev.Id);
-            this.Removed?.Invoke(dev);
+            InvokeDeviceRemoved(dev);
             dev.Dispose();
         }
     }
@@ -137,9 +137,21 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
             var dev = CreateDevice(transport);
             Devices.Add(dev);
             Logger?.LogDebug("Device found: {D}", dev.Id);
-            Attached?.Invoke(dev);
+            InvokeDeviceAttached(dev);
         }
     }
+
+    /// <summary>
+    /// Invoke event when device attached
+    /// </summary>
+    /// <param name="dev"></param>
+    protected void InvokeDeviceAttached(TDevice dev) => Attached?.Invoke(dev);
+
+    /// <summary>
+    /// Invoke event when device removed
+    /// </summary>
+    /// <param name="dev"></param>
+    protected void InvokeDeviceRemoved(TDevice dev) => Removed?.Invoke(dev);
 
     /// <inheritdoc />
     public override void Dispose() {
