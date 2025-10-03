@@ -6,4 +6,6 @@ public interface IMySettingDescriptors : ISettingDescriptors {
     public ISettingDescriptor StringSettingDescriptor { get; }
     public ISettingDescriptor MyParamSettingDescriptor { get; }
     public ISettingDescriptor HistoryIntervalSettingDescriptor { get; }
+    public ISettingDescriptor BoolSettingDescriptor { get; }
+    public ISettingDescriptor OnOffSettingDescriptor { get; }
 }
