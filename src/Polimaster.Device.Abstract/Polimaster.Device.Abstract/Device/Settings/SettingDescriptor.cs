@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -13,6 +15,16 @@ public class SettingDescriptor(
     object? unit = null,
     IEnumerable<object>? valueList = null,
     ValueRange? valueRange = null) : ISettingDescriptor {
+    /// <inheritdoc />
+    public int Id {
+        get {
+            var input = $"{Name}|{GroupName}|{ValueType}";
+            using var sha = SHA256.Create();
+            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return BitConverter.ToInt32(bytes, 0);
+        }
+    }
+
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
@@ -52,7 +64,7 @@ public class SettingDescriptor(
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     private bool Equals(SettingDescriptor other) {
-        return Name == other.Name && GroupName == other.GroupName;
+        return Name == other.Name && GroupName == other.GroupName && ValueType == other.ValueType;
     }
 
     /// <inheritdoc />
