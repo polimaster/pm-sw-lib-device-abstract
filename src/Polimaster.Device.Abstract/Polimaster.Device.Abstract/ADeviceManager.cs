@@ -156,6 +156,8 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     /// <inheritdoc />
     public override void Dispose() {
         base.Dispose();
+        Discovery.Found -= OnFound;
+        Discovery.Lost -= OnLost;
         Discovery.Dispose();
     }
 }
