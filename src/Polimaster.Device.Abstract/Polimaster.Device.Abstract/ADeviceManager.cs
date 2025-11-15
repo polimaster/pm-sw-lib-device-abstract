@@ -102,9 +102,9 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     protected readonly TDiscovery Discovery;
 
     /// <summary>
-    /// Thread race lock
+    /// Thread race lock for <see cref="OnFound"/> and <see cref="OnLost"/> methods
     /// </summary>
-    private readonly object _devicesRaceLock = new();
+    protected readonly object DevicesRaceLock = new();
 
     /// <inheritdoc />
     public override event Action<TDevice>? Attached;
@@ -150,7 +150,7 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     protected virtual void OnLost(IEnumerable<TConnectionParams> parameters) {
         List<TDevice> removed = [];
 
-        lock (_devicesRaceLock) {
+        lock (DevicesRaceLock) {
             var toRemove = GetDevices().Where(x => parameters.Any(p =>
                         x.HasSame(CreateTransport(CreateClient(p))))).ToList();
 
@@ -173,7 +173,7 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     protected virtual void OnFound(IEnumerable<TConnectionParams> parameters) {
         List<TDevice> added = [];
 
-        lock (_devicesRaceLock) {
+        lock (DevicesRaceLock) {
             foreach (var parameter in parameters) {
                 var client = CreateClient(parameter);
                 var transport = CreateTransport(client);
