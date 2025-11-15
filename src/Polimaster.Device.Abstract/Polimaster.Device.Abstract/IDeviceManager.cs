@@ -22,9 +22,10 @@ public interface IDeviceManager<T> : IDisposable where T : IDevice {
     public event Action<T>? Removed;
 
     /// <summary>
-    /// Current connected devices
+    /// Get current connected devices
     /// </summary>
-    List<T> Devices { get; }
+    /// <returns></returns>
+    IReadOnlyList<T> GetDevices();
 
     /// <summary>
     /// Settings descriptors
