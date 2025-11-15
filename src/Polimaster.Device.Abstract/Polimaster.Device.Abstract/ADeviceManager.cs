@@ -175,15 +175,19 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
 
         lock (DevicesRaceLock) {
             foreach (var parameter in parameters) {
-                var client = CreateClient(parameter);
-                var transport = CreateTransport(client);
+                try {
+                    var client = CreateClient(parameter);
+                    var transport = CreateTransport(client);
 
-                var exists = GetDevices().Any(x => x.HasSame(transport));
-                if (exists) continue;
+                    var exists = GetDevices().Any(x => x.HasSame(transport));
+                    if (exists) continue;
 
-                var dev = CreateDevice(transport);
-                AddDevice(dev);
-                added.Add(dev);
+                    var dev = CreateDevice(transport);
+                    AddDevice(dev);
+                    added.Add(dev);
+                } catch (Exception e) {
+                    Logger?.LogError(e, "Error while creating device form {Param}", parameter);
+                }
             }
         }
 
