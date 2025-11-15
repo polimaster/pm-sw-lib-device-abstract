@@ -25,7 +25,7 @@ public class MyDeviceManagerTest : Mocks {
         var list = new List<ClientParams> { new(1,1) };
         
         disco.Raise(e => e.Found += null, list);
-        Assert.Equal(list.Count, manager.Devices.Count);
+        Assert.Equal(list.Count, manager.GetDevices().Count);
         Assert.True(devAttached?.HasSame(transport.Object));
         
         IMyDevice? devRemoved = null;
@@ -34,7 +34,7 @@ public class MyDeviceManagerTest : Mocks {
         };
         
         disco.Raise(e => e.Lost += null, list);
-        Assert.Empty(manager.Devices);
+        Assert.Empty(manager.GetDevices());
         Assert.True(devRemoved?.HasSame(transport.Object));
         
     }

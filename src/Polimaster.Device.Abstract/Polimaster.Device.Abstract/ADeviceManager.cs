@@ -26,11 +26,43 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
     /// <inheritdoc />
     public abstract event Action<T>? Removed;
 
-    /// <inheritdoc />
-    public List<T> Devices { get; } = [];
+    /// <summary>
+    /// Current connected devices
+    /// </summary>
+    private readonly List<T> _devices = [];
+
+    /// <summary>
+    /// Lock for <see cref="_devices"/> list manupulation
+    /// </summary>
+    private readonly object _devicesLock = new();
 
     /// <inheritdoc />
     public abstract ISettingDescriptors SettingsDescriptors { get; }
+
+    /// <summary>
+    /// Add device
+    /// </summary>
+    /// <param name="device"></param>
+    protected void AddDevice(T device) {
+        lock (_devicesLock) {
+            _devices.Add(device);
+        }
+    }
+
+    /// <summary>
+    /// Remove device
+    /// </summary>
+    /// <param name="device"></param>
+    protected void RemoveDevice(T device) {
+        lock (_devicesLock) {
+            _devices.Remove(device);
+        }
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<T> GetDevices() {
+        lock (_devicesLock) return _devices.ToList(); // thread safe list
+    }
 
     /// <summary>
     /// 
@@ -44,7 +76,10 @@ public abstract class ADeviceManager<T> : IDeviceManager<T> where T : IDisposabl
     /// <inheritdoc />
     public virtual void Dispose() {
         Logger?.LogDebug("Disposing {D}", GetType().Name);
-        foreach (var device in Devices) { device.Dispose(); }
+        lock (_devicesLock) {
+            foreach (var device in _devices) { device.Dispose(); }
+            _devices.Clear();
+        }
     }
 }
 
@@ -65,6 +100,11 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     /// See <see cref="ITransportDiscovery{TConnectionParams}"/>
     /// </summary>
     protected readonly TDiscovery Discovery;
+
+    /// <summary>
+    /// Thread race lock
+    /// </summary>
+    private readonly object _devicesRaceLock = new();
 
     /// <inheritdoc />
     public override event Action<TDevice>? Attached;
@@ -104,19 +144,22 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     protected abstract IClient<TStream> CreateClient(TConnectionParams connectionParams);
 
     /// <summary>
-    /// When override remove from <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.
+    /// When override call <see cref="ADeviceManager{T}.RemoveDevice"/> list and invoke <see cref="ADeviceManager{T}.Removed"/> action.
     /// </summary>
     /// <param name="parameters"></param>
     protected virtual void OnLost(IEnumerable<TConnectionParams> parameters) {
-        var toRemove = Devices.Where(x =>
-            parameters.Any(p => x.HasSame(CreateTransport(CreateClient(p))))).ToArray();
-        foreach (var dev in toRemove) DeviceRemoved(dev);
+        List<TDevice> removed = [];
 
-        Devices.RemoveAll(x => toRemove.Any(y => y.Equals(x)));
+        lock (_devicesRaceLock) {
+            var toRemove = GetDevices().Where(x => parameters.Any(p =>
+                        x.HasSame(CreateTransport(CreateClient(p))))).ToList();
 
-        return;
-
-        void DeviceRemoved(TDevice dev) {
+            foreach (var dev in toRemove) {
+                RemoveDevice(dev);
+                removed.Add(dev);
+            }
+        }
+        foreach (var dev in removed) {
             Logger?.LogDebug("Device lost: {D}", dev.Id);
             InvokeDeviceRemoved(dev);
             dev.Dispose();
@@ -124,18 +167,27 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     }
 
     /// <summary>
-    /// When override fill <see cref="ADeviceManager{T}.Devices"/> list and invoke <see cref="ADeviceManager{T}.Attached"/> action.
+    /// When override call <see cref="ADeviceManager{T}.AddDevice"/> list and invoke <see cref="ADeviceManager{T}.Attached"/> action.
     /// </summary>
     /// <param name="parameters"></param>
     protected virtual void OnFound(IEnumerable<TConnectionParams> parameters) {
-        foreach (var parameter in parameters) {
-            var client = CreateClient(parameter);
-            var transport = CreateTransport(client);
-            var found = Devices.Any(x => x.HasSame(transport));
-            if(found) continue;
+        List<TDevice> added = [];
 
-            var dev = CreateDevice(transport);
-            Devices.Add(dev);
+        lock (_devicesRaceLock) {
+            foreach (var parameter in parameters) {
+                var client = CreateClient(parameter);
+                var transport = CreateTransport(client);
+
+                var exists = GetDevices().Any(x => x.HasSame(transport));
+                if (exists) continue;
+
+                var dev = CreateDevice(transport);
+                AddDevice(dev);
+                added.Add(dev);
+            }
+        }
+
+        foreach (var dev in added) {
             Logger?.LogDebug("Device found: {D}", dev.Id);
             InvokeDeviceAttached(dev);
         }
@@ -156,6 +208,8 @@ public abstract class ADeviceManager<TDevice, TTransport, TStream, TDiscovery, T
     /// <inheritdoc />
     public override void Dispose() {
         base.Dispose();
+        Discovery.Found -= OnFound;
+        Discovery.Lost -= OnLost;
         Discovery.Dispose();
     }
 }
