@@ -88,7 +88,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override bool HasValue => ProxiedSetting.HasValue;
     // protected set => base.HasValue = value;
     /// <inheritdoc />
-    // public override bool IsDirty => base.IsDirty;
+    // public override bool IsDirty => ProxiedSetting.IsDirty;
 
     /// <inheritdoc />
     public override bool IsSynchronized => ProxiedSetting.IsSynchronized;
@@ -122,7 +122,9 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override Task Reset(CancellationToken cancellationToken) {
         // HasValue = false;
         // Exception = null;
-        return ProxiedSetting.Reset(cancellationToken);
+        var res= ProxiedSetting.Reset(cancellationToken);
+        IsDirty = ProxiedSetting.IsDirty;
+        return res;
     }
 
     /// <inheritdoc />
@@ -130,6 +132,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
         if (!ValidationResults.Any()) {
             // Exception = null;
             await ProxiedSetting.CommitChanges(cancellationToken);
+            IsDirty = ProxiedSetting.IsDirty;
         }
 
         // Exception = new Exception("Value is not valid");
@@ -141,5 +144,6 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
         // HasValue = false;
         // Exception = null;
         await ProxiedSetting.Read(cancellationToken);
+        IsDirty = ProxiedSetting.IsDirty;
     }
 }
