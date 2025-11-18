@@ -120,6 +120,7 @@ public class ADeviceSettingProxyTest : Mocks {
 
         await proxy.CommitChanges(Token);
         writer.Verify(e => e.Write(It.IsAny<MyParam>(), Token));
+        Assert.False(proxy.IsDirty);
     }
     
     
@@ -141,6 +142,9 @@ public class ADeviceSettingProxyTest : Mocks {
         Assert.False(proxy.IsValid);
 
         writer.Verify(e => e.Write(It.IsAny<MyParam>(), Token), Times.Never);
+
+        Assert.True(proxy.IsDirty);
+        Assert.False(proxy.IsValid);
     }
 
     [Fact]
@@ -174,6 +178,8 @@ public class ADeviceSettingProxyTest : Mocks {
             Value = "test"
         };
 
+        Assert.True(proxy.IsDirty);
+
         var ex = new Exception();
         writer.Setup(e => e.Write(It.IsAny<MyParam>(), Token)).ThrowsAsync(ex);
 
@@ -181,6 +187,7 @@ public class ADeviceSettingProxyTest : Mocks {
 
         Assert.Equal(ex, proxy.Exception);
         Assert.True(proxy.IsError);
+        Assert.True(proxy.IsDirty);
     }
     
     
