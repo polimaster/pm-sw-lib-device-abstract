@@ -41,7 +41,7 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
             while (true) {
                 if (_watchTokenSource.Token.IsCancellationRequested) return Task.CompletedTask;
                 try { Search(); } catch (Exception? e) { Logger?.LogError(e, "Cant search devices"); }
-                Thread.Sleep(Sleep);
+                Task.Delay(Sleep, _watchTokenSource.Token);
             }
         }, _watchTokenSource.Token);
     }
