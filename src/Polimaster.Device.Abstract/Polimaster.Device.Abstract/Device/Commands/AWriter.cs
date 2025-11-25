@@ -36,12 +36,12 @@ public abstract class AWriter<TValue, TData, TStream> : AWriter<TValue, TStream>
 
     /// <inheritdoc />
     public override async Task Write(TValue data, CancellationToken cancellationToken) {
-        // LogDebug(nameof(Write));
+        LogDebug(GetType().Name);
         try {
             // await Transport.WriteAsync(Compile(data), cancellationToken);
             await Transport.ExecOnStream(stream => Execute(stream, Compile(data), cancellationToken), cancellationToken);
         } catch (Exception e) {
-            LogError(e, nameof(Write));
+            LogError(e, GetType().Name);
             throw;
         }
     }

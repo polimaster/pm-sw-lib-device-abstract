@@ -14,12 +14,12 @@ namespace Polimaster.Device.Abstract.Device.Commands;
 public abstract class ACommand<TStream> : CommandBase<TStream>, ICommand {
     /// <inheritdoc />
     public virtual async Task Exec(CancellationToken cancellationToken) {
-        // LogDebug(nameof(Exec));
+        LogDebug(GetType().Name);
         try {
             // await Transport.WriteAsync(Compile(), cancellationToken);
             await Transport.ExecOnStream(stream => Execute(stream, cancellationToken), cancellationToken);
         } catch (Exception e) {
-            LogError(e, nameof(Exec));
+            LogError(e, GetType().Name);
             throw;
         }
     }
