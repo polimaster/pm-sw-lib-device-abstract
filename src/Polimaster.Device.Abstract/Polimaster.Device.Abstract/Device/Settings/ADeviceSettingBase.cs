@@ -97,6 +97,17 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
         OnPropertyChanged(nameof(UntypedValue));
     }
 
+    /// <summary>
+    /// Reset setting to default state
+    /// </summary>
+    /// <param name="exception"></param>
+    protected void SetError(Exception? exception) {
+        HasValue = false;
+        _internalValue = default;
+        IsDirty =  false;
+        Exception = exception ?? null;
+    }
+
     /// <inheritdoc cref="HasValue" />
     private bool _hasValue;
 

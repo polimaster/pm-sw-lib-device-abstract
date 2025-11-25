@@ -87,7 +87,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
 
     /// <inheritdoc />
     public virtual async Task ExecOnStream(Func<TStream, Task> action, CancellationToken cancellationToken = new()) {
-        Logger?.LogDebug("Executing {Name}", nameof(ExecOnStream));
+        // Logger?.LogDebug("Executing {Name}", nameof(ExecOnStream));
 
         var locked = false;
         try {

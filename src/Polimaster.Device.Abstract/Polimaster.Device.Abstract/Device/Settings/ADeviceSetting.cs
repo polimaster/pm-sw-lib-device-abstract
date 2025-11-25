@@ -59,9 +59,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
             _isSynchronized = true;
         } catch (Exception e) {
             _isSynchronized = false;
-            SetValue(default);
-            HasValue = false;
-            Exception = e;
+            SetError(e);
         } finally {
             OnPropertyChanged(nameof(IsSynchronized));
             // if (Semaphore.CurrentCount < 1) Semaphore.Release();

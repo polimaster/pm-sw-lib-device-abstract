@@ -62,7 +62,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     public abstract Task<DeviceInfo?> ReadDeviceInfo(CancellationToken cancellationToken);
 
     /// <inheritdoc />
-    public async Task ReadAllSettings(CancellationToken cancellationToken) {
+    public virtual async Task ReadAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
         var ds = GetSettingsProperties();
         foreach (var info in ds) {
@@ -72,7 +72,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     }
 
     /// <inheritdoc />
-    public async Task WriteAllSettings(CancellationToken cancellationToken) {
+    public virtual async Task WriteAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
         var ds = GetSettingsProperties();
         foreach (var info in ds) {
@@ -82,7 +82,7 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     }
 
     /// <inheritdoc />
-    public IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) {
+    public virtual IDeviceSetting SetSetting<T>(ISettingDescriptor descriptor, T value) {
         if (descriptor.ValueType != typeof(T))
             throw new ArgumentException($"Type of {nameof(value)} must be of type {descriptor.ValueType}");
 
@@ -92,14 +92,14 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     }
 
     /// <inheritdoc />
-    public IDeviceSetting GetSetting(ISettingDescriptor descriptor) {
+    public virtual IDeviceSetting GetSetting(ISettingDescriptor descriptor) {
         var settings = GetSettings();
         return settings.FirstOrDefault(e => e.Descriptor.Equals(descriptor)) ??
                throw new ArgumentException($"No settings found for '{descriptor.Name}'");
     }
 
     /// <inheritdoc />
-    public IEnumerable<IDeviceSetting> GetSettings() {
+    public virtual IEnumerable<IDeviceSetting> GetSettings() {
         var ds = GetSettingsProperties();
         var res =  new List<IDeviceSetting>();
         foreach (var info in ds) {

@@ -23,13 +23,13 @@ public abstract class ALogged {
     /// <summary>
     /// Log current command
     /// </summary>
-    /// <param name="methodName"></param>
-    // protected void LogDebug(string methodName) => Logger?.LogDebug("Execute {C}", methodName);
+    /// <param name="commandName"></param>
+    protected void LogDebug(string commandName) => Logger?.LogDebug("Execute {C}", commandName);
 
     /// <summary>
     /// Log error
     /// </summary>
     /// <param name="e"></param>
-    /// <param name="methodName"></param>
-    protected void LogError(Exception e, string methodName) => Logger?.LogError(e, "Error while executing {C}", methodName);
+    /// <param name="commandName"></param>
+    protected void LogError(Exception e, string commandName) => Logger?.LogError(e, "Error while executing {C}", commandName);
 }
