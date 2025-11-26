@@ -74,7 +74,6 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
         set {
             lock (this) {
                 SetValue(value, true);
-                Validate();
             }
         }
     }
@@ -93,6 +92,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
         Exception = null;
         _internalValue = value;
         HasValue = true;
+        Validate();
         OnPropertyChanged(nameof(Value));
         OnPropertyChanged(nameof(UntypedValue));
     }
