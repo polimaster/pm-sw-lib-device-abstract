@@ -73,6 +73,7 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public async Task ShouldValidateValue() {
         var reader = new Mock<IDataReader<MyParam>>();
+        reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam());
         var setting = new MyParamSetting(new SettingDefinition<MyParam> {
             Reader = reader.Object,
             Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
@@ -127,6 +128,7 @@ public class ADeviceSettingProxyTest : Mocks {
     [Fact]
     public async Task ShouldNotWriteValue() {
         var reader = new Mock<IDataReader<MyParam>>();
+        reader.Setup(e => e.Read(Token)).ReturnsAsync(new MyParam());
         var writer = new Mock<IDataWriter<MyParam>>();
         var setting = new MyParamSetting(new SettingDefinition<MyParam> {
             Reader = reader.Object,

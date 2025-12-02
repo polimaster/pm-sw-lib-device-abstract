@@ -22,6 +22,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
         ProxiedSetting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(ProxiedSetting.Value):
+                    if(Value is not null && Value.Equals(GetProxied())) return;
                     SetValue(GetProxied());
                     OnPropertyChanged(nameof(Value));
                     break;

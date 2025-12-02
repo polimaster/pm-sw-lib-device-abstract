@@ -85,16 +85,16 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <param name="value"></param>
     /// <param name="isDirty"></param>
     protected void SetValue(T? value, bool isDirty = false) {
+        IsDirty = isDirty;
+        Exception = null;
+        HasValue = value is not null;
         // isDirty indicates that value is changing by user through Value property
         if (!isDirty && value is not null && EqualityComparer<T>.Default.Equals(value, Value))
             return;
 
         _internalValue = value;
-        HasValue = true;
         OnPropertyChanged(nameof(Value));
         OnPropertyChanged(nameof(UntypedValue));
-        IsDirty = isDirty;
-        Exception = null;
         Validate();
     }
 
