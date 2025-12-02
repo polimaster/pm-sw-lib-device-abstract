@@ -85,16 +85,17 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <param name="value"></param>
     /// <param name="isDirty"></param>
     protected void SetValue(T? value, bool isDirty = false) {
-        if (value is not null && Value is not null && EqualityComparer<T>.Default.Equals(value, Value))
+        // isDirty indicates that value is changing by user through Value property
+        if (!isDirty && value is not null && EqualityComparer<T>.Default.Equals(value, Value))
             return;
 
-        IsDirty = isDirty;
-        Exception = null;
         _internalValue = value;
         HasValue = true;
-        Validate();
         OnPropertyChanged(nameof(Value));
         OnPropertyChanged(nameof(UntypedValue));
+        IsDirty = isDirty;
+        Exception = null;
+        Validate();
     }
 
     /// <summary>
@@ -146,15 +147,12 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <inheritdoc />
     public List<ValidationResult> ValidationResults { get; }
 
-    /// <inheritdoc cref="Exception" />
-    private Exception? _exception;
-
     /// <inheritdoc />
     public virtual Exception? Exception {
-        get => _exception;
+        get;
         protected set {
-            if (Equals(value, _exception)) return;
-            _exception = value;
+            if (Equals(value, field)) return;
+            field = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsError));
         }

@@ -76,7 +76,7 @@ public class MyDeviceTest : Mocks {
 
         var dev = new MyDevice(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY);
 
-        var v = TimeSpan.FromSeconds(10);
+        var v = TimeSpan.FromMinutes(10);
         dev.HistoryInterval.Value = v;
         dev.StringSetting.Value = "test";
         await dev.WriteAllSettings(Token);
