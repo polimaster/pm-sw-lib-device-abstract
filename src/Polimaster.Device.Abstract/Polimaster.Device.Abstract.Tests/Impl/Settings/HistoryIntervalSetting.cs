@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Polimaster.Device.Abstract.Device.Settings;
 using Polimaster.Device.Abstract.Tests.Impl.Commands;
@@ -14,4 +15,11 @@ public class HistoryIntervalSetting(
         Reader = new HistoryIntervalReader(transport, loggerFactory),
         Descriptor = settingsDescriptors.HistoryIntervalSettingDescriptor,
         Writer = new HistoryIntervalWriter(transport, loggerFactory)
-    });
+    }) {
+    /// <inheritdoc />
+    [Required, TimeSpanRange(60, 86400)] // 1min - 24h
+    public override TimeSpan Value {
+        get => base.Value;
+        set => base.Value = value;
+    }
+}

@@ -126,9 +126,8 @@ public class DeviceSettingTest : Mocks {
         Assert.True(setting.IsDirty);
         Assert.False(setting.IsValid);
 
-        setting = new MyParamSetting(transport.Object, SETTING_DESCRIPTORS, LOGGER_FACTORY) {
-            Value = new MyParam { Value = "Valid" }
-        };
+        setting.Value = new MyParam { Value = "Valid" };
+
         Assert.True(setting.IsDirty);
         Assert.True(setting.IsValid);
     }
@@ -174,6 +173,31 @@ public class DeviceSettingTest : Mocks {
         Assert.True(untypedValuePropertyRaised);
         Assert.True(isSynchronizedPropertyRaised);
         Assert.True(hasValuePropertyRaised);
+    }
+
+    [Fact]
+    public async Task ShouldResetValue() {
+        var reader = new Mock<IDataReader<MyParam>>();
+        var p = new MyParam { Value = "test" };
+        reader.Setup(e => e.Read(Token)).Returns(Task.FromResult(p));
+        var setting = new MyParamSetting(new SettingDefinition<MyParam> {
+            Reader = reader.Object,
+            Descriptor = SETTING_DESCRIPTORS.MyParamSettingDescriptor,
+        }) {
+            Value = new MyParam { Value = "ve__________________________ery long string" }
+        };
+
+
+        Assert.True(setting.IsDirty);
+        Assert.False(setting.IsValid);
+        Assert.True(setting.ValidationResults.Count > 0);
+
+        await setting.Reset(Token);
+
+        Assert.False(setting.IsDirty);
+        Assert.True(setting.IsValid);
+        Assert.False(setting.ValidationResults.Count > 0);
+
     }
 
     [Fact]
