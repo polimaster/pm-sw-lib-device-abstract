@@ -25,6 +25,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                     if(Value is not null && Value.Equals(GetProxied())) return;
                     SetValue(GetProxied());
                     OnPropertyChanged(nameof(Value));
+                    OnPropertyChanged(nameof(UntypedValue));
                     break;
                 case nameof(ProxiedSetting.IsDirty):
                     OnPropertyChanged(nameof(IsDirty));

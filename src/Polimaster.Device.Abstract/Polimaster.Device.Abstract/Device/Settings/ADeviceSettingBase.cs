@@ -109,28 +109,22 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
         Exception = exception ?? null;
     }
 
-    /// <inheritdoc cref="HasValue" />
-    private bool _hasValue;
-
     /// <inheritdoc />
     public virtual bool HasValue {
-        get => _hasValue;
+        get;
         protected set {
-            if (value == _hasValue) return;
-            _hasValue = value;
+            if (value == field) return;
+            field = value;
             OnPropertyChanged();
         }
     }
 
-    /// <inheritdoc cref="IsDirty" />
-    private bool _isDirty;
-
     /// <inheritdoc />
     public virtual bool IsDirty {
-        get => _isDirty;
+        get;
         protected set {
-            if (value == _isDirty) return;
-            _isDirty = value;
+            if (value == field) return;
+            field = value;
             OnPropertyChanged();
         }
     }
