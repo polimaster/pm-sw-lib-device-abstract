@@ -89,7 +89,7 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
         Exception = null;
         HasValue = value is not null;
         // isDirty indicates that value is changing by user through Value property
-        if (!isDirty && value is not null && EqualityComparer<T>.Default.Equals(value, Value))
+        if (!isDirty && value is not null && EqualityComparer<T>.Default.Equals(value, _internalValue))
             return;
 
         _internalValue = value;

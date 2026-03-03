@@ -22,10 +22,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
         ProxiedSetting.PropertyChanged += (_, args) => {
             switch (args.PropertyName) {
                 case nameof(ProxiedSetting.Value):
-                    if(Value is not null && Value.Equals(GetProxied())) return;
                     SetValue(GetProxied());
-                    OnPropertyChanged(nameof(Value));
-                    OnPropertyChanged(nameof(UntypedValue));
                     break;
                 case nameof(ProxiedSetting.IsDirty):
                     OnPropertyChanged(nameof(IsDirty));
@@ -42,9 +39,12 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                 case nameof(ProxiedSetting.Exception):
                     OnPropertyChanged(nameof(Exception));
                     break;
-                // case nameof(ProxiedSetting.IsValid):
-                //     OnPropertyChanged(nameof(IsValid));
-                //     break;
+                case nameof(ProxiedSetting.IsValid):
+                    OnPropertyChanged(nameof(IsValid));
+                    break;
+                case nameof(ProxiedSetting.ValidationResults):
+                    OnPropertyChanged(nameof(ValidationResults));
+                    break;
             }
         };
     }
@@ -77,12 +77,11 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
             if (ReferenceEquals(newProxied, ProxiedSetting.Value)) throw new ApplicationException($"{nameof(CreateNewProxiedValue)} should not return the same object");
             ProxiedSetting.Value = newProxied;
 
-            if (!ProxiedSetting.ValidationResults.Any()) return;
-
-            ValidationResults.Clear();
-            ValidationResults.AddRange(ProxiedSetting.ValidationResults);
-            OnPropertyChanged(nameof(ValidationResults));
-            OnPropertyChanged(nameof(IsValid));
+            if (ProxiedSetting.ValidationResults.Any()) {
+                ValidationResults.AddRange(ProxiedSetting.ValidationResults);
+                OnPropertyChanged(nameof(ValidationResults));
+                OnPropertyChanged(nameof(IsValid));
+            }
         }
     }
 
@@ -90,7 +89,10 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override bool HasValue => ProxiedSetting.HasValue;
     // protected set => base.HasValue = value;
     /// <inheritdoc />
-    // public override bool IsDirty => ProxiedSetting.IsDirty;
+    public override bool IsDirty {
+        get => ProxiedSetting.IsDirty || base.IsDirty;
+        protected set => base.IsDirty = value;
+    }
 
     /// <inheritdoc />
     public override bool IsSynchronized => ProxiedSetting.IsSynchronized;
