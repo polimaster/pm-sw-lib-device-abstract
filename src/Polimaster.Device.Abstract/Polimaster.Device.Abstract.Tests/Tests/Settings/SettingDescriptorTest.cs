@@ -27,16 +27,6 @@ public class SettingDescriptorTest {
     }
 
     [Fact]
-    public void ShouldHaveUniqueId() {
-        var d1 = new SettingDescriptor("Name", typeof(int), groupName: "G1");
-        var d2 = new SettingDescriptor("Name", typeof(int), groupName: "G1");
-        var d3 = new SettingDescriptor("Name2", typeof(int), groupName: "G1");
-
-        Assert.Equal(d1.Id, d2.Id);
-        Assert.NotEqual(d1.Id, d3.Id);
-    }
-
-    [Fact]
     public void ShouldHandleProperties() {
         var range = new ValueRange { Min = 0, Max = 10, Step = 1 };
         var list = new object[] { 1, 2, 3 };

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
@@ -12,6 +13,13 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> {
     /// <summary>
+    /// Handles property change notifications from the proxied <see cref="IDeviceSetting{TProxied}"/> instance.
+    /// This delegate is attached to the <see cref="INotifyPropertyChanged.PropertyChanged"/> event of the proxied setting
+    /// to propagate changes and maintain synchronization between the proxied and parent settings.
+    /// </summary>
+    private readonly PropertyChangedEventHandler _proxiedPropertyChanged;
+
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="proxiedSetting">Setting to proxy</param>
@@ -19,34 +27,47 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingDescriptor settingDescriptor) :
         base(settingDescriptor) {
         ProxiedSetting = proxiedSetting;
-        ProxiedSetting.PropertyChanged += (_, args) => {
-            switch (args.PropertyName) {
-                case nameof(ProxiedSetting.Value):
-                    SetValue(GetProxied());
-                    break;
-                case nameof(ProxiedSetting.IsDirty):
-                    OnPropertyChanged(nameof(IsDirty));
-                    break;
-                case nameof(ProxiedSetting.HasValue):
-                    OnPropertyChanged(nameof(HasValue));
-                    break;
-                case nameof(ProxiedSetting.IsSynchronized):
-                    OnPropertyChanged(nameof(IsSynchronized));
-                    break;
-                case nameof(ProxiedSetting.IsError):
-                    OnPropertyChanged(nameof(IsError));
-                    break;
-                case nameof(ProxiedSetting.Exception):
-                    OnPropertyChanged(nameof(Exception));
-                    break;
-                case nameof(ProxiedSetting.IsValid):
-                    OnPropertyChanged(nameof(IsValid));
-                    break;
-                case nameof(ProxiedSetting.ValidationResults):
-                    OnPropertyChanged(nameof(ValidationResults));
-                    break;
-            }
-        };
+        _proxiedPropertyChanged = OnProxiedSettingPropertyChanged;
+        ProxiedSetting.PropertyChanged += _proxiedPropertyChanged;
+    }
+
+    /// <summary>
+    /// Handles the PropertyChanged event of the proxied setting and updates the state of the current setting accordingly.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically the proxied setting.</param>
+    /// <param name="args">The event data containing details about the property that changed.</param>
+    private void OnProxiedSettingPropertyChanged(object? sender, PropertyChangedEventArgs args) {
+        switch (args.PropertyName) {
+            case nameof(ProxiedSetting.Value):
+                SetValue(GetProxied());
+                break;
+            case nameof(ProxiedSetting.IsDirty):
+                OnPropertyChanged(nameof(IsDirty));
+                break;
+            case nameof(ProxiedSetting.HasValue):
+                OnPropertyChanged(nameof(HasValue));
+                break;
+            case nameof(ProxiedSetting.IsSynchronized):
+                OnPropertyChanged(nameof(IsSynchronized));
+                break;
+            case nameof(ProxiedSetting.IsError):
+                OnPropertyChanged(nameof(IsError));
+                break;
+            case nameof(ProxiedSetting.Exception):
+                OnPropertyChanged(nameof(Exception));
+                break;
+            case nameof(ProxiedSetting.IsValid):
+                OnPropertyChanged(nameof(IsValid));
+                break;
+            case nameof(ProxiedSetting.ValidationResults):
+                OnPropertyChanged(nameof(ValidationResults));
+                break;
+        }
+    }
+
+    /// <inheritdoc />
+    public override void Dispose() {
+        ProxiedSetting.PropertyChanged -= _proxiedPropertyChanged;
     }
 
     /// <summary>
@@ -62,11 +83,8 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override T? Value {
         get => IsDirty ? base.Value : GetProxied();
         set {
-            // if (value is not null && Value is not null && EqualityComparer<T>.Default.Equals(value, Value))
-            //     return;
-
             if (!ProxiedSetting.HasValue)
-                throw new Exception($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
+                throw new InvalidOperationException($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
 
             base.Value = value;
             // does not allow to change proxied value until is valid
@@ -74,20 +92,19 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
             var newProxied = CreateNewProxiedValue(ProxiedSetting.Value ?? throw new InvalidOperationException(),
                 value ?? throw new ArgumentNullException(nameof(value)));
-            if (ReferenceEquals(newProxied, ProxiedSetting.Value)) throw new ApplicationException($"{nameof(CreateNewProxiedValue)} should not return the same object");
+            if (ReferenceEquals(newProxied, ProxiedSetting.Value))
+                throw new InvalidOperationException($"{nameof(CreateNewProxiedValue)} should not return the same object");
             ProxiedSetting.Value = newProxied;
 
             if (ProxiedSetting.ValidationResults.Any()) {
-                ValidationResults.AddRange(ProxiedSetting.ValidationResults);
-                OnPropertyChanged(nameof(ValidationResults));
-                OnPropertyChanged(nameof(IsValid));
+                AddValidationResults(ProxiedSetting.ValidationResults);
             }
         }
     }
 
     /// <inheritdoc />
     public override bool HasValue => ProxiedSetting.HasValue;
-    // protected set => base.HasValue = value;
+
     /// <inheritdoc />
     public override bool IsDirty {
         get => ProxiedSetting.IsDirty || base.IsDirty;
@@ -98,15 +115,10 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     public override bool IsSynchronized => ProxiedSetting.IsSynchronized;
 
     /// <inheritdoc />
-    // public override bool IsValid => !ValidationResults.Any() && ProxiedSetting.IsValid;
-
-    /// <inheritdoc />
     public override bool IsError => ProxiedSetting.IsError;
 
     /// <inheritdoc />
     public override Exception? Exception => ProxiedSetting.Exception;
-
-    // protected set => base.Exception = value;
     /// <summary>
     /// Converts <see cref="ProxiedSetting"/> value to <see cref="Value"/>
     /// </summary>
@@ -124,9 +136,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
     /// <inheritdoc />
     public override Task Reset(CancellationToken cancellationToken) {
-        // HasValue = false;
-        // Exception = null;
-        var res= ProxiedSetting.Reset(cancellationToken);
+        var res = ProxiedSetting.Reset(cancellationToken);
         IsDirty = ProxiedSetting.IsDirty;
         return res;
     }
@@ -134,19 +144,13 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!ValidationResults.Any()) {
-            // Exception = null;
             await ProxiedSetting.CommitChanges(cancellationToken);
             IsDirty = ProxiedSetting.IsDirty;
         }
-
-        // Exception = new Exception("Value is not valid");
-        // OnPropertyChanged(nameof(Exception));
     }
 
     /// <inheritdoc />
     public override async Task Read(CancellationToken cancellationToken) {
-        // HasValue = false;
-        // Exception = null;
         await ProxiedSetting.Read(cancellationToken);
         IsDirty = ProxiedSetting.IsDirty;
     }

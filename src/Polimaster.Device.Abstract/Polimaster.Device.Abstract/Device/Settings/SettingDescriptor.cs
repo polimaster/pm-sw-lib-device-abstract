@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Polimaster.Device.Abstract.Device.Settings;
 
@@ -15,15 +13,6 @@ public class SettingDescriptor(
     object? unit = null,
     IEnumerable<object>? valueList = null,
     ValueRange? valueRange = null) : ISettingDescriptor {
-    /// <inheritdoc />
-    public int Id {
-        get {
-            var input = $"{Name}|{GroupName}|{ValueType}";
-            using var sha = SHA256.Create();
-            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-            return BitConverter.ToInt32(bytes, 0);
-        }
-    }
 
     /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;

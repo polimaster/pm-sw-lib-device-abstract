@@ -37,13 +37,19 @@ public abstract class ATransportDiscovery<TConnectionParams> : ITransportDiscove
         _watchTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         Logger?.LogDebug("Starting device discovery");
 
-        Task.Run(() => {
+        var cts = _watchTokenSource;
+        Task.Run(async () => {
             while (true) {
-                if (_watchTokenSource.Token.IsCancellationRequested) return Task.CompletedTask;
-                try { Search(); } catch (Exception? e) { Logger?.LogError(e, "Cant search devices"); }
-                Task.Delay(Sleep, _watchTokenSource.Token);
+                try {
+                    Search();
+                    await Task.Delay(Sleep, cts.Token);
+                } catch (OperationCanceledException) {
+                    return;
+                } catch (Exception e) {
+                    Logger?.LogError(e, "Cannot search devices");
+                }
             }
-        }, _watchTokenSource.Token);
+        }, cts.Token);
     }
 
     /// <summary>

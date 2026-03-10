@@ -49,6 +49,6 @@ public abstract class AClient<TStream, TConnectionParams> : IClient<TStream> whe
     public abstract void Reset();
 
     /// <inheritdoc />
-    public virtual bool Equals(IClient<TStream> other) => ConnectionId.Equals(other.ConnectionId);
+    public virtual bool Equals(IClient<TStream>? other) => other is not null && ConnectionId.Equals(other.ConnectionId);
 
 }

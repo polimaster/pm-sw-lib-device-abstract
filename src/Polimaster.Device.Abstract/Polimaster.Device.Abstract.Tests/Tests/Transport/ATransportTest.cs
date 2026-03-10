@@ -28,7 +28,7 @@ public class ATransportTest : Mocks {
         var transport = new MySimpleTransport(client.Object, LOGGER_FACTORY);
 
         var executed = false;
-        await transport.ExecOnStream(s => {
+        await transport.ExecOnStream(_ => {
             executed = true;
             return Task.CompletedTask;
         }, Token);

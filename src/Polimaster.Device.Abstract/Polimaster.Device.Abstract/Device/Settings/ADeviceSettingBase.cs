@@ -16,13 +16,39 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <typeparam name="T"><inheritdoc cref="IDeviceSetting{T}"/></typeparam>
 public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <summary>
+    /// Synchronization object used to ensure thread safety when accessing or modifying values.
+    /// </summary>
+    private readonly object _valueLock = new();
+
+    /// <summary>
+    /// Internal value.
+    /// </summary>
+    private T? _internalValue;
+
+    /// <summary>
+    /// Indicates whether the current setting has a defined value.
+    /// Used internally to track whether the setting has been initialized or updated.
+    /// </summary>
+    private bool _hasValue;
+
+    /// <summary>
+    /// Indicates whether the setting has been modified since it was last read.
+    /// </summary>
+    private bool _isDirty;
+
+    /// <summary>
+    /// Stores <see cref="Exception"/> occured while reading data from the device.
+    /// </summary>
+    private Exception? _exception;
+
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="settingDescriptor">See <see cref="ISettingDescriptor"/></param>
     protected ADeviceSettingBase(ISettingDescriptor settingDescriptor) {
 
         if (!typeof(T).IsAssignableFrom(settingDescriptor.ValueType)) {
-            throw new Exception(
+            throw new ArgumentException(
                 $"{nameof(settingDescriptor.ValueType)} of {nameof(settingDescriptor)} parameter should be assignable to {typeof(T)}, " +
                 $"current is {settingDescriptor.ValueType}");
         }
@@ -35,7 +61,9 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     public Type ValueType => typeof(T);
 
     /// <summary>
-    ///
+    /// Represents a generic untyped value that can be accessed or modified as an object.
+    /// The property facilitates interaction with the stored value without requiring knowledge
+    /// of its specific type, while ensuring type safety through validation during assignment.
     /// </summary>
     public object? UntypedValue {
         get => Value;
@@ -62,70 +90,138 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <inheritdoc />
     public abstract bool ReadOnly { get; }
 
-    /// <summary>
-    /// Internal <see cref="Value"/>
-    /// </summary>
-    private T? _internalValue;
-
     /// <inheritdoc />
     [Required]
     public virtual T? Value {
-        get => _internalValue;
+        get { lock (_valueLock) return _internalValue; }
         set {
-            lock (this) {
-                SetValue(value, true);
+            List<string> changed;
+            bool valueChanged;
+            lock (_valueLock) {
+                changed = [];
+                // user assignment is always dirty and clears error
+                ApplyIsDirty(true, changed);
+                ApplyException(null, changed);
+                ApplyHasValue(value is not null, changed);
+                _internalValue = value;
+                changed.Add(nameof(Value));
+                changed.Add(nameof(UntypedValue));
+                valueChanged = true;
             }
+            FireChanged(changed);
+            if (valueChanged) Validate();
         }
     }
 
     /// <summary>
     /// Set <see cref="Value"/> from internal Read/Write commands.
-    /// Note it resets <see cref="IsDirty"/> and <see cref="Exception"/> fields.
+    /// Resets <see cref="IsDirty"/> and <see cref="Exception"/>.
     /// </summary>
-    /// <param name="value"></param>
-    /// <param name="isDirty"></param>
     protected void SetValue(T? value, bool isDirty = false) {
-        IsDirty = isDirty;
-        Exception = null;
-        HasValue = value is not null;
-        // isDirty indicates that value is changing by user through Value property
-        if (!isDirty && value is not null && EqualityComparer<T>.Default.Equals(value, _internalValue))
-            return;
-
-        _internalValue = value;
-        OnPropertyChanged(nameof(Value));
-        OnPropertyChanged(nameof(UntypedValue));
-        Validate();
+        List<string> changed;
+        bool valueChanged;
+        lock (_valueLock) {
+            changed = [];
+            ApplyIsDirty(isDirty, changed);
+            ApplyException(null, changed);
+            ApplyHasValue(value is not null, changed);
+            // skip update if the value is unchanged and not a user-initiated dirty write
+            if (!isDirty && value is not null && EqualityComparer<T>.Default.Equals(value, _internalValue)) {
+                valueChanged = false;
+            } else {
+                _internalValue = value;
+                changed.Add(nameof(Value));
+                changed.Add(nameof(UntypedValue));
+                valueChanged = true;
+            }
+        }
+        FireChanged(changed);
+        if (valueChanged) Validate();
     }
 
     /// <summary>
-    /// Reset setting to default state
+    /// Reset setting to error state.
     /// </summary>
-    /// <param name="exception"></param>
     protected void SetError(Exception? exception) {
-        HasValue = false;
-        _internalValue = default;
-        IsDirty =  false;
-        Exception = exception ?? null;
+        List<string> changed;
+        lock (_valueLock) {
+            changed = [];
+            ApplyHasValue(false, changed);
+            if (_internalValue is not null) {
+                _internalValue = default;
+                changed.Add(nameof(Value));
+                changed.Add(nameof(UntypedValue));
+            }
+            ApplyIsDirty(false, changed);
+            ApplyException(exception, changed);
+        }
+        FireChanged(changed);
     }
+
+    // --- Helpers: must be called under _valueLock ---
+
+    /// <summary>
+    /// Updates the internal state to reflect whether the setting has a valid value.
+    /// </summary>
+    /// <param name="value">A boolean indicating whether the setting has a value.</param>
+    /// <param name="changed">A list of property names that will be updated when the state changes.</param>
+    private void ApplyHasValue(bool value, List<string> changed) {
+        if (_hasValue == value) return;
+        _hasValue = value;
+        changed.Add(nameof(HasValue));
+    }
+
+    /// <summary>
+    /// Updates the internal dirty state of the setting and adds the "IsDirty" property name
+    /// to the list of changed properties if the dirty state is altered.
+    /// </summary>
+    /// <param name="value">The new value indicating whether the setting is dirty.</param>
+    /// <param name="changed">A list to track the names of properties that have changed.</param>
+    private void ApplyIsDirty(bool value, List<string> changed) {
+        if (_isDirty == value) return;
+        _isDirty = value;
+        changed.Add(nameof(IsDirty));
+    }
+
+    /// <summary>
+    /// Updates the exception state of the setting and tracks the changed properties.
+    /// </summary>
+    /// <param name="value">The exception to set. Can be null to clear the current error state.</param>
+    /// <param name="changed">A list of property names that have changed as a result of this operation.</param>
+    private void ApplyException(Exception? value, List<string> changed) {
+        if (Equals(_exception, value)) return;
+        _exception = value;
+        changed.Add(nameof(Exception));
+        changed.Add(nameof(IsError));
+    }
+
+    /// <summary>
+    /// Fire PropertyChanged event for each property in the list.
+    /// </summary>
+    /// <param name="changed">List of property names that have changed.</param>
+    private void FireChanged(List<string> changed) {
+        foreach (var name in changed) OnPropertyChanged(name);
+    }
+
+    // --- Public properties ---
 
     /// <inheritdoc />
     public virtual bool HasValue {
-        get;
+        get => _hasValue;
         protected set {
-            if (value == field) return;
-            field = value;
-            OnPropertyChanged();
+            List<string> changed = [];
+            lock (_valueLock) { ApplyHasValue(value, changed); }
+            FireChanged(changed);
         }
     }
 
     /// <inheritdoc />
     public virtual bool IsDirty {
-        get;
+        get => _isDirty;
         protected set {
-            if (value == field) return;
-            field = value;
-            OnPropertyChanged();
+            List<string> changed = [];
+            lock (_valueLock) { ApplyIsDirty(value, changed); }
+            FireChanged(changed);
         }
     }
 
@@ -136,19 +232,18 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     public virtual bool IsValid => !ValidationResults.Any();
 
     /// <inheritdoc />
-    public virtual bool IsError => Exception != null;
+    public virtual bool IsError => _exception != null;
 
     /// <inheritdoc />
     public List<ValidationResult> ValidationResults { get; }
 
     /// <inheritdoc />
     public virtual Exception? Exception {
-        get;
+        get => _exception;
         protected set {
-            if (Equals(value, field)) return;
-            field = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsError));
+            List<string> changed = [];
+            lock (_valueLock) { ApplyException(value, changed); }
+            FireChanged(changed);
         }
     }
 
@@ -161,23 +256,45 @@ public abstract class ADeviceSettingBase<T> : IDeviceSetting<T> {
     /// <inheritdoc />
     public abstract Task CommitChanges(CancellationToken cancellationToken);
 
+    /// <inheritdoc />
+    public virtual void Dispose() { }
+
     /// <summary>
     /// Validates value while assignment. See <see cref="ValidationResults"/> for errors.
+    /// Validation work is done outside the lock; results are applied atomically.
     /// </summary>
     protected virtual void Validate() {
-        ValidationResults.Clear();
+        var snapshot = Value;
+        var results = new List<ValidationResult>();
 
         var memberContext = new ValidationContext(this) { MemberName = nameof(Value) };
-        Validator.TryValidateProperty(Value, memberContext, ValidationResults);
+        Validator.TryValidateProperty(snapshot, memberContext, results);
 
-        if (Value is not null) {
-            var type = Value.GetType();
+        if (snapshot is not null) {
+            var type = snapshot.GetType();
             if (!type.IsSimpleType()) { // if value is complex object
-                var valueContext = new ValidationContext(Value);
-                Validator.TryValidateObject(Value, valueContext, ValidationResults, validateAllProperties: true);
+                var valueContext = new ValidationContext(snapshot);
+                Validator.TryValidateObject(snapshot, valueContext, results, validateAllProperties: true);
             }
         }
 
+        lock (_valueLock) {
+            ValidationResults.Clear();
+            ValidationResults.AddRange(results);
+        }
+
+        OnPropertyChanged(nameof(ValidationResults));
+        OnPropertyChanged(nameof(IsValid));
+    }
+
+    /// <summary>
+    /// Appends additional validation results atomically.
+    /// Used by subclasses to merge validation errors from proxied settings.
+    /// </summary>
+    protected void AddValidationResults(IEnumerable<ValidationResult> additional) {
+        lock (_valueLock) {
+            ValidationResults.AddRange(additional);
+        }
         OnPropertyChanged(nameof(ValidationResults));
         OnPropertyChanged(nameof(IsValid));
     }

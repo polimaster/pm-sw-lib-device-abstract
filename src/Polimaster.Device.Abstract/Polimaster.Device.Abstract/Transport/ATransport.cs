@@ -86,36 +86,35 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
     }
 
     /// <inheritdoc />
-    public virtual async Task ExecOnStream(Func<TStream, Task> action, CancellationToken cancellationToken = new()) {
-        // Logger?.LogDebug("Executing {Name}", nameof(ExecOnStream));
-
-        var locked = false;
+    public virtual async Task ExecOnStream(Func<TStream, Task> action, CancellationToken cancellationToken = default) {
         try {
-            await Exec();
-        } catch {
+            await Exec(action, cancellationToken);
+        } catch (OperationCanceledException) {
+            throw;
+        } catch (Exception e) {
+            Logger?.LogWarning(e, "Command failed, retrying");
             Client.Reset();
-            if (SyncStreamAccess && locked) Semaphore.Release();
-            await Exec(); // retrying....
+            await Exec(action, cancellationToken);
             Close();
-        } finally {
-            if (SyncStreamAccess && locked) Semaphore.Release();
         }
+    }
 
-        return;
-
-        async Task Exec() {
-            await Open(cancellationToken);
-            if (SyncStreamAccess) {
-                await Semaphore.WaitAsync(cancellationToken);
-                locked = true;
-            }
+    /// <summary>
+    /// Executes an action on the stream, ensuring proper synchronization and resource management.
+    /// </summary>
+    /// <param name="action">The action to execute on the stream.</param>
+    /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
+    /// <returns>A task representing the asynchronous execution of the action.</returns>
+    private async Task Exec(Func<TStream, Task> action, CancellationToken cancellationToken) {
+        await Open(cancellationToken);
+        if (SyncStreamAccess) await Semaphore.WaitAsync(cancellationToken);
+        try {
             var stream = Client.GetStream();
             await action.Invoke(stream);
-            if (SyncStreamAccess && locked) Semaphore.Release();
-            locked = false;
-            Thread.Sleep(Sleep);
+        } finally {
+            if (SyncStreamAccess) Semaphore.Release();
         }
-
+        await Task.Delay(Sleep, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -133,6 +132,7 @@ public abstract class ATransport<TStream> : ITransport<TStream> {
         } finally {
             if (SyncStreamAccess && locked) Semaphore.Release();
             Client.Dispose();
+            Semaphore.Dispose();
         }
     }
 }
