@@ -1,145 +1,131 @@
-﻿### Define device discovery
-Discovery searches for devices on particular interface (like IrDA or Bluetooth).
+# Device Manager and Discovery
+
+## Define discovery
+
+Discovery searches for devices on a particular interface (USB, IrDA, Bluetooth, etc.). Extend `ATransportDiscovery<TConnectionParams>` and call `Found` / `Lost` with connection parameter lists.
+
+`ATransportDiscovery` runs `Search()` in a background loop every `Sleep` milliseconds (default 1000). Override `Sleep` to change the polling interval.
 
 ```c#
-public interface IPm1703MDiscovery : ITransportDiscovery<UsbDeviceParams> {
+public interface IPm1703Discovery : ITransportDiscovery<UsbConnectionParams> {
 }
 
-public class Pm1703Discovery : ATransportDiscovery<UsbDeviceParams>, IPm1703Discovery {
-    private readonly ManagementEventWatcher _managementEventWatcher;
+public class Pm1703Discovery : ATransportDiscovery<UsbConnectionParams>, IPm1703Discovery {
     private const string VID = "VID_2047";
     private const string PID = "PID_0A1B";
-    private readonly ILogger<Pm1703Discovery>? _logger;
-    private CancellationTokenSource? _watchTokenSource;
-    private const int TIMEOUT = 20;
+    private ManagementEventWatcher? _watcher;
 
-    public Pm1703Discovery(IClientFactory factory, ILoggerFactory? loggerFactory = null) :
-        base(factory, loggerFactory) {
-        _logger = loggerFactory?.CreateLogger<Pm1703Discovery>();
+    public override event Action<IEnumerable<UsbConnectionParams>>? Found;
+    public override event Action<IEnumerable<UsbConnectionParams>>? Lost;
 
-        const string query =
-            "SELECT * FROM __InstanceOperationEvent WITHIN 1 WHERE TargetInstance isa 'Win32_SerialPort'";
-        _managementEventWatcher = new ManagementEventWatcher(new WqlEventQuery(query));
-        _managementEventWatcher.EventArrived += OnMEWEvent;
-    }
+    public Pm1703Discovery(ILoggerFactory? loggerFactory = null) : base(loggerFactory) { }
 
     public override void Start(CancellationToken token) {
-        _logger?.LogDebug("Starting ManagementEventWatcher");
-        _watchTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-        _managementEventWatcher.Start();
+        // Set up WMI watcher for plug/unplug events
+        const string query =
+            "SELECT * FROM __InstanceOperationEvent WITHIN 1 WHERE TargetInstance isa 'Win32_SerialPort'";
+        _watcher = new ManagementEventWatcher(new WqlEventQuery(query));
+        _watcher.EventArrived += OnWmiEvent;
+        _watcher.Start();
 
-        Task.Run(() => {
-            while (true) {
-                if (_watchTokenSource.Token.IsCancellationRequested) {
-                    _managementEventWatcher.Stop();
-                    break;
-                }
-                Thread.Sleep(TIMEOUT);
-            }
-            
-        }, _watchTokenSource.Token);
+        // Enumerate devices already connected
+        base.Start(token);
+    }
 
-        _logger?.LogDebug("Search for already connected devices");
-        using var searcher = new ManagementObjectSearcher(@"SELECT * FROM Win32_SerialPort");
-        var managementObjectCollection = searcher.Get();
+    protected override void Search() {
+        using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_SerialPort");
+        var found = new List<UsbConnectionParams>();
+        foreach (var obj in searcher.Get()) {
+            var pnp = (string)obj["PNPDeviceID"];
+            var id = (string)obj["DeviceID"];
+            if (pnp.Contains($"{VID}&{PID}"))
+                found.Add(new UsbConnectionParams { Name = id, PlugAndPlayId = pnp });
+        }
+        if (found.Count > 0) Found?.Invoke(found);
+    }
 
-        foreach (var deviceUsb in managementObjectCollection) {
-            var pnpDeviceId = (string)deviceUsb.GetPropertyValue("PNPDeviceID");
-            var deviceId = (string)deviceUsb.GetPropertyValue("DeviceID");
-            if (pnpDeviceId.Contains($"{VID}&{PID}")) {
-                OnFound(new UsbDeviceParams { Name = deviceId, PlugAndPlayId = pnpDeviceId });
-            }
+    private void OnWmiEvent(object sender, EventArrivedEventArgs e) {
+        if (e.NewEvent.Properties["TargetInstance"].Value is not ManagementBaseObject mbo) return;
+        var param = new UsbConnectionParams {
+            Name = mbo["DeviceID"]?.ToString() ?? string.Empty,
+            PlugAndPlayId = mbo["PNPDeviceID"]?.ToString() ?? string.Empty
+        };
+        if (!param.PlugAndPlayId.Contains($"{VID}&{PID}")) return;
+
+        switch (e.NewEvent.ClassPath.ClassName) {
+            case "__InstanceCreationEvent": Found?.Invoke([param]); break;
+            case "__InstanceDeletionEvent": Lost?.Invoke([param]); break;
         }
     }
 
     public override void Stop() {
-        _logger?.LogDebug("Stopping device discovery");
-        _watchTokenSource?.Cancel();
-    }
-
-    private void OnMEWEvent(object sender, EventArrivedEventArgs e) {
-        var p = e.NewEvent.Properties["TargetInstance"];
-        if (p.Value is not ManagementBaseObject mbo) return;
-
-        var deviceId = mbo.Properties["DeviceID"];
-        var pnpDeviceId = mbo.Properties["PNPDeviceID"];
-
-        var usbDevice = new UsbDeviceParams
-            { Name = deviceId.Value.ToString(), PlugAndPlayId = pnpDeviceId.Value.ToString() };
-        if (!usbDevice.PlugAndPlayId.Contains($"{VID}&{PID}")) return;
-
-        switch (e.NewEvent.ClassPath.ClassName) {
-            case "__InstanceCreationEvent":
-                OnFound(usbDevice);
-                break;
-            case "__InstanceDeletionEvent":
-                OnLost(usbDevice);
-                break;
-        }
-    }
-
-    private void OnFound(UsbDeviceParams usbDevice) {
-        _logger?.LogDebug("Found device {P}:{A}", usbDevice.Name, usbDevice.PlugAndPlayId);
-        var client = ClientFactory.CreateClient<IUsbClient, UsbDevice>();
-        var res = new Pm1703Transport(client, usbDevice, LoggerFactory);
-        Found?.Invoke(new List<ITransport<UsbDeviceParams>> { res });
-    }
-
-    private void OnLost(UsbDeviceParams usbDevice) {
-        _logger?.LogDebug("Lost device {P}:{A}", usbDevice.Name, usbDevice.PlugAndPlayId);
-        var client = ClientFactory.CreateClient<IUsbClient, UsbDeviceParams>();
-        var res = new Pm1703Transport(client, usbDevice, LoggerFactory);
-        Lost?.Invoke(new List<ITransport<UsbDeviceParams>> { res });
+        _watcher?.Stop();
+        base.Stop();
     }
 
     public override void Dispose() {
-        _managementEventWatcher.EventArrived -= OnMEWEvent;
-        _managementEventWatcher.Stop();
-        _managementEventWatcher.Dispose();
+        if (_watcher != null) {
+            _watcher.EventArrived -= OnWmiEvent;
+            _watcher.Stop();
+            _watcher.Dispose();
+        }
+        base.Dispose();
     }
 }
 ```
 
-### Define device manager
+## Define a device manager
+
+The device manager subscribes to discovery events and maintains the list of live devices. Extend `ADeviceManager<TDevice, TTransport, TStream, TDiscovery, TConnectionParams>` and implement three factory methods:
 
 ```c#
 public interface IPm1703DeviceManager : IDeviceManager<IPm1703> {
 }
 
-public class Pm1703DeviceManager : ADeviceManager<IPm1703>, IPm1703DeviceManager {
-    private readonly IPm1703Discovery _discovery;
+public class Pm1703DeviceManager :
+    ADeviceManager<IPm1703, IPm1703Transport, Stream, IPm1703Discovery, UsbConnectionParams>,
+    IPm1703DeviceManager {
 
-    public Pm1703DeviceManager(IPm1703Discovery discovery, IDeviceBuilder deviceBuilder,
-        ILoggerFactory? loggerFactory = null) : base(
-        deviceBuilder, loggerFactory) {
-        _discovery = discovery;
-        _discovery.Found += OnFound;
-        _discovery.Lost += OnLost;
-    }
+    private readonly ISettingDescriptors _descriptors = new Pm1703Descriptors();
+    public override ISettingDescriptors SettingsDescriptors => _descriptors;
 
-    private void OnLost(IEnumerable<ITransport<UsbDevice>> transports) {
-        
-        void Removed(IPm1703 dev) {
-            this.Removed?.Invoke(dev);
-            dev.Dispose();
-        }
-        
-        var discovered = from transport in transports select DeviceBuilder.With(transport).Build<Pm1703>();
-        var toRemove = Devices.Where(x => discovered.All(y => y != x)).ToList();
-        foreach (var dev in toRemove) Removed(dev);
-    }
+    public override event Action<IPm1703>? Attached;
+    public override event Action<IPm1703>? Removed;
 
-    private void OnFound(IEnumerable<ITransport<UsbDevice>> transports) {
-        var discovered = from transport in transports select DeviceBuilder.With(transport).Build<Pm1703>();
-        var devices = discovered.ToList();
-        Devices.AddRange(devices);
-        foreach (var device in devices) { Attached?.Invoke(device); }
-    }
+    public Pm1703DeviceManager(IPm1703Discovery discovery, ILoggerFactory? loggerFactory = null)
+        : base(discovery, loggerFactory) { }
 
-    public override void Dispose() {
-        base.Dispose();
-        _discovery.Dispose();
-    }
+    protected override IClient<Stream> CreateClient(UsbConnectionParams connectionParams) =>
+        new UsbClient(connectionParams, LoggerFactory);
+
+    protected override IPm1703Transport CreateTransport(IClient<Stream> client) =>
+        new Pm1703Transport(client, LoggerFactory);
+
+    protected override IPm1703 CreateDevice(IPm1703Transport transport) =>
+        new Pm1703(transport, SettingsDescriptors, LoggerFactory);
 }
+```
 
+### What the base class does automatically
+
+When `Discovery.Found` fires, `ADeviceManager` calls your three factory methods in sequence (`CreateClient` → `CreateTransport` → `CreateDevice`), adds the device to the internal list, and fires `Attached`.
+
+When `Discovery.Lost` fires, it matches the incoming connection parameters to existing devices via `HasSame(transport)`, fires `Removed`, disposes the device, and removes it from the list.
+
+The device list is protected by a lock (`Lock` object) — safe to read and mutate from multiple threads.
+
+### Accessing devices
+
+```c#
+IReadOnlyList<IPm1703> devices = manager.GetDevices();
+```
+
+### Accessing setting descriptors
+
+`SettingsDescriptors` is accessible directly on the manager, so the UI layer can enumerate available settings before any device connects:
+
+```c#
+foreach (var descriptor in manager.SettingsDescriptors.GetAll()) {
+    Console.WriteLine($"{descriptor.GroupName} / {descriptor.Name}");
+}
 ```
