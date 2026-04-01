@@ -15,6 +15,9 @@ public class SettingDescriptor(
     ValueRange? valueRange = null) : ISettingDescriptor {
 
     /// <inheritdoc />
+    public int Id => GetHashCode();
+
+    /// <inheritdoc />
     public SettingAccessLevel AccessLevel { get; set; } = accessLevel;
 
     /// <inheritdoc />
