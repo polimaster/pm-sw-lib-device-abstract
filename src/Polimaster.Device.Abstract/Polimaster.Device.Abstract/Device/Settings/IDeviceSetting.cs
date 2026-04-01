@@ -11,7 +11,7 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <summary>
 /// Device setting
 /// </summary>
-public interface IDeviceSetting : INotifyPropertyChanged {
+public interface IDeviceSetting : INotifyPropertyChanged, IDisposable {
 
     /// <summary>
     /// Value type

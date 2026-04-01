@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,9 +22,10 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     private readonly IEnumerable<ISettingDescriptor> _settingDescriptors;
 
     /// <summary>
-    /// Settings properties cache
+    /// Settings properties cache shared across all instances of the same type
     /// </summary>
-    private List<PropertyInfo>? _settingsProperties;
+    // ReSharper disable once StaticMemberInGenericType
+    private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> SETTINGS_PROPERTIES_CACHE = new();
 
     /// <summary>
     /// Transport layer
@@ -64,20 +66,20 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     /// <inheritdoc />
     public virtual async Task ReadAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Reading settings for device {D}", Id);
-        var ds = GetSettingsProperties();
-        foreach (var info in ds) {
+        foreach (var info in GetSettingsProperties()) {
             if (cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting.Read), cancellationToken);
+            if (info.GetValue(this) is IDeviceSetting setting)
+                await setting.Read(cancellationToken);
         }
     }
 
     /// <inheritdoc />
     public virtual async Task WriteAllSettings(CancellationToken cancellationToken) {
         Logger?.LogDebug("Writing settings for device {D}", Id);
-        var ds = GetSettingsProperties();
-        foreach (var info in ds) {
+        foreach (var info in GetSettingsProperties()) {
             if (cancellationToken.IsCancellationRequested) return;
-            await InvokeSettingsMethod(info, nameof(IDeviceSetting.CommitChanges), cancellationToken);
+            if (info.GetValue(this) is IDeviceSetting setting)
+                await setting.CommitChanges(cancellationToken);
         }
     }
 
@@ -111,35 +113,16 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
 
 
     /// <summary>
-    /// Execute method on device setting <see cref="IDeviceSetting{T}"/>
-    /// </summary>
-    /// <param name="info">Target property</param>
-    /// <param name="methodName">Method to execute</param>
-    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-    private async Task InvokeSettingsMethod(PropertyInfo info, string methodName, CancellationToken cancellationToken) {
-        if (info.GetValue(this) is not IDeviceSetting setting) return;
-
-        var method = setting.GetType().GetMethod(methodName);
-        if (method == null) throw new MissingMethodException(info.Name, methodName);
-
-        var task = (Task)method.Invoke(setting, [cancellationToken]);
-        if (task != null) await task;
-    }
-
-
-    /// <summary>
     /// Get PropertyInfo's of all <see cref="IDeviceSetting{T}"/> instance properties.
+    /// Result is cached per concrete type.
     /// </summary>
     /// <returns></returns>
-    private IEnumerable<PropertyInfo> GetSettingsProperties() {
-        if (_settingsProperties != null) return _settingsProperties;
-
-        var propertyInfos = GetType().GetProperties();
-        _settingsProperties = propertyInfos.Where(info => info.PropertyType.IsGenericType)
-            .Where(info => info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
-            .ToList();
-        return _settingsProperties;
-    }
+    private IEnumerable<PropertyInfo> GetSettingsProperties() =>
+        SETTINGS_PROPERTIES_CACHE.GetOrAdd(GetType(), static t =>
+            t.GetProperties()
+             .Where(info => info.PropertyType.IsGenericType &&
+                            info.PropertyType.GetGenericTypeDefinition() == typeof(IDeviceSetting<>))
+             .ToList());
 
     /// <inheritdoc />
     public virtual bool HasSame(TTransport transport) => transport.Client.Equals(Transport.Client);
@@ -158,6 +141,10 @@ public abstract class ADevice<TTransport, TStream> : IDevice<TTransport, TStream
     public virtual void Dispose() {
         Logger?.LogDebug("Disposing device {D}", Id);
         IsDisposing?.Invoke();
+        foreach (var info in GetSettingsProperties()) {
+            if (info.GetValue(this) is IDeviceSetting setting)
+                setting.Dispose();
+        }
         Transport.Dispose();
     }
 

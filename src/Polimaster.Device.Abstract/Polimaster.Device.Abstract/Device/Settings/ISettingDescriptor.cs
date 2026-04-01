@@ -9,11 +9,6 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 public interface ISettingDescriptor {
 
     /// <summary>
-    /// Global identifier
-    /// </summary>
-    public int Id { get; }
-
-    /// <summary>
     /// Access level for setting. See <see cref="SettingAccessLevel"/>.
     /// </summary>
     SettingAccessLevel AccessLevel { get; set; }

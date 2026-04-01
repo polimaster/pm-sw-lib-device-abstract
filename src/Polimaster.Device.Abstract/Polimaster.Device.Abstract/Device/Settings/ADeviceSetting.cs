@@ -11,16 +11,11 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// <inheritdoc cref="IDeviceSetting{T}"/>
 public class ADeviceSetting<T> : ADeviceSettingBase<T> {
     /// <summary>
-    /// Set limit of threads to 1, witch can access to read/write operations at a time. 
-    /// </summary>
-    // protected SemaphoreSlim Semaphore { get; } = new(1, 1);
-
-    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="settingDefinition"></param>
     protected ADeviceSetting(SettingDefinition<T> settingDefinition) : base(settingDefinition.Descriptor) {
-        Reader = settingDefinition.Reader ?? throw new NullReferenceException($"{nameof(settingDefinition.Reader)} is null");
+        Reader = settingDefinition.Reader;
         Writer = settingDefinition.Writer;
     }
 
@@ -41,7 +36,7 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
     public override bool IsSynchronized => _isSynchronized;
 
     /// <summary>
-    ///
+    /// <see cref="IsSynchronized"/>
     /// </summary>
     private bool _isSynchronized;
 
@@ -52,7 +47,6 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
 
     /// <inheritdoc />
     public override async Task Reset(CancellationToken cancellationToken) {
-        // await Semaphore.WaitAsync(cancellationToken);
         try {
             var v = await Reader.Read(cancellationToken);
             SetValue(v);
@@ -62,21 +56,19 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
             SetError(e);
         } finally {
             OnPropertyChanged(nameof(IsSynchronized));
-            // if (Semaphore.CurrentCount < 1) Semaphore.Release();
         }
     }
 
     /// <inheritdoc />
     public override async Task CommitChanges(CancellationToken cancellationToken) {
         if (!IsValid) {
-            Exception = new Exception("Value is not valid");
+            Exception = new InvalidOperationException("Value is not valid");
             return;
         }
 
         if (Writer == null || !IsDirty) return;
 
         try {
-            // await Semaphore.WaitAsync(cancellationToken);
             if (Value is not null) await Writer.Write(Value, cancellationToken);
             IsDirty = false;
             Exception = null;
@@ -85,6 +77,5 @@ public class ADeviceSetting<T> : ADeviceSettingBase<T> {
         } catch (Exception e) {
             Exception = e;
         }
-        // finally { if (Semaphore.CurrentCount < 1) Semaphore.Release(); }
     }
 }
