@@ -13,13 +13,6 @@ namespace Polimaster.Device.Abstract.Device.Settings;
 /// </summary>
 public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, IDeviceSetting<T> {
     /// <summary>
-    /// Handles property change notifications from the proxied <see cref="IDeviceSetting{TProxied}"/> instance.
-    /// This delegate is attached to the <see cref="INotifyPropertyChanged.PropertyChanged"/> event of the proxied setting
-    /// to propagate changes and maintain synchronization between the proxied and parent settings.
-    /// </summary>
-    private readonly PropertyChangedEventHandler _proxiedPropertyChanged;
-
-    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="proxiedSetting">Setting to proxy</param>
@@ -27,8 +20,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     protected ADeviceSettingProxy(IDeviceSetting<TProxied> proxiedSetting, ISettingDescriptor settingDescriptor) :
         base(settingDescriptor) {
         ProxiedSetting = proxiedSetting;
-        _proxiedPropertyChanged = OnProxiedSettingPropertyChanged;
-        ProxiedSetting.PropertyChanged += _proxiedPropertyChanged;
+        ProxiedSetting.PropertyChanged += OnProxiedSettingPropertyChanged;
     }
 
     /// <summary>
@@ -39,7 +31,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
     private void OnProxiedSettingPropertyChanged(object? sender, PropertyChangedEventArgs args) {
         switch (args.PropertyName) {
             case nameof(ProxiedSetting.Value):
-                SetValue(GetProxied());
+                SetValue(GetProxied(), ProxiedSetting.IsDirty);
                 break;
             case nameof(ProxiedSetting.IsDirty):
                 OnPropertyChanged(nameof(IsDirty));
@@ -67,7 +59,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
 
     /// <inheritdoc />
     public override void Dispose() {
-        ProxiedSetting.PropertyChanged -= _proxiedPropertyChanged;
+        ProxiedSetting.PropertyChanged -= OnProxiedSettingPropertyChanged;
     }
 
     /// <summary>
@@ -87,7 +79,7 @@ public abstract class ADeviceSettingProxy<T, TProxied> : ADeviceSettingBase<T>, 
                 throw new InvalidOperationException($"Underlying {ProxiedSetting.GetType().Name} should be read from device before assigning value");
 
             base.Value = value;
-            // does not allow to change proxied value until is valid
+            // does not allow changing proxied value until is valid
             if (ValidationResults.Any()) return;
 
             var newProxied = CreateNewProxiedValue(ProxiedSetting.Value ?? throw new InvalidOperationException(),
