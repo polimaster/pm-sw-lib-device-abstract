@@ -46,5 +46,21 @@ public class SettingDescriptorTest {
         Assert.Equal("Unit", d.Unit);
         Assert.Equal(list, d.ValueList);
         Assert.Equal(range, d.Range);
+        Assert.NotEqual(0, d.Id);
+    }
+
+    [Fact]
+    public void IdShouldBeStable() {
+        var d = new SettingDescriptor("Name", typeof(int), groupName: "G1");
+        var id1 = d.Id;
+        var id2 = d.Id;
+        Assert.Equal(id1, id2);
+    }
+
+    [Fact]
+    public void IdShouldBeDifferentForDifferentFields() {
+        var d1 = new SettingDescriptor("Name1", typeof(int));
+        var d2 = new SettingDescriptor("Name2", typeof(int));
+        Assert.NotEqual(d1.Id, d2.Id);
     }
 }
